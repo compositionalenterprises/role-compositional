@@ -1,0 +1,11 @@
+---
+- src: git@gitlab.com:smacz/role-common.git
+  version: master
+  scm: git
+  name: common
+- src: nickjj.docker
+  version: master
+  name: docker
+- src: git@gitlab.com:smacz/role-compositional
+  version: master
+  name: compositional
