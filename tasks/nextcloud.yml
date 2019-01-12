@@ -41,7 +41,7 @@
                 external: true
       build: "{{ compositional_nextcloud_build }}"
       state: "{{ compositional_nextcloud_state }}"
-      register: compositional_nextcloud_output
+    register: compositional_nextcloud_output
 
   when: compositional_backend_type == 'mysql'
 
@@ -79,8 +79,8 @@
                 external: true
       build: "{{ compositional_nextcloud_build }}"
       state: "{{ compositional_nextcloud_state }}"
-      register: compositional_nextcloud_output
-      when: compositional_backend_type == 'postgres'
+    register: compositional_nextcloud_output
+    when: compositional_backend_type == 'postgres'
 
   when: compositional_backend_type == 'mysql'
 

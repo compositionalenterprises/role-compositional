@@ -24,7 +24,7 @@
               name: frontend
     build: "{{ compositional_frontend_build }}"
     state: "present"
-    register: frontend_output
+  register: frontend_output
 
 - debug:
   var: frontend_output

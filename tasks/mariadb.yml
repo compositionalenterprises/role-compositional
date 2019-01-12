@@ -24,7 +24,7 @@
               name: backend
     build: "{{ compositional_backend_build }}"
     state: "present"
-    register: backend_output
+  register: backend_output
 
 - debug:
   var: backend_output
