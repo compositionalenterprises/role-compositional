@@ -1,0 +1,5 @@
+---
+
+compositional_kanboard_build: yes
+compositional_kanboard_state: present
+compositional_kanboard_backend_password: 'testpassword'

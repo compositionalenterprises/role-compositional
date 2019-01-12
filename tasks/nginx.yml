@@ -1,0 +1,43 @@
+---
+- name: The latest nginx service is built and present
+  project_name: nginx
+  definition:
+    version: '3.6'
+    services:
+        nginx:
+            image: nginx
+            container_name: nginx
+            restart: always
+            ports:
+                - "80:80"
+                - "443:443"
+            volumes:
+                - conf.d:/etc/nginx/conf.d
+                - /etc/letsencrypt:/etc/letsencrypt
+            networks:
+                - frontend
+    volumes:
+        conf.d:
+    networks:
+        frontend:
+            name: frontend
+  build: "{{ compositional_frontend_build }}"
+  state: "present"
+  register: frontend_output
+
+- debug:
+  var: frontend_output
+
+- name: Nginx default.conf is deployed
+  template:
+    src: nginx_default.conf.j2
+    dest: '/var/lib/docker/volumes/nginx_conf.d/_data/default.conf'
+
+- name: Services directory is created
+  file:
+    path: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}"
+    state: directory
+
+- name: Set Frontend Type
+  set_fact:
+    compositional_backend_type: 'nginx'

@@ -1,0 +1,10 @@
+---
+
+compositional_nextcloud_build: yes
+compositional_nextcloud_state: present
+compositional_nextcloud_backend_password: 'testpassword'
+compositional_nextcloud_mysql_script: |
+  CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
+  CREATE DATABASE IF NOT EXISTS nextcloud;
+  GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
+  FLUSH privileges;

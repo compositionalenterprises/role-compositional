@@ -1,0 +1,86 @@
+---
+- name: Nginx conf is deployed
+  template:
+    src: "nginx_nextcloud.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/nextcloud.conf"
+
+- block:
+
+  - name: Set up the database
+    shell: "docker exec -it {{ backend_output.service.container_name }} mysql -u root -p {{ compositional_mysql_root_password }} <<< {{ compositional_nextcloud_mysql_script }}"
+
+  - name: The latest nextcloud service is built and {{ compositional_nextcloud_state }}
+    project_name: nextcloud
+    definition:
+      version: '3.6'
+      services:
+          nextcloud:
+              image: nextcloud
+              container_name: nextcloud
+              volumes:
+                  - data:/var/www/html/data
+                  - config:/var/www/html/config
+                  - themes:/var/www/html/themes
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                  MYSQL_HOST: "{{ backend_output.service.container_name }}"
+                  MYSQL_DATABASE: "nextcloud"
+                  MYSQL_USER: "nextcloud"
+                  MYSQL_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
+      volumes:
+          data:
+          config:
+          themes:
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_nextcloud_build }}"
+    state: "{{ compositional_nextcloud_state }}"
+    register: compositional_nextcloud_output
+
+  when: compositional_backend_type == 'mysql'
+
+- block:
+
+  - name: The latest nextcloud service is built and {{ compositional_nextcloud_state }}
+    project_name: nextcloud
+    definition:
+      version: '3.6'
+      services:
+          nextcloud:
+              image: nextcloud
+              container_name: nextcloud
+              volumes:
+                  - data:/var/www/html/data
+                  - config:/var/www/html/config
+                  - themes:/var/www/html/themes
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                  POSTGRES_DB: "nextcloud"
+                  POSTGRES_USER: "nextcloud"
+                  POSTGRES_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
+                  POSTGRES_HOST: "{{ backend_output.service.container_name }}"
+      volumes:
+          data:
+          config:
+          themes:
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_nextcloud_build }}"
+    state: "{{ compositional_nextcloud_state }}"
+    register: compositional_nextcloud_output
+    when: compositional_backend_type == 'postgres'
+
+  when: compositional_backend_type == 'mysql'
+
+- debug:
+  var: compositional_nextcloud_output

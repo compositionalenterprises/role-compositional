@@ -1,0 +1,33 @@
+---
+- name: The latest mariadb service is build and present
+  project_name: mariadb
+  definition:
+    version: '3.6'
+    services:
+        mariadb:
+            image: mariadb
+            container_name: mariadb
+            restart: always
+            volumes:
+                - mysql:/var/lib/mysql
+                - conf.d:/etc/mysql/conf.d
+            networks:
+                - db
+            environment:
+                MYSQL_ROOT_PASSWORD: "{{ compositional_MYSQL_ROOT_PASSWORD }}"
+    volumes:
+        mysql:
+        conf.d:
+    networks:
+        backend:
+            name: backend
+  build: "{{ compositional_backend_build }}"
+  state: "present"
+  register: backend_output
+
+- debug:
+  var: backend_output
+
+- name: Set Backend Type
+  set_fact:
+    compositional_backend_type: 'mysql'

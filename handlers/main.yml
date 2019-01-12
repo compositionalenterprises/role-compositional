@@ -1,0 +1,7 @@
+---
+# handlers file for role-compositional
+
+- name: Docker is restarted
+  service:
+    name: docker
+    state: restarted
