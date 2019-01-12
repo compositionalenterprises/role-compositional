@@ -15,7 +15,7 @@
               networks:
                   - db
               environment:
-                  MYSQL_ROOT_PASSWORD: "{{ compositional_MYSQL_ROOT_PASSWORD }}"
+                  MYSQL_ROOT_PASSWORD: "{{ compositional_mysql_root_password }}"
       volumes:
           mysql:
           conf.d:
