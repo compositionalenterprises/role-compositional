@@ -41,4 +41,4 @@
 
 - name: Set Frontend Type
   set_fact:
-    compositional_backend_type: 'nginx'
+    compositional_frontend_type: 'nginx'
