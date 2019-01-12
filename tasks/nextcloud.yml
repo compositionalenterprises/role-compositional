@@ -12,7 +12,7 @@
     # actual name, but since for the time being we name the name of the service
     # the same as the container, it's not really going to affect us now, as
     # long as we stick to that paradigm.
-    shell: "docker exec -it {{ backend_output.ansible_facts.keys()[0] }} mysql -u root -p {{ compositional_mysql_root_password }} <<< {{ compositional_nextcloud_mysql_script }}"
+    shell: 'echo "{{ compositional_nextcloud_mysql_script }}" | docker exec -it {{ backend_output.ansible_facts.keys()[0] }} mysql -u root -p {{ compositional_mysql_root_password }}'
 
   - name: (nextcloud) The latest nextcloud service is built and {{ compositional_nextcloud_state }}
     docker_service:
