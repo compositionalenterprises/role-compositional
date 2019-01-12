@@ -13,7 +13,7 @@
                   - mysql:/var/lib/mysql
                   - conf.d:/etc/mysql/conf.d
               networks:
-                  - db
+                  - backend
               environment:
                   MYSQL_ROOT_PASSWORD: "{{ compositional_mysql_root_password }}"
       volumes:
