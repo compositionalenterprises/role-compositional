@@ -85,4 +85,4 @@
   when: compositional_backend_type == 'mysql'
 
 - debug:
-  var: compositional_nextcloud_output
+    var: compositional_nextcloud_output

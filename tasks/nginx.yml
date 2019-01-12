@@ -27,7 +27,7 @@
   register: frontend_output
 
 - debug:
-  var: frontend_output
+    var: frontend_output
 
 - name: Nginx default.conf is deployed
   template:
