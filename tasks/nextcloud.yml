@@ -1,15 +1,20 @@
 ---
-- name: Nginx conf is deployed
+- name: (nextcloud) Nginx conf is deployed
   template:
     src: "nginx_nextcloud.conf.j2"
     dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/nextcloud.conf"
 
 - block:
 
-  - name: Set up the database
-    shell: "docker exec -it {{ backend_output.service.container_name }} mysql -u root -p {{ compositional_mysql_root_password }} <<< {{ compositional_nextcloud_mysql_script }}"
+  - name: (nextcloud) Set up the database
+    # We have to use `.keys()[0]` to get the name of the container. If we
+    # wanted to, we should probably walk down the data structure to get the
+    # actual name, but since for the time being we name the name of the service
+    # the same as the container, it's not really going to affect us now, as
+    # long as we stick to that paradigm.
+    shell: "docker exec -it {{ backend_output.ansible_facts.keys()[0] }} mysql -u root -p {{ compositional_mysql_root_password }} <<< {{ compositional_nextcloud_mysql_script }}"
 
-  - name: The latest nextcloud service is built and {{ compositional_nextcloud_state }}
+  - name: (nextcloud) The latest nextcloud service is built and {{ compositional_nextcloud_state }}
     docker_service:
       project_name: nextcloud
       definition:
@@ -47,7 +52,7 @@
 
 - block:
 
-  - name: The latest nextcloud service is built and {{ compositional_nextcloud_state }}
+  - name: (nextcloud) The latest nextcloud service is built and {{ compositional_nextcloud_state }}
     docker_service:
       project_name: nextcloud
       definition:
