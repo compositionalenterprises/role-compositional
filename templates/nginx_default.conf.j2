@@ -18,8 +18,8 @@ server {
     #
     # Set SSL/TLS options
     #
-    ssl_certificate /etc/letsencrypt/live/andrewcz.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/andrewcz.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ environment_domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ environment_domain }}/privkey.pem;
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_protocols TLSv1.2 TLSv1.3;
