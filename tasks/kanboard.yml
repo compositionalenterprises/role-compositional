@@ -28,7 +28,7 @@
       version: '3.6'
       services:
           kanboard:
-              image: kanboard
+              image: kanboard/kanboard
               container_name: kanboard
               volumes:
                   - data:/var/www/app/data
