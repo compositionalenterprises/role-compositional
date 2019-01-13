@@ -104,6 +104,13 @@
 
   when: compositional_backend_type == 'mysql'
 
+- name: (nextcloud) Wait for config.php to be generated
+  wait_for:
+    delay: 5
+    path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
+    search_regex: 'overwrite.cli.url'
+    state: present
+
 - name: (nextcloud) config.php is configured with overwritewebroot
   lineinfile:
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
