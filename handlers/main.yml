@@ -12,3 +12,9 @@
     name: "{{ backend_output.ansible_facts.keys()[0] }}"
     restart: yes
     state: started
+
+- name: Restart Backend
+  docker_container:
+    name: "kanboard"
+    restart: yes
+    state: started
