@@ -54,6 +54,6 @@
 
 - name: (kanboard) nginx.conf file is deployed
   copy:
-    src: 'kanboard_nginx.conf.j2'
+    src: 'kanboard_nginx.conf'
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: Restart Kanboard
