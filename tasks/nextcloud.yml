@@ -106,7 +106,7 @@
   lineinfile:
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
     insertafter: "0 => 'localhost'"
-    line: "    {{ loop_idx + 1 }} => {{ loop_item }},"
+    line: "    {{ loop_idx + 1 }} => '{{ loop_item }}',"
   loop:
     - "{{ environment_domain }}"
     - "nextcloud"
