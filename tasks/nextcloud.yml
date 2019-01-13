@@ -104,15 +104,18 @@
 
 - name: (nextcloud) config.php is configured with trusted_domains
   lineinfile:
+    path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
     insertafter: "0 => localhost"
-    line: "    {{ idx + 1 }} => {{ item }},"
+    line: "    {{ loop_idx + 1 }} => {{ loop_item }},"
   loop:
     - "{{ environment_domain }}"
     - "nextcloud"
   loop_control:
-    index_var: idx
+    loop_var: loop_item
+    index_var: loop_idx
 
 - name: (nextcloud) config.php is configured with overwritewebroot
   lineinfile:
+    path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
     insertafter: "overwrite.cli.url"
     line: "  'overwritewebroot' => '/nextcloud',"
