@@ -42,6 +42,7 @@
       volumes:
           data:
           plugins:
+          nginx:
       networks:
           frontend:
               external: true
