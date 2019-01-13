@@ -101,3 +101,18 @@
     when: compositional_backend_type == 'postgres'
 
   when: compositional_backend_type == 'mysql'
+
+- name: (nextcloud) config.php is configured with trusted_domains
+  lineinfile:
+    insertafter: "0 => localhost"
+    line: "    {{ idx + 1 }} => {{ item }},"
+  loop:
+    - "{{ environment_domain }}"
+    - "nextcloud"
+  loop_control:
+    index_var: idx
+
+- name: (nextcloud) config.php is configured with overwritewebroot
+  lineinfile:
+    insertafter: "overwrite.cli.url"
+    line: "  'overwritewebroot' => '/nextcloud',"
