@@ -6,13 +6,18 @@
 
 - block:
 
+  - debug:
+      var: backend_output.ansible_facts.keys()[0]
+
   - name: (nextcloud) Set up the database
     # We have to use `.keys()[0]` to get the name of the container. If we
     # wanted to, we should probably walk down the data structure to get the
     # actual name, but since for the time being we name the name of the service
     # the same as the container, it's not really going to affect us now, as
     # long as we stick to that paradigm.
-    shell: 'echo "{{ compositional_nextcloud_mysql_script }}" | docker exec -it {{ backend_output.ansible_facts.keys()[0] }} mysql -u root -p {{ compositional_mysql_root_password }}'
+    shell: docker exec -i {{ backend_output.ansible_facts.keys()[0] }} mysql -uroot -p{{ compositional_mysql_root_password }} <<< "{{ compositional_nextcloud_mysql_script }}"
+    args:
+      executable: '/bin/bash'
 
   - name: (nextcloud) The latest nextcloud service is built and {{ compositional_nextcloud_state }}
     docker_service:
@@ -31,7 +36,7 @@
                     - frontend
                     - backend
                 environment:
-                    MYSQL_HOST: "{{ backend_output.service.container_name }}"
+                    MYSQL_HOST: "{{ backend_output.ansible_facts.keys()[0] }}"
                     MYSQL_DATABASE: "nextcloud"
                     MYSQL_USER: "nextcloud"
                     MYSQL_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
@@ -72,7 +77,7 @@
                     POSTGRES_DB: "nextcloud"
                     POSTGRES_USER: "nextcloud"
                     POSTGRES_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
-                    POSTGRES_HOST: "{{ backend_output.service.container_name }}"
+                    POSTGRES_HOST: "{{ backend_output.ansible_facts.keys()[0] }}"
         volumes:
             data:
             config:
