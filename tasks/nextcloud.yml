@@ -105,7 +105,7 @@
 - name: (nextcloud) config.php is configured with trusted_domains
   lineinfile:
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
-    insertafter: "0 => localhost"
+    insertafter: "0 => 'localhost'"
     line: "    {{ loop_idx + 1 }} => {{ loop_item }},"
   loop:
     - "{{ environment_domain }}"
