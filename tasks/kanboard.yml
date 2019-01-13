@@ -1,0 +1,52 @@
+---
+- name: (kanboard) Nginx conf is deployed
+  template:
+    src: "nginx_kanboard.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/kanboard.conf"
+  notify: 'Restart Frontend'
+
+- name: (kanboard) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i {{ compositional_backend_output.ansible_facts.keys()[0] }} bash -c "while mysql -uroot -p{{ compositional_mysql_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+
+- name: (kanboard) Set up the MySQL database
+  # We have to use `.keys()[0]` to get the name of the container. If we
+  # wanted to, we should probably walk down the data structure to get the
+  # actual name, but since for the time being we name the name of the service
+  # the same as the container, it's not really going to affect us now, as
+  # long as we stick to that paradigm.
+  shell: docker exec -i {{ compositional_backend_output.ansible_facts.keys()[0] }} mysql -uroot -p{{ compositional_mysql_root_password }} <<< "{{ compositional_kanboard_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+
+- name: (kanboard) The latest kanboard service is built and {{ compositional_kanboard_state }}
+  docker_service:
+    project_name: kanboard
+    definition:
+      version: '3.6'
+      services:
+          kanboard:
+              image: kanboard
+              container_name: kanboard
+              volumes:
+                  - data:/var/www/app/data
+                  - plugins:/var/www/app/plugins
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DATABASE_URL: "{{ compositional_backend_type }}://kanboard:{{ compositional_kanboard_backend_password }}@{{ compositional_backend_output.ansible_facts.keys()[0] }}:{{ compositional_backend_port }}/kanboard"
+      volumes:
+          data:
+          plugins:
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_kanboard_build }}"
+    state: "{{ compositional_kanboard_state }}"
+  register: compositional_kanboard_output
+

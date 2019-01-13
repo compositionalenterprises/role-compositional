@@ -24,8 +24,9 @@
               name: backend
     build: "{{ compositional_backend_build }}"
     state: "present"
-  register: backend_output
+  register: compositional_backend_output
 
 - name: (mariadb) Set Backend Type
   set_fact:
     compositional_backend_type: 'mysql'
+    compositional_backend_port: '3306'
