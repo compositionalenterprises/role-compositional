@@ -1,0 +1,38 @@
+server {
+    listen 80 default_server;
+
+    root /var/www/html;
+    index index.php index.html index.htm;
+    server_name _;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ^~ /kanboard {
+
+        location /kanboard {
+            try_files $uri $uri/ /kanboard/index.php$is_args$args;
+        }
+
+        location ~ ^/kanboard/(?:kanboard|config.php|config.default.php) {
+            deny all;
+        }
+
+        location ~* /kanboard/data {
+            deny all;
+        }
+
+        location ~ \.php(?:$|/) {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+            include fastcgi_params;
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+        }
+
+        location ~ /kanboard/\.ht {
+            deny all;
+        }
+    }
+}

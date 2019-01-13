@@ -52,15 +52,8 @@
     state: "{{ compositional_kanboard_state }}"
   register: compositional_kanboard_output
 
-- name: (nextcloud) Wait for nginx.conf to be generated
-  wait_for:
-    delay: 15
-    path: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
-    search_regex: 'try_files'
-    state: present
-
 - name: (kanboard) nginx.conf file is deployed
-  copy:
-    src: '../files/kanboard_nginx.conf.j2'
+  template:
+    src: 'kanboard_nginx.conf.j2'
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: Restart Kanboard
