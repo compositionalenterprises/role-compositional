@@ -3,6 +3,7 @@
   template:
     src: "nginx_nextcloud.conf.j2"
     dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/nextcloud.conf"
+  notify: 'Restart Frontend'
 
 - block:
 

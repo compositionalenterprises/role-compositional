@@ -5,3 +5,9 @@
   service:
     name: docker
     state: restarted
+
+- name: Restart Frontend
+  docker_service:
+    project_name: "{{ frontend_output.ansible_facts.keys()[0] }}"
+    restarted: yes
+    state: present
