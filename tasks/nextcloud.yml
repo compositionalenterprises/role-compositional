@@ -102,6 +102,11 @@
 
   when: compositional_backend_type == 'mysql'
 
+- name: (nextcloud) wait for nextcloud to initiate config files
+  pause:
+    seconds: 30
+  when: compositional_nextcloud_output.changed
+
 - name: (nextcloud) config.php is configured with trusted_domains
   lineinfile:
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
