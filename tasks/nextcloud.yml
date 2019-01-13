@@ -7,6 +7,13 @@
 
 - block:
 
+  - name: (nextcloud) The database service is up and initialized
+    # We're running a while loop to check to ensure that the mysql database has
+    # initialized:
+    #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+    shell: 'docker exec -i {{ backend_output.ansible_facts.keys()[0] }} bash -l -c "while ! mysqladmin ping -uroot -p{{ compositional_mysql_root_password }} --silent; do sleep 1; done"'
+
+
   - name: (nextcloud) Set up the database
     # We have to use `.keys()[0]` to get the name of the container. If we
     # wanted to, we should probably walk down the data structure to get the
