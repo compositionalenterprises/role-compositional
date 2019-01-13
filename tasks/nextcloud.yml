@@ -46,6 +46,7 @@
                     MYSQL_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
                     NEXTCLOUD_ADMIN_USER: "{{ compositional_nextcloud_admin_user }}"
                     NEXTCLOUD_ADMIN_PASSWORD: "{{ compositional_nextcloud_admin_password }}"
+                    NEXTCLOUD_TRUSTED_DOMAINS: "{{ environment_domain }} nextcloud"
         volumes:
             data:
             config:
@@ -86,6 +87,7 @@
                     POSTGRES_HOST: "{{ backend_output.ansible_facts.keys()[0] }}"
                     NEXTCLOUD_ADMIN_USER: "{{ compositional_nextcloud_admin_user }}"
                     NEXTCLOUD_ADMIN_PASSWORD: "{{ compositional_nextcloud_admin_password }}"
+                    NEXTCLOUD_TRUSTED_DOMAINS: "{{ environment_domain }} nextcloud"
         volumes:
             data:
             config:
@@ -101,23 +103,6 @@
     when: compositional_backend_type == 'postgres'
 
   when: compositional_backend_type == 'mysql'
-
-- name: (nextcloud) wait for nextcloud to initiate config files
-  pause:
-    seconds: 30
-  when: compositional_nextcloud_output_1.changed or compositional_nextcloud_output_2.changed
-
-- name: (nextcloud) config.php is configured with trusted_domains
-  lineinfile:
-    path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
-    insertafter: "0 => 'localhost'"
-    line: "    {{ loop_idx + 1 }} => '{{ loop_item }}',"
-  loop:
-    - "{{ environment_domain }}"
-    - "nextcloud"
-  loop_control:
-    loop_var: loop_item
-    index_var: loop_idx
 
 - name: (nextcloud) config.php is configured with overwritewebroot
   lineinfile:
