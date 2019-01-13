@@ -13,7 +13,7 @@
     restart: yes
     state: started
 
-- name: Restart Backend
+- name: Restart Kanboard
   docker_container:
     name: "kanboard"
     restart: yes
