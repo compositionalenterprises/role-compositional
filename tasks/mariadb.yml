@@ -1,5 +1,5 @@
 ---
-- name: The latest mariadb service is build and present
+- name: (mariadb) The latest mariadb service is build and present
   docker_service:
     project_name: mariadb
     definition:
@@ -26,12 +26,6 @@
     state: "present"
   register: backend_output
 
-- debug:
-    var: backend_output
-
-- debug:
-    var: backend_output.ansible_facts.keys()[0]
-
-- name: Set Backend Type
+- name: (mariadb) Set Backend Type
   set_fact:
     compositional_backend_type: 'mysql'

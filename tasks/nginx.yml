@@ -1,5 +1,5 @@
 ---
-- name: The latest nginx service is built and present
+- name: (nginx) The latest nginx service is built and present
   docker_service:
     project_name: nginx
     definition:
@@ -26,19 +26,16 @@
     state: "present"
   register: frontend_output
 
-- debug:
-    var: frontend_output
-
-- name: Nginx default.conf is deployed
+- name: (nginx) Nginx default.conf is deployed
   template:
     src: nginx_default.conf.j2
     dest: '/var/lib/docker/volumes/nginx_conf.d/_data/default.conf'
 
-- name: Services directory is created
+- name: (nginx) Services directory is created
   file:
     path: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}"
     state: directory
 
-- name: Set Frontend Type
+- name: (nginx) Set Frontend Type
   set_fact:
     compositional_frontend_type: 'nginx'

@@ -8,3 +8,5 @@ compositional_nextcloud_mysql_script: |
   CREATE DATABASE IF NOT EXISTS nextcloud;
   GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
   FLUSH privileges;
+compositional_nextcloud_admin_user: 'admin'
+compositional_nextcloud_admin_password: 'admin'

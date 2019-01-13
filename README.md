@@ -18,6 +18,8 @@ Dependencies
 
 A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
+Make sure that you install certificates to `/etc/letsencrypt` (preferably using `certbot`) with the domain name that you'll be using.
+
 Example Playbook
 ----------------
 
