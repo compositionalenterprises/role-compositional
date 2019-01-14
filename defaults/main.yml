@@ -4,6 +4,10 @@
 compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_frontend_build: 'yes'
+compositional_frontend_state: 'present'
 compositional_backend_build: 'yes'
+compositional_backend_state: 'present'
 compositional_services:
   - 'nextcloud'
+  - 'wordpress'
+  - 'kanboard'
