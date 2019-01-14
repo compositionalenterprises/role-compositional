@@ -62,4 +62,4 @@
   register: compositional_kanboard_output
 
 - name: (kanboard) Symlink kanboard directory
-  shell: docker exec -it kanboard "ln -sT /var/www/app /var/www/app/kanboard/"
+  shell: docker exec -it kanboard bash -c "ln -sT /var/www/app /var/www/app/kanboard"

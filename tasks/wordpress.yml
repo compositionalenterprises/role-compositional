@@ -42,11 +42,6 @@
                 WORDPRESS_DB_PASSWORD: "{{ compositional_wordpress_backend_password }}"
                 WORDPRESS_DB_NAME: "wordpress"
                 WORDPRESS_CONFIG_EXTRA: |
-                  /* Fix Reverse Proxy Admin */
-                  define('FORCE_SSL_ADMIN', true);
-                  // in some setups HTTP_X_FORWARDED_PROTO might contain 
-                  // a comma-separated list e.g. http,https so check for https existence
-                  if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) $_SERVER['HTTPS']='on';
                   /* Fix Subdirectory config */
                   define('WP_SITEURL', 'https://{{ environment_domain }}/blog');
                   define('WP_HOME', 'https://{{ environment_domain }}/blog');
