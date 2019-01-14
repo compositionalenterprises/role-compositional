@@ -64,3 +64,8 @@
 - name: (kanboard) Symlink kanboard directory
   shell: docker exec -i kanboard bash -c "ln -sT /var/www/app/ /var/www/app/kanboard"
   when: compositional_kanboard_output.changed
+
+- name: (kanboard) nginx.conf is deployed
+  copy:
+    src: 'kanboard_nginx.conf'
+    dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
