@@ -1,8 +1,8 @@
 ---
 
-compositional_kanboard_build: yes
-compositional_kanboard_state: present
-compositional_kanboard_backend_password: 'testpassword'
-compositional_kanboard_mysql_script: |
+compositional_wordpress_build: yes
+compositional_wordpress_state: present
+compositional_wordpress_backend_password: 'testpassword'
+compositional_wordpress_mysql_script: |
   CREATE DATABASE IF NOT EXISTS wordpress;
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%' IDENTIFIED BY '{{ compositional_wordpress_backend_password }}';
