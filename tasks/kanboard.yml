@@ -64,3 +64,4 @@
 - name: (kanboard) Symlink kanboard directory
   shell: docker exec -i kanboard bash -c "ln -sT /var/www/app/ /var/www/app/kanboard"
   when: compositional_kanboard_output.changed
+  when: compositional_kanboard_output.changed
