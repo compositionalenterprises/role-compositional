@@ -3,13 +3,13 @@
 
 - name: Restart Frontend
   docker_container:
-    name: "{{ frontend_output.ansible_facts.keys()[0] }}"
+    name: "{{ frontend_output.ansible_facts.keys() | list | first }}"
     restart: yes
     state: started
 
 - name: Restart Backend
   docker_container:
-    name: "{{ backend_output.ansible_facts.keys()[0] }}"
+    name: "{{ backend_output.ansible_facts.keys() | list | first }}"
     restart: yes
     state: started
 
