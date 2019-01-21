@@ -5,7 +5,7 @@
 #
 ---
 - name: Roles in Common
-  hosts: all
+  hosts: compositional
   become: yes
   vars_files:
     - '../vars/all.yml'
@@ -15,6 +15,5 @@
       - 'nextcloud'
     compositional_nextcloud_state: 'absent'
   roles:
-    - { role: role-common }
     - { role: docker }
     - { role: compositional }

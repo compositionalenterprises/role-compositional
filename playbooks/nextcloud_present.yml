@@ -14,6 +14,5 @@
     compositional_services:
       - 'nextcloud'
   roles:
-    - { role: role-common }
     - { role: docker }
     - { role: compositional }

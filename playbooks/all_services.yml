@@ -5,12 +5,14 @@
 #
 ---
 - name: Roles in Common
-  hosts: all
+  hosts: compositional
   become: yes
   vars_files:
     - '../vars/all.yml'
-    - '../environment/vars/*'
+  vars:
+    docker__pip_packages:
+      - "docker"
+      - "python-apt"
   roles:
-    - { role: role-common }
     - { role: docker }
-    - { role: compositional }
+    - { role: compositional, tags: ['comp'], ansible_python_interpreter: "/usr/bin/env python-docker" }
