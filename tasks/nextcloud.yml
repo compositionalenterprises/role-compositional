@@ -117,7 +117,7 @@
     insertafter: "overwrite.cli.url"
     line: "  'overwritewebroot' => '/nextcloud',"
 
-- name: (nextcloud) config.php is configured with overwritewebroot
+- name: (nextcloud) config.php is configured with dbtableprefix
   lineinfile:
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
     regexp: "dbtableprefix"
