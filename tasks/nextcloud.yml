@@ -40,7 +40,7 @@
                     - frontend
                     - backend
                 environment:
-                    MYSQL_HOST: "{{ compositional_backend_output.ansible_facts.keys()[0] }}"
+                    MYSQL_HOST: "{{ compositional_backend_output.ansible_facts.keys() | list | first }}"
                     MYSQL_DATABASE: "nextcloud"
                     MYSQL_USER: "nextcloud"
                     MYSQL_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
