@@ -116,3 +116,9 @@
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
     insertafter: "overwrite.cli.url"
     line: "  'overwritewebroot' => '/nextcloud',"
+
+- name: (nextcloud) config.php is configured with overwritewebroot
+  lineinfile:
+    path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
+    regexp: "dbtableprefix"
+    line: "  'dbtableprefix' => 'oc_',"
