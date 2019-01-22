@@ -1,6 +1,1 @@
 ---
-
-compositional_services:
-  - 'nextcloud'
-  - 'kanboard'
-  - 'wordpress'
