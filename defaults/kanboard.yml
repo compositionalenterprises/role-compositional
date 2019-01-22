@@ -1,8 +1,0 @@
----
-
-compositional_kanboard_build: yes
-compositional_kanboard_state: present
-compositional_kanboard_backend_password: 'testpassword'
-compositional_kanboard_mysql_script: |
-  CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-  GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';

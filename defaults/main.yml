@@ -1,6 +1,9 @@
 ---
 # defaults file for role-compositional
 
+#
+# General Vars (o7)
+#
 compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_frontend_build: 'yes'
@@ -11,3 +14,43 @@ compositional_services:
   - 'nextcloud'
   - 'wordpress'
   - 'kanboard'
+
+#
+# Kanboard
+#
+compositional_kanboard_build: yes
+compositional_kanboard_state: present
+compositional_kanboard_backend_password: 'testpassword'
+compositional_kanboard_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';
+
+#
+# MySQL
+#
+compositional_mysql_root_password: 'testpassword'
+
+#
+# Nextcloud
+#
+compositional_nextcloud_build: yes
+compositional_nextcloud_tag: '14'
+compositional_nextcloud_state: present
+compositional_nextcloud_backend_password: 'testpassword'
+compositional_nextcloud_mysql_script: |
+  CREATE USER IF NOT EXISTS 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
+  CREATE DATABASE IF NOT EXISTS nextcloud;
+  GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
+  FLUSH privileges;
+compositional_nextcloud_admin_user: 'admin'
+compositional_nextcloud_admin_password: 'admin'
+
+#
+# Wordpress
+#
+compositional_wordpress_build: yes
+compositional_wordpress_state: present
+compositional_wordpress_backend_password: 'testpassword'
+compositional_wordpress_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS wordpress;
+  GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%' IDENTIFIED BY '{{ compositional_wordpress_backend_password }}';
