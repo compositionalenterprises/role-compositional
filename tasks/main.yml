@@ -1,18 +1,10 @@
 ---
 # tasks file for role-compositional
 
-- include_vars: "../defaults/{{ item }}.yml"
-  with_items:
-    - "{{ compositional_frontend_service }}"
-    - "{{ compositional_backend_service }}"
-
 - include_tasks: "./{{ item }}.yml"
   with_items:
     - "{{ compositional_frontend_service }}"
     - "{{ compositional_backend_service }}"
-
-- include_vars: "../defaults/{{ item }}.yml"
-  with_items: "{{ compositional_services }}"
 
 - include_tasks: "./{{ item }}.yml"
   with_items: "{{ compositional_services }}"
