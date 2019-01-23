@@ -34,7 +34,7 @@ compositional_mysql_root_password: 'testpassword'
 # Nextcloud
 #
 compositional_nextcloud_build: yes
-compositional_nextcloud_tag: '14'
+compositional_nextcloud_tag: 'latest'
 compositional_nextcloud_state: present
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
