@@ -44,7 +44,7 @@ compositional_nextcloud_mysql_script: |
   FLUSH privileges;
 compositional_nextcloud_admin_user: 'admin'
 compositional_nextcloud_admin_password: 'admin'
-
+compositional_nextcloud_legacy_dbtableprefix: False
 #
 # Wordpress
 #

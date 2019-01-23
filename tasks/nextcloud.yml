@@ -122,3 +122,4 @@
     path: '/var/lib/docker/volumes/nextcloud_config/_data/config.php'
     regexp: "dbtableprefix"
     line: "  'dbtableprefix' => 'oc_',"
+  when: compositional_nextcloud_legacy_dbtableprefix
