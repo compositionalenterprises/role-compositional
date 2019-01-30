@@ -1,0 +1,20 @@
+#
+# This playbook sets up a Kanboard instance on either a single host or on a multi-tiered deployment.
+#
+#   ansible-playbook -i environment/hosts.yml playbooks/site.yml
+#
+---
+- name: Roles in Common
+  hosts: compositional
+  become: yes
+  vars_files:
+    - '../environment/group_vars/compositional/all.yml'
+    - '../environment/group_vars/compositional/vault.yml'
+    - '../vars/all.yml'
+  vars:
+    docker__pip_packages:
+      - "docker"
+      - "python-apt"
+  roles:
+    - { role: docker }
+    - { role: compositional, tags: ['comp'], ansible_python_interpreter: "/usr/bin/env python-docker"}
