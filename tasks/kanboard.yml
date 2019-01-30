@@ -69,3 +69,4 @@
   copy:
     src: 'kanboard_nginx.conf'
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
+  notify: 'Restart Kanboard'
