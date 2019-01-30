@@ -6,3 +6,5 @@
   scm: git
   version: master
   name: compositional
+- src: geerlingguy.certbot
+  name: certbot
