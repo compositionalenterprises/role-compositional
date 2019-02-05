@@ -1,0 +1,31 @@
+#
+# This playbook sets up a Kanboard instance on either a single host or on a multi-tiered deployment.
+#
+#   ansible-playbook -i environment/hosts.yml playbooks/site.yml
+#
+---
+- name: Infrastructure Setup
+  hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+  tasks:
+    - name: Install Python on Ubuntu or Debian servers
+      shell: apt update -y && apt install -y python
+      when: ansible_distribution in ['Ubuntu', 'Debian']
+
+    - name: Install Python on Fedora or CentOS servers
+      shell: yum install -y python
+      when: ansible_distribution in ['Fedora', 'CentOS']
+
+- name: Setup
+  hosts: all
+  become: yes
+  tasks:
+    - setup:
+
+- name: Setup Docker
+  hosts: all
+  become: yes
+  roles:
+    - { role: docker }

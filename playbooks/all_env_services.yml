@@ -4,6 +4,26 @@
 #   ansible-playbook -i environment/hosts.yml playbooks/site.yml
 #
 ---
+- name: Infrastructure Setup
+  hosts: all
+  become: yes
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+  tasks:
+    - name: Install Python on Ubuntu or Debian servers
+      shell: apt update -y && apt install -y python
+      when: ansible_distribution in ['Ubuntu', 'Debian']
+
+    - name: Install Python on Fedora or CentOS servers
+      shell: yum install -y python
+      when: ansible_distribution in ['Fedora', 'CentOS']
+
+- name: Setup
+  hosts: all
+  become: yes
+  tasks:
+    - setup:
+
 - name: Roles in Common
   hosts: compositional
   become: yes
@@ -15,6 +35,16 @@
     docker__pip_packages:
       - "docker"
       - "python-apt"
+    certbot_auto_renew_options: "--quiet --no-self-upgrade --pre-hook='docker stop nginx' --post-hook='docker start nginx'"
+    certbot_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
+    certbot_create_if_missing: True
+    certbot_install_from_source: True
+    certbot_create_standalone_stop_services:
+      - 'docker'
+    certbot_certs:
+      - domains:
+        - "{{ environment_domain }}"
   roles:
     - { role: docker }
+    - { role: certbot }
     - { role: compositional, tags: ['comp'], ansible_python_interpreter: "/usr/bin/env python-docker"}

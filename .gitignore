@@ -1,0 +1,4 @@
+roles/
+environment
+.fact_caches/
+.retry_files/
