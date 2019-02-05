@@ -8,3 +8,7 @@ location /blog/ {
     add_header Front-End-Https on;
     proxy_pass   http://wordpress/;
 }
+
+location /wp-admin/ {
+    return 301 https://$host/blog$request_uri;
+}
