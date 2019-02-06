@@ -12,7 +12,7 @@ server {
 server {
     listen  80;
     server_name {{ compositional_service }}.{{ environment_domain }};
-    return 301 https://{{ environment_domain }}{% if compositional_service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %};
+    return 301 https://{{ environment_domain }}/{% if compositional_service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %};
 }
 
 server {
