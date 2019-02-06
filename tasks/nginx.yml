@@ -14,11 +14,13 @@
                   - "443:443"
               volumes:
                   - conf.d:/etc/nginx/conf.d
+                  - html:/usr/share/nginx/html
                   - /etc/letsencrypt:/etc/letsencrypt
               networks:
                   - frontend
       volumes:
           conf.d:
+          html:
       networks:
           frontend:
               name: frontend

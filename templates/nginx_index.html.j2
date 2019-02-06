@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to {{ environment_domain }}!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to {{ environment_domain }}!</h1>
+<p>Please feel free to navigate to one of the services below:</p>
+
+<ul>
+{% for compositional_service in compositional_services %}
+    <li><a href="https://{{ environment_domain }}/{% if service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %}">{{ compositional_service | capitalize() }}</a></li>
+{% endfor %}
+</ul>
+
+<p><em>Thank you for using Compositional Enterprises for your hosting needs.</em></p>
+</body>
+</html>

@@ -41,4 +41,11 @@ server {
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
+
+    #
+    # Direct {{ environment_domain }}/ without any indicator to a listing of services
+    #
+    location = /$ {
+        root /usr/share/nginx/html;
+    }
 }
