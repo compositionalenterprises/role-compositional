@@ -16,7 +16,7 @@
 
 <ul>
 {% for compositional_service in compositional_services %}
-    <li><a href="https://{{ environment_domain }}/{% if service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %}">{{ compositional_service | capitalize() }}</a></li>
+    <li><a href="https://{{ environment_domain }}/{% if compositional_service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %}">{{ compositional_service | capitalize() }}</a></li>
 {% endfor %}
 </ul>
 
