@@ -32,6 +32,7 @@
   template:
     src: nginx_default.conf.j2
     dest: '/var/lib/docker/volumes/nginx_conf.d/_data/default.conf'
+  notify: 'Restart Frontend'
 
 - name: (nginx) Services directory is created
   file:
