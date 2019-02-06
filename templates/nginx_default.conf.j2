@@ -8,6 +8,35 @@ server {
     return 301 https://$host$request_uri;
 }
 
+{% for compositional_service in compositional_services %}
+
+server {
+    listen  80;
+    server_name {{ compositional_service }}.{{ environment_domain }};
+    return 301 https://{{ environment_domain }}{% if compositional_service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %}
+}
+
+server {
+    listen  443 ssl;
+    server_name {{ compositional_service }}.{{ environment_domain }};
+    #
+    # Set SSL/TLS options
+    #
+    ssl_certificate /etc/letsencrypt/live/{{ environment_domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ environment_domain }}/privkey.pem;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    # Only use safe chiphers
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA';
+
+    return 301 https://{{ environment_domain }}{% if compositional_service == 'wordpress' %}blog{% else %}{{ compositional_service }}{% endif %}
+}
+{% endfor %}
+
 server {
     listen       443 ssl;
     server_name  "{{ environment_domain }}";
