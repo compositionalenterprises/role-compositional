@@ -79,10 +79,11 @@ server {
         root   /usr/share/nginx/html;
     }
 
+    root /usr/share/nginx/html;
     #
     # Direct {{ environment_domain }}/ without any indicator to a listing of services
     #
-    location = /$ {
-        root /usr/share/nginx/html;
+    location = / {
+        index index.html;
     }
 }
