@@ -45,7 +45,6 @@
                   /* Fix Subdirectory config */
                   define('WP_SITEURL', 'https://{{ environment_domain }}/blog');
                   define('WP_HOME', 'https://{{ environment_domain }}/blog');
-
       volumes:
           themes:
           plugins:
@@ -57,3 +56,7 @@
     build: "{{ compositional_wordpress_build }}"
     state: "{{ compositional_wordpress_state }}"
   register: compositional_wordpress_output
+
+- name: (wordpress) Symlink blog directory
+  shell: docker exec -i wordpress bash -c "ln -sT /var/www/html/ /var/www/html/blog"
+  when: compositional_wordpress_output.changed

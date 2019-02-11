@@ -6,9 +6,5 @@ location /blog/ {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     add_header Front-End-Https on;
-    proxy_pass   http://wordpress/;
-}
-
-location /wp-admin/ {
-    return 301 https://$host/blog$request_uri;
+    proxy_pass   http://wordpress;
 }
