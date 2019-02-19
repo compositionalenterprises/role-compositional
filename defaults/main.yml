@@ -16,6 +16,12 @@ compositional_services:
   - 'kanboard'
 
 #
+# Environment Vars
+#
+environment_domain: 'example.com'
+environment_admin: 'admin'
+
+#
 # Kanboard
 #
 compositional_kanboard_build: yes
@@ -45,6 +51,7 @@ compositional_nextcloud_mysql_script: |
 compositional_nextcloud_admin_user: 'admin'
 compositional_nextcloud_admin_password: 'admin'
 compositional_nextcloud_legacy_dbtableprefix: False
+
 #
 # Wordpress
 #
