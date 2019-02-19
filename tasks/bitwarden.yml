@@ -1,0 +1,29 @@
+---
+- name: (bitwarden) Nginx conf is deployed
+  template:
+    src: "nginx_bitwarden.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/bitwarden.conf"
+  notify: 'Restart Frontend'
+
+- name: (bitwarden) The latest bitwarden service is built and {{ compositional_bitwarden_state }}
+  docker_service:
+    project_name: bitwarden
+    definition:
+      version: '3.6'
+      services:
+          bitwarden:
+              image: mprasil/bitwarden:1.7.0-alpine
+              container_name: bitwarden
+              restart: always
+              volumes:
+                  - data:/data/
+              networks:
+                  - frontend
+      volumes:
+          data:
+      networks:
+          frontend:
+              external: true
+    build: "{{ compositional_bitwarden_build }}"
+    state: "{{ compositional_bitwarden_state }}"
+  register: compositional_bitwarden_output
