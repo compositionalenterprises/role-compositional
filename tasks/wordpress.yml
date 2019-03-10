@@ -30,6 +30,7 @@
           wordpress:
               image: wordpress
               container_name: wordpress
+              restart: always
               volumes:
                   - themes:/var/www/html/wp-content/themes
                   - plugins:/var/www/html/wp-content/plugins
