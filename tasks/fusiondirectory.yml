@@ -80,7 +80,7 @@
       networks:
         identity:
           name: 'identity'
-        identity:
+        frontend:
           external: true
 
     build: "{{ compositional_fusiondirectory_build }}"
