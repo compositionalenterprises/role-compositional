@@ -18,28 +18,28 @@
           restart: always
           domainname: "{{ environment_domain }}"
           environment:
-            - HOSTNAME=openldap-fusiondirectory
-            - BACKEND=mdb
-            - LOG_LEVEL=256
-            - DOMAIN={{ environment_domain }}
-            - ADMIN_PASS={{ compositional_fusiondirectory_ldap_admin_pass }}
-            - CONFIG_PASS={{ compositional_fusiondirectory_ldap_config_pass }}
-            - FUSIONDIRECTORY_ADMIN_USER=fd-admin
-            - FUSIONDIRECTORY_ADMIN_PASS={{ compositional_fusiondirectory_admin_pass }}
-            - ORGANIZATION={{ environment_domain }}
-            - BASE_DN={% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}
-            - ENABLE_TLS=true
-            - TLS_CRT_FILENAME=cert.pem
-            - TLS_KEY_FILENAME=key.pem
-            - TLS_CA_CRT_FILENAME=ca.pem
-            - TLS_ENFORCE=false
-            - TLS_CIPHER_SUITE=ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:-DHE-DSS:-RSA:!aNULL:!MD5:!DSS:!SHA
-            - TLS_VERIFY_CLIENT=never
-            - SSL_HELPER_PREFIX=ldap
-            - ENABLE_REPLICATION=false
-            - BACKUP_CONFIG_CRON_PERIOD=0 4 * * *
-            - BACKUP_DATA_CRON_PERIOD=0 4 * * *
-            - BACKUP_TTL=15
+            HOSTNAME: 'openldap-fusiondirectory'
+            BACKEND: 'mdb'
+            LOG_LEVEL: '256'
+            DOMAIN: '{{ environment_domain }}'
+            ADMIN_PASS: '{{ compositional_fusiondirectory_ldap_admin_pass }}'
+            CONFIG_PASS: '{{ compositional_fusiondirectory_ldap_config_pass }}'
+            FUSIONDIRECTORY_ADMIN_USER: 'fd-admin'
+            FUSIONDIRECTORY_ADMIN_PASS: '{{ compositional_fusiondirectory_admin_pass }}'
+            ORGANIZATION: '{{ environment_domain }}'
+            BASE_DN: "{% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}"
+            ENABLE_TLS: 'true'
+            TLS_CRT_FILENAME: 'cert.pem'
+            TLS_KEY_FILENAME: 'key.pem'
+            TLS_CA_CRT_FILENAME: 'ca.pem'
+            TLS_ENFORCE: 'false'
+            TLS_CIPHER_SUITE: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:-DHE-DSS:-RSA:!aNULL:!MD5:!DSS:!SHA'
+            TLS_VERIFY_CLIENT: 'never'
+            SSL_HELPER_PREFIX: 'ldap'
+            ENABLE_REPLICATION: 'false'
+            BACKUP_CONFIG_CRON_PERIOD: '0 4 * * *'
+            BACKUP_DATA_CRON_PERIOD: '0 4 * * *'
+            BACKUP_TTL: '15'
 
           volumes:
             - ./backup:/data/backup
