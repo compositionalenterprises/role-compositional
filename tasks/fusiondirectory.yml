@@ -1,0 +1,89 @@
+---
+- name: (fusiondirectory) Fusion Directory conf is deployed
+  template:
+    src: "nginx_fusiondirectory.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/fusiondirectory.conf"
+  notify: 'Restart Frontend'
+
+- name: (fusiondirectory) The latest wordpress service is built and {{ compositional_fusiondirectory_state }}
+  docker_service:
+    project_name: fusiondirectory
+    definition:
+      version: '3'
+      services:
+        openldap:
+          image: tiredofit/openldap-fusiondirectory
+          container_name: openldap
+          hostname: openldap
+          restart: always
+          domainname: "{{ environment_domain }}"
+          environment:
+            - HOSTNAME=openldap-fusiondirectory
+            - BACKEND=mdb
+            - LOG_LEVEL=256
+            - DOMAIN={{ environment_domain }}
+            - ADMIN_PASS={{ compositional_fusiondirectory_ldap_admin_pass }}
+            - CONFIG_PASS={{ compositional_fusiondirectory_ldap_config_pass }}
+            - FUSIONDIRECTORY_ADMIN_USER=fd-admin
+            - FUSIONDIRECTORY_ADMIN_PASS={{ compositional_fusiondirectory_admin_pass }}
+            - ORGANIZATION={{ environment_domain }}
+            - BASE_DN={% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}
+            - ENABLE_TLS=true
+            - TLS_CRT_FILENAME=cert.pem
+            - TLS_KEY_FILENAME=key.pem
+            - TLS_CA_CRT_FILENAME=ca.pem
+            - TLS_ENFORCE=false
+            - TLS_CIPHER_SUITE=ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:-DHE-DSS:-RSA:!aNULL:!MD5:!DSS:!SHA
+            - TLS_VERIFY_CLIENT=never
+            - SSL_HELPER_PREFIX=ldap
+            - ENABLE_REPLICATION=false
+            - BACKUP_CONFIG_CRON_PERIOD=0 4 * * *
+            - BACKUP_DATA_CRON_PERIOD=0 4 * * *
+            - BACKUP_TTL=15
+
+          volumes:
+            - ./backup:/data/backup
+            - ./data:/var/lib/openldap
+            - ./config:/etc/openldap/slapd.d
+
+          networks:
+            identity:
+              external: True
+
+        fusiondirectory:
+          container_name: fusiondirectory
+          restart: always
+          image: tiredofit/fusiondirectory:alpine
+          depends_on:
+            - openldap
+
+          environment:
+            - VIRTUAL_HOST=fusiondirectory.{{ environment_domain }}
+            - VIRTUAL_NETWORK=nginx-proxy
+            - VIRTUAL_PORT=80
+            - PLUGIN_AUDIT=TRUE
+            - PLUGIN_DSA=TRUE
+            - PLUGIN_LDAPDUMP=TRUE
+            - PLUGIN_LDAPMANAGER=TRUE
+            - PLUGIN_MAIL=TRUE
+            - PLUGIN_PERSONAL=TRUE
+            - PLUGIN_PPOLICY=TRUE
+            - PLUGIN_WEBSERVICE=TRUE
+            - LDAP1_HOST=openldap
+            - LDAP1_BASE_DN={% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}
+            - LDAP1_ADMIN_DN=cn=admin,{% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}
+            - LDAP1_ADMIN_PASS={{ compositional_fusiondirectory_ldap_admin_pass }}
+
+          networks:
+            - 'frontend'
+            - 'identity'
+
+      networks:
+        frontend:
+          external: true
+
+        identity:
+          name: 'identity'
+    build: "{{ compositional_fusiondirectory_build }}"
+    state: "{{ compositional_fusiondirectory_state }}"
+  register: compositional_fusiondirectory_output
