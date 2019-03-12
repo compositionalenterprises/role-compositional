@@ -9,7 +9,7 @@
   docker_service:
     project_name: fusiondirectory
     definition:
-      version: '3'
+      version: '3.6'
       services:
         openldap:
           image: tiredofit/openldap-fusiondirectory
