@@ -50,7 +50,7 @@
             - 'identity'
 
         fusiondirectory:
-          container_name: fusiondirectory
+          container_name: tiredofit/fusiondirectory
           restart: always
           image: tiredofit/fusiondirectory:alpine
           depends_on:
