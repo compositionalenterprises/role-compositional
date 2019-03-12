@@ -1,40 +1,105 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+This role sets up a VM to host what amounts to a cloud-in-a-box; a combination of various cloud services all hosted in subdirectories of a given domain.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
-
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+### General
+
+```yaml
+# The frontend used for the reverse proxy
+compositional_frontend_service: 'nginx'
+# The backend used for the database
+compositional_backend_service: 'mariadb'
+# The enumeration of the services to be installed
+compositional_services:
+  - 'nextcloud'
+  - 'wordpress'
+  - 'kanboard'
+```
+
+### Environment
+
+```yaml
+# The domain that will be pointing to the server's IP
+environment_domain: 'example.com'
+# The domain that will be pointing to the server's IP
+environment_admin: 'admin'
+```
+
+### Kanboard
+
+```yaml
+compositional_kanboard_backend_password: 'testpassword'
+```
+
+### Nextcloud
+
+```yaml
+compositional_nextcloud_backend_password: 'testpassword'
+compositional_nextcloud_admin_user: 'admin'
+compositional_nextcloud_admin_password: 'admin'
+```
+
+### Wordpress
+
+```yaml
+compositional_wordpress_backend_password: 'testpassword'
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Make sure that you install certificates to `/etc/letsencrypt` (preferably using `certbot`) with the domain name that you'll be using.
+```yaml
+- src: nickjj.docker
+  version: 'v1.8.0'
+  name: docker
+- src: geerlingguy.certbot
+  name: certbot
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+#
+# This playbook sets up a SSL-encrypted server running nextcloud with default
+# frontends and backends, and default passwords. FOR TESTING ONLY!!!
+#
+- hosts: all
+  become: True
+  vars:
+    docker__pip_packages:
+      - "docker"
+      - "python-apt"
+    certbot_auto_renew_options: "--quiet --no-self-upgrade --pre-hook='docker stop nginx' --post-hook='docker start nginx'"
+    certbot_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
+    certbot_create_if_missing: True
+    certbot_install_from_source: True
+    certbot_create_standalone_stop_services: []
+    certbot_certs:
+      - domains:
+        - "{{ environment_domain }}"
+    compositional_services:
+      - 'nextcloud'
+  roles:
+    - { role: docker }
+    - { role: certbot }
+    - { role: compositional, ansible_python_interpreter: "/usr/bin/env python-docker"}
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Andrew Cziryak
+https://andrewcz.com
