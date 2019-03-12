@@ -5,7 +5,7 @@
     dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/fusiondirectory.conf"
   notify: 'Restart Frontend'
 
-- name: (fusiondirectory) The latest wordpress service is built and {{ compositional_fusiondirectory_state }}
+- name: (fusiondirectory) The latest Fustion Directory service is built and {{ compositional_fusiondirectory_state }}
   docker_service:
     project_name: fusiondirectory
     definition:
@@ -75,15 +75,14 @@
             - LDAP1_ADMIN_PASS={{ compositional_fusiondirectory_ldap_admin_pass }}
 
           networks:
-            - 'frontend'
-            - 'identity'
+            frontend:
+              external: true
+            identity:
 
       networks:
-        frontend:
-          external: true
-
         identity:
           name: 'identity'
+
     build: "{{ compositional_fusiondirectory_build }}"
     state: "{{ compositional_fusiondirectory_state }}"
   register: compositional_fusiondirectory_output
