@@ -47,8 +47,7 @@
             - ./config:/etc/openldap/slapd.d
 
           networks:
-            identity:
-              external: True
+            - 'identity'
 
         fusiondirectory:
           container_name: fusiondirectory
@@ -75,13 +74,14 @@
             - LDAP1_ADMIN_PASS={{ compositional_fusiondirectory_ldap_admin_pass }}
 
           networks:
-            frontend:
-              external: true
-            identity:
+            - 'frontend'
+            - 'identity'
 
       networks:
         identity:
           name: 'identity'
+        identity:
+          external: true
 
     build: "{{ compositional_fusiondirectory_build }}"
     state: "{{ compositional_fusiondirectory_state }}"
