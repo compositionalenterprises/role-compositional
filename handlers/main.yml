@@ -2,19 +2,10 @@
 # handlers file for role-compositional
 
 - name: Restart Frontend
-  docker_container:
-    name: "{{ frontend_output.ansible_facts.keys() | list | first }}"
-    restart: yes
-    state: started
+  command: docker restart {{ frontend_output.ansible_facts.keys() | list | first }}
 
 - name: Restart Backend
-  docker_container:
-    name: "{{ backend_output.ansible_facts.keys() | list | first }}"
-    restart: yes
-    state: started
+  command: docker restart {{ backend_output.ansible_facts.keys() | list | first }}
 
 - name: Restart Kanboard
-  docker_container:
-    name: "kanboard"
-    restart: yes
-    state: started
+  command: docker restart kanboard

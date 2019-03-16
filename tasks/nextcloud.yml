@@ -79,6 +79,7 @@
                     - data:/var/www/html/data
                     - config:/var/www/html/config
                     - themes:/var/www/html/themes
+                    - custom_apps:/var/www/html/custom_apps
                 networks:
                     - frontend
                     - backend
@@ -94,6 +95,7 @@
             data:
             config:
             themes:
+            custom_apps:
         networks:
             frontend:
                 external: true
