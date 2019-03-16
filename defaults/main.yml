@@ -67,3 +67,13 @@ compositional_wordpress_mysql_script: |
 #
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
+
+
+#
+# Fusion Directory
+#
+compositional_fusiondirectory_ldap_admin_pass: 'testpassword'
+compositional_fusiondirectory_ldap_config_pass: 'testpassword'
+compositional_fusiondirectory_admin_pass: 'testpassword'
+compositional_fusiondirectory_build: yes
+compositional_fusiondirectory_state: present
