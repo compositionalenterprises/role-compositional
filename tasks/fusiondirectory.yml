@@ -27,7 +27,7 @@
             FUSIONDIRECTORY_ADMIN_USER: fd-admin
             FUSIONDIRECTORY_ADMIN_PASS: "{{ compositional_fusiondirectory_admin_pass }}"
             ORGANIZATION: "{{ environment_domain }}"
-            BASE_DN: "{% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}"
+            BASE_DN: "{% for i in environment_domain.split('.') %}dc={{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
             ENABLE_TLS: 'true'
             TLS_CRT_FILENAME: cert.pem
             TLS_KEY_FILENAME: key.pem
@@ -52,13 +52,13 @@
         fusiondirectory:
           container_name: fusiondirectory
           restart: always
-          image: tiredofit/fusiondirectory:alpine
+          image: 'tiredofit/fusiondirectory:1.15'
           depends_on:
             - openldap
 
           environment:
             VIRTUAL_HOST: fusiondirectory.{{ environment_domain }}
-            VIRTUAL_NETWORK: nginx-proxy
+            VIRTUAL_NETWORK: identity
             VIRTUAL_PORT: 80
             PLUGIN_AUDIT: 'TRUE'
             PLUGIN_DSA: 'TRUE'
@@ -69,8 +69,11 @@
             PLUGIN_PPOLICY: 'TRUE'
             PLUGIN_WEBSERVICE: 'TRUE'
             LDAP1_HOST: openldap
-            LDAP1_BASE_DN: "{% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}"
-            LDAP1_ADMIN_DN: cn=admin,{% for i in environment_domain %}dc=${i}{% if not loop.last %},{% endif %}{% endfor %}
+            LDAP1_DOMAIN: "{{ environment_domain }}"
+            LDAP1_PORT: "389"
+            LDAP1_NAME: "{{ environment_domain }}"
+            LDAP1_BASE_DN: "{% for i in environment_domain.split('.') %}dc={{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
+            LDAP1_ADMIN_DN: "cn=admin,{% for i in environment_domain.split('.') %}dc={{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
             LDAP1_ADMIN_PASS: "{{ compositional_fusiondirectory_ldap_admin_pass }}"
 
           networks:
