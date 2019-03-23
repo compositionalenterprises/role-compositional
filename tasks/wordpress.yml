@@ -46,6 +46,7 @@
                   /* Fix Subdirectory config */
                   define('WP_SITEURL', 'https://{{ environment_domain }}/blog');
                   define('WP_HOME', 'https://{{ environment_domain }}/blog');
+                  define('WP_MEMORY_LIMIT', '2048M');
       volumes:
           themes:
           plugins:
