@@ -75,5 +75,5 @@
     - 'php_value max_input_time 300'
 
 - name: (wordpress) Ensure uploads have a location to upload to
-  shell: docker exec -i wordpress bash -c "mkdir /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content/uploads"
+  shell: docker exec -i wordpress bash -c "mkdir -p /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content/uploads"
   when: compositional_wordpress_output.changed
