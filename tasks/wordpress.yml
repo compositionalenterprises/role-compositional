@@ -62,3 +62,12 @@
 - name: (wordpress) Symlink blog directory
   shell: docker exec -i wordpress bash -c "ln -sT /var/www/html/ /var/www/html/blog"
   when: compositional_wordpress_output.changed
+
+- name: (wordpress) Ensure large file uploads are permitted in htaccess
+  shell: docker exec -i wordpress bash -c "grep -qxF '{{ item }}' foo.bar || echo '{{ item }}' >> foo.bar"
+  when: compositional_wordpress_output.changed
+  with_items:
+    - 'php_value upload_max_filesize 2048M'
+    - 'php_value post_max_size 2048M'
+    - 'php_value max_execution_time 300'
+    - 'php_value max_input_time 300'
