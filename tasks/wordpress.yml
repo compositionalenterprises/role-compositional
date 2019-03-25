@@ -34,6 +34,7 @@
               volumes:
                   - themes:/var/www/html/wp-content/themes
                   - plugins:/var/www/html/wp-content/plugins
+                  - uploads:/var/www/html/wp-content/uploads
               networks:
                   - frontend
                   - backend
@@ -50,6 +51,7 @@
       volumes:
           themes:
           plugins:
+          uploads:
       networks:
           frontend:
               external: true
@@ -64,10 +66,14 @@
   when: compositional_wordpress_output.changed
 
 - name: (wordpress) Ensure large file uploads are permitted in htaccess
-  shell: docker exec -i wordpress bash -c "grep -qxF '{{ item }}' foo.bar || echo '{{ item }}' >> foo.bar"
+  shell: docker exec -i wordpress bash -c "grep -qxF '{{ item }}' /var/www/html/.htaccess || echo '{{ item }}' >> /var/www/html/.htaccess"
   when: compositional_wordpress_output.changed
   with_items:
     - 'php_value upload_max_filesize 2048M'
     - 'php_value post_max_size 2048M'
     - 'php_value max_execution_time 300'
     - 'php_value max_input_time 300'
+
+- name: (wordpress) Ensure uploads have a location to upload to
+  shell: docker exec -i wordpress bash -c "mkdir /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content/uploads"
+  when: compositional_wordpress_output.changed
