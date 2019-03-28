@@ -123,3 +123,20 @@
     regexp: "dbtableprefix"
     line: "  'dbtableprefix' => 'oc_',"
   when: compositional_nextcloud_legacy_dbtableprefix
+
+#
+# See https://github.com/Yetangitu/owncloud-apps/pull/108#issuecomment-429428310
+# and https://github.com/Yetangitu/owncloud-apps/issues/114
+# for an explanation of what's going on here
+#
+- name: (nextcloud) files_reader app is downloaded and extracted
+  unarchive:
+    src: 'https://github.com/manvalls/owncloud-apps/raw/master/dist/files_reader-1.2.3-patched-5-OC.tar.gz'
+    dest: '/var/lib/docker/volumes/nextcloud_custom_apps/_data/'
+    remote_src: yes
+
+- name: (nextcloud) files_reader app has the max-version adjusted
+  lineinfile:
+    path: '/var/lib/docker/volumes/nextcloud_custom_apps/_data/files_reader/appinfo/info.xml'
+    regexp: '.*max-version="14.0"'
+    line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
