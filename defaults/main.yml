@@ -67,3 +67,24 @@ compositional_wordpress_mysql_script: |
 #
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
+
+#
+# Fusion Directory
+#
+compositional_fusiondirectory_ldap_admin_pass: 'testpassword'
+compositional_fusiondirectory_ldap_config_pass: 'testpassword'
+compositional_fusiondirectory_admin_pass: 'testpassword'
+compositional_fusiondirectory_build: yes
+compositional_fusiondirectory_state: present
+
+#
+# Firefly
+#
+# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
+compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
+compositional_firefly_build: yes
+compositional_firefly_state: present
+compositional_firefly_backend_password: 'testpassword'
+compositional_firefly_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS firefly;
+  GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
