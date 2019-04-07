@@ -52,6 +52,13 @@ compositional_nextcloud_admin_password: 'admin'
 compositional_wordpress_backend_password: 'testpassword'
 ```
 
+### Firefly
+
+```yaml
+compositional_firefly_backend_password: 'testpassword'
+compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
+```
+
 Dependencies
 ------------
 
