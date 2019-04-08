@@ -11,13 +11,14 @@
     definition:
       version: '3.6'
       services:
-        openldap:
+        ldap:
           image: tiredofit/openldap-fusiondirectory
-          container_name: openldap
-          hostname: openldap
+          container_name: ldap
+          hostname: ldap
           restart: always
           domainname: "{{ environment_domain }}"
           environment:
+            DEBUG_MODE: 'TRUE'
             HOSTNAME: 'openldap-fusiondirectory'
             BACKEND: 'mdb'
             LOG_LEVEL: '256'
@@ -28,33 +29,21 @@
             FUSIONDIRECTORY_ADMIN_PASS: '{{ compositional_fusiondirectory_admin_pass }}'
             ORGANIZATION: '{{ environment_domain }}'
             BASE_DN: "{% for i in environment_domain.split('.') %}dc={{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
-            ENABLE_TLS: 'true'
-            TLS_CRT_FILENAME: 'cert.pem'
-            TLS_KEY_FILENAME: 'key.pem'
-            TLS_CA_CRT_FILENAME: 'ca.pem'
-            TLS_ENFORCE: 'false'
-            TLS_CIPHER_SUITE: 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:-DHE-DSS:-RSA:!aNULL:!MD5:!DSS:!SHA'
-            TLS_VERIFY_CLIENT: 'never'
-            SSL_HELPER_PREFIX: 'ldap'
-            ENABLE_REPLICATION: 'false'
-            BACKUP_CONFIG_CRON_PERIOD: '0 4 * * *'
-            BACKUP_DATA_CRON_PERIOD: '0 4 * * *'
-            BACKUP_TTL: '15'
 
           volumes:
-            - ./backup:/data/backup
-            - ./data:/var/lib/openldap
-            - ./config:/etc/openldap/slapd.d
+            - backup:/data/backup
+            - data:/var/lib/openldap
+            - config:/etc/openldap/slapd.d
 
           networks:
             - 'identity'
 
         fusiondirectory:
-          container_name: tiredofit/fusiondirectory
+          container_name: fusiondirectory
           restart: always
-          image: tiredofit/fusiondirectory:alpine
+          image: tiredofit/fusiondirectory
           depends_on:
-            - openldap
+            - ldap
 
           environment:
             VIRTUAL_HOST: 'fusiondirectory'
@@ -68,7 +57,9 @@
             PLUGIN_PERSONAL: 'TRUE'
             PLUGIN_PPOLICY: 'TRUE'
             PLUGIN_WEBSERVICE: 'TRUE'
-            LDAP1_HOST: 'openldap'
+            LDAP1_NAME: 'LDAP'
+            LDAP1_HOST: 'ldap'
+            LDAP1_PORT: '389'
             LDAP1_BASE_DN: "{% for i in environment_domain.split('.') %}dc={{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
             LDAP1_ADMIN_DN: "cn=admin,{% for i in environment_domain.split('.') %}dc={{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
             LDAP1_ADMIN_PASS: '{{ compositional_fusiondirectory_ldap_admin_pass }}'
@@ -77,6 +68,10 @@
             - 'frontend'
             - 'identity'
 
+      volumes:
+        backup:
+        data:
+        config:
       networks:
         identity:
           name: 'identity'
@@ -86,3 +81,7 @@
     build: "{{ compositional_fusiondirectory_build }}"
     state: "{{ compositional_fusiondirectory_state }}"
   register: compositional_fusiondirectory_output
+
+- name: (fusiondirectory) Symlink fusiondirectory directory
+  shell: docker exec -i fusiondirectory bash -c "ln -sT /www/fusiondirectory/html /www/fusiondirectory/html/fusiondirectory"
+  when: compositional_fusiondirectory_output.changed
