@@ -76,7 +76,3 @@
     build: "{{ compositional_phpldapadmin_build }}"
     state: "{{ compositional_phpldapadmin_state }}"
   register: compositional_phpldapadmin_output
-
-- name: (phpldapadmin) Symlink blog directory
-  shell: docker exec -i phpldapadmin bash -c "ln -sT /var/www/html/ /var/www/html/blog"
-  when: compositional_phpldapadmin_output.changed
