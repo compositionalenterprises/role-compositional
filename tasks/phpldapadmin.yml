@@ -1,13 +1,13 @@
 ---
-- name: (wordpress) Nginx conf is deployed
+- name: (phpldapadmin) Nginx conf is deployed
   template:
-    src: "nginx_wordpress.conf.j2"
-    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/wordpress.conf"
+    src: "nginx_phpldapadmin.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/phpldapadmin.conf"
   notify: 'Restart Frontend'
 
-- name: (wordpress) The latest wordpress service is built and {{ compositional_wordpress_state }}
+- name: (phpldapadmin) The latest phpldapadmin service is built and {{ compositional_phpldapadmin_state }}
   docker_service:
-    project_name: wordpress
+    project_name: phpldapadmin
     definition:
       version: '3.6'
       services:
@@ -73,10 +73,10 @@
           identity:
               name: 'identity'
 
-    build: "{{ compositional_wordpress_build }}"
-    state: "{{ compositional_wordpress_state }}"
-  register: compositional_wordpress_output
+    build: "{{ compositional_phpldapadmin_build }}"
+    state: "{{ compositional_phpldapadmin_state }}"
+  register: compositional_phpldapadmin_output
 
-- name: (wordpress) Symlink blog directory
-  shell: docker exec -i wordpress bash -c "ln -sT /var/www/html/ /var/www/html/blog"
-  when: compositional_wordpress_output.changed
+- name: (phpldapadmin) Symlink blog directory
+  shell: docker exec -i phpldapadmin bash -c "ln -sT /var/www/html/ /var/www/html/blog"
+  when: compositional_phpldapadmin_output.changed

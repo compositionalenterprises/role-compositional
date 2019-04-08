@@ -139,3 +139,5 @@ compositional_jekyll_extra_commands: |
 #
 compositional_phpldapadmin_admin_pass: 'testpassword'
 compositional_phpldapadmin_config_pass: 'testpassword'
+compositional_phpldapadmin_build: yes
+compositional_phpldapadmin_state: present
