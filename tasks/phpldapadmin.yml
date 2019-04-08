@@ -55,6 +55,7 @@
           restart: always
           networks:
             - 'identity'
+            - 'frontend'
 
           environment:
             PHPLDAPADMIN_LDAP_HOSTS: "ldap"
