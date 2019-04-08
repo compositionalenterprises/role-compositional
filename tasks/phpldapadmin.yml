@@ -1,0 +1,82 @@
+---
+- name: (wordpress) Nginx conf is deployed
+  template:
+    src: "nginx_wordpress.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/wordpress.conf"
+  notify: 'Restart Frontend'
+
+- name: (wordpress) The latest wordpress service is built and {{ compositional_wordpress_state }}
+  docker_service:
+    project_name: wordpress
+    definition:
+      version: '3.6'
+      services:
+        ldap:
+          image: osixia/openldap
+          container_name: ldap
+          domainname: "{{ environment_domain }}" # important: same as hostname
+          hostname: "{{ environment_domain }}"
+          restart: always
+          volumes:
+            - 'ldap:/var/lib/ldap'
+            - 'slapd.d:/etc/ldap/slapd.d'
+            - 'certs:/container/service/slapd/assets/certs/'
+
+          networks:
+            - 'frontend'
+            - 'identity'
+
+          environment:
+            LDAP_LOG_LEVEL: "256"
+            LDAP_ORGANISATION: "{{ environment_domain.split('.')[0].capitalize() }}"
+            LDAP_DOMAIN: "{{ environment_domain }}"
+            LDAP_BASE_DN: "{% for i in environment_domain.split('.') %}{{ i }}{% if not loop.last %},{% endif %}{% endfor %}"
+            LDAP_ADMIN_PASSWORD: "{{ compositional_phpldapadmin_admin_pass }}"
+            LDAP_CONFIG_PASSWORD: "{{ compositional_phpldapadmin_config_pass }}"
+            LDAP_READONLY_USER: "false"
+            LDAP_BACKEND: "mdb"
+            LDAP_TLS: "true"
+            LDAP_TLS_CRT_FILENAME: "ldap.crt"
+            LDAP_TLS_KEY_FILENAME: "ldap.key"
+            LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+            LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+            LDAP_TLS_ENFORCE: "false"
+            LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
+            LDAP_TLS_PROTOCOL_MIN: "3.1"
+            LDAP_TLS_VERIFY_CLIENT: "demand"
+            LDAP_REPLICATION: "false"
+            KEEP_EXISTING_CONFIG: "false"
+            LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+            LDAP_SSL_HELPER_PREFIX: "ldap"
+
+        phpldapadmin:
+          image: osixia/phpldapadmin
+          container_name: phpldapadmin
+          restart: always
+          networks:
+            - 'identity'
+
+          environment:
+            PHPLDAPADMIN_LDAP_HOSTS: "ldap"
+            PHPLDAPADMIN_HTTPS: "false"
+
+          depends_on:
+            - 'ldap'
+
+      volumes:
+          ldap:
+          slapd.d:
+          certs:
+      networks:
+          frontend:
+              external: true
+          identity:
+              name: 'identity'
+
+    build: "{{ compositional_wordpress_build }}"
+    state: "{{ compositional_wordpress_state }}"
+  register: compositional_wordpress_output
+
+- name: (wordpress) Symlink blog directory
+  shell: docker exec -i wordpress bash -c "ln -sT /var/www/html/ /var/www/html/blog"
+  when: compositional_wordpress_output.changed
