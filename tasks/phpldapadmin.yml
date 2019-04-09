@@ -77,3 +77,7 @@
     build: "{{ compositional_phpldapadmin_build }}"
     state: "{{ compositional_phpldapadmin_state }}"
   register: compositional_phpldapadmin_output
+
+- name: (nginx) Set Identity Type
+  set_fact:
+    compositional_frontend_type: 'phpldapadmin'
