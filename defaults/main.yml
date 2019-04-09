@@ -1,19 +1,32 @@
 ---
-# defaults file for role-compositional
-
 #
 # General Vars (o7)
 #
-compositional_frontend_service: 'nginx'
-compositional_backend_service: 'mariadb'
-compositional_database_root_password: 'testpassword'
 compositional_services:
-  - 'kanboard'
   - 'nextcloud'
   - 'wordpress'
-  - 'bitwarden'
-  - 'firefly'
-  - 'manager'
+  - 'kanboard'
+
+#
+# Frontend Service
+#
+compositional_frontend_service: 'nginx'
+compositional_frontend_build: 'yes'
+compositional_frontend_state: 'present'
+
+#
+# Backend Service
+#
+compositional_backend_service: 'mariadb'
+compositional_backend_build: 'yes'
+compositional_backend_state: 'present'
+
+#
+# Identity Service
+#
+compositional_identity_service: 'phpldapadmin'
+compositional_identity_build: 'yes'
+compositional_identity_state: 'present'
 
 #
 # Environment Vars
