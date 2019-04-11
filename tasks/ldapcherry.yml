@@ -1,0 +1,58 @@
+---
+- name: (ldapcherry) Nginx conf is deployed
+  template:
+    src: "nginx_ldapcherry.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/ldapcherry.conf"
+  notify: 'Restart Frontend'
+
+- name: (ldapcherry) The latest ldapcherry service is built and {{ compositional_ldapcherry_state }}
+  docker_service:
+    project_name: ldapcherry
+    definition:
+      version: '3.6'
+      services:
+          bitwarden:
+              image: mprasil/bitwarden:1.7.0-alpine
+              container_name: ldapcherry
+              restart: always
+              volumes:
+                  - ldapcherry:/etc/ldapcherry
+
+              networks:
+                  - frontend
+                  - identity
+
+          bitwarden:
+              image: mwaeckerlin/openldap
+              container_name: openldap
+              restart: always
+              environment:
+                DOMAIN: "{{ environment_domain }}"
+                PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
+              volumes:
+                  - ldap-db:/var/lib/ldap
+                  - ldap-conf:/etc/ldap
+                  - backups:/var/backups
+                  - restore:/var/restore
+
+              networks:
+                  - identity
+
+      volumes:
+          ldap-db:
+          ldap-conf:
+          backups:
+          restore:
+          ldapcherry:
+
+      networks:
+          frontend:
+              external: true
+
+          identity:
+              external: true
+
+    build: "{{ compositional_bitwarden_build }}"
+    state: "{{ compositional_bitwarden_state }}"
+
+  register: compositional_bitwarden_output
