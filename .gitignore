@@ -3,3 +3,4 @@ environment
 .fact_caches/
 .retry_files/
 site-data/
+.vault_pass
