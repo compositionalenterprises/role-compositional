@@ -138,4 +138,5 @@ compositional_jekyll_extra_commands: |
 # LdapCherry
 #
 compositional_ldapcherry_admin_pass: 'testpassword'
->>>>>>> Ldapcherry templates
+compositional_ldapcherry_build: yes
+compositional_ldapcherry_state: present
