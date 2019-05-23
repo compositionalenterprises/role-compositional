@@ -23,7 +23,7 @@
                   - identity
 
               environment:
-                LDAP_DISPLAY_NAME: "Compositional f'ing Enterprises"
+                LDAP_DISPLAY_NAME: "Compositional Enterprises"
                 LDAP_URI: 'ldap://directory'
                 LDAP_BINDDN: "cn=admin,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}"
                 LDAP_PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
