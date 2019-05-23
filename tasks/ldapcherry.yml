@@ -12,7 +12,7 @@
       version: '3.6'
       services:
           ldapcherry:
-              image: 'smacz/ldapcherry:andrewcz.com-homelab-179'
+              image: 'smacz/ldapcherry:andrewcz-homelab-179'
               container_name: ldapcherry
               restart: always
               volumes:
