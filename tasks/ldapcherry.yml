@@ -11,8 +11,8 @@
     definition:
       version: '3.6'
       services:
-          bitwarden:
-              image: mprasil/bitwarden:1.7.0-alpine
+          ldapcherry:
+              image: 'smacz/ldapcherry:andrewcz.com-homelab-179'
               container_name: ldapcherry
               restart: always
               volumes:
@@ -22,13 +22,21 @@
                   - frontend
                   - identity
 
-          bitwarden:
+              environment:
+                LDAP_DISPLAY_NAME: "Compositional f'ing Enterprises"
+                LDAP_URI: 'ldap://directory'
+                LDAP_BINDDN: "cn=admin,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}"
+                LDAP_PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
+                SUFFIX: "{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}"
+
+          directory:
               image: mwaeckerlin/openldap
-              container_name: openldap
+              container_name: directory
               restart: always
               environment:
                 DOMAIN: "{{ environment_domain }}"
                 PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
+
               volumes:
                   - ldap-db:/var/lib/ldap
                   - ldap-conf:/etc/ldap
@@ -50,9 +58,9 @@
               external: true
 
           identity:
-              external: true
+              name: identity
 
-    build: "{{ compositional_bitwarden_build }}"
-    state: "{{ compositional_bitwarden_state }}"
+    build: "{{ compositional_ldapcherry_build }}"
+    state: "{{ compositional_ldapcherry_state }}"
 
-  register: compositional_bitwarden_output
+  register: compositional_ldapcherry_output
