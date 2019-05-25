@@ -24,6 +24,10 @@
               LDAP_ROOT_PASSWORD: "{{ compositional_389ds_ldap_root_password }}"
               LDAP_SUFFIX: "{{ compositional_389ds_ldap_suffix }}"
 
+            ports:
+              - '389'
+              - '636'
+
       networks:
           identity:
               name: identity
