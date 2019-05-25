@@ -133,3 +133,9 @@ compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.gi
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
+
+#
+# 389ds
+#
+compositional_389ds_build: yes
+compositional_389ds_state: present
