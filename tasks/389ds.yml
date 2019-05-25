@@ -13,10 +13,10 @@
       services:
           389ds:
             image: 'dabelenda/389ds:latest'
-              container_name: 389ds
-              restart: always
-              networks:
-                  - identity
+            container_name: 389ds
+            restart: always
+            networks:
+                - identity
 
       networks:
           identity:
