@@ -18,6 +18,12 @@
             networks:
                 - identity
 
+            environment:
+              LDAP_HOSTNAME: "{{ compositional_389ds_ldap_hostname }}"
+              LDAP_ROOT_DN: "{{ compositional_389ds_ldap_root_dn }}"
+              LDAP_ROOT_PASSWORD: "{{ compositional_389ds_ldap_root_password }}"
+              LDAP_SUFFIX: "{{ compositional_389ds_ldap_suffix }}"
+
       networks:
           identity:
               name: identity

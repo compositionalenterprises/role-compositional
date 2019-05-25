@@ -139,3 +139,7 @@ compositional_jekyll_extra_commands: |
 #
 compositional_389ds_build: yes
 compositional_389ds_state: present
+compositional_389ds_ldap_hostname: '389ds'
+compositional_389ds_ldap_root_password: 'testpassword'
+compositional_389ds_ldap_suffix: "{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}"
+compositional_389ds_ldap_root_dn: "cn=admin,{{ compositional_389ds_ldap_suffix }}"
