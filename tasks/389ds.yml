@@ -1,0 +1,28 @@
+---
+#- name: (389ds) Nginx conf is deployed
+#  template:
+#    src: "nginx_389ds.conf.j2"
+#    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/389ds.conf"
+#  notify: 'Restart Frontend'
+
+- name: (389ds) The latest 389ds service is built and {{ compositional_389ds_state }}
+  docker_service:
+    project_name: 389ds
+    definition:
+      version: '3.6'
+      services:
+          389ds:
+            image: dabelenda/389ds:latest
+              container_name: 389ds
+              restart: always
+              networks:
+                  - identity
+
+      networks:
+          identity:
+              name: identity
+
+    build: "{{ compositional_389ds_build }}"
+    state: "{{ compositional_389ds_state }}"
+
+  register: compositional_389ds_output
