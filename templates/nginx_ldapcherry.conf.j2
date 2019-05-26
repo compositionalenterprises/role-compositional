@@ -1,6 +1,6 @@
 location /ldapcherry/ {
     proxy_pass http://ldapcherry:8080;
-    proxy_redirect http://ldapcherry:8080 /ldapcherry/;
+    proxy_redirect http://ldapcherry:8080 /ldapcherry;
 }
 
 location /static/ {
