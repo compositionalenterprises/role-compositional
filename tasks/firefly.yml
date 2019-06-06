@@ -19,7 +19,7 @@
   no_log: True
 
 - name: (firefly) The latest firefly service is built and {{ compositional_firefly_state }}
-  docker_service:
+  docker_compose:
     project_name: firefly
     definition:
       version: '3.6'

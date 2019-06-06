@@ -19,7 +19,7 @@
   no_log: True
 
 - name: (wordpress) The latest wordpress service is built and {{ compositional_wordpress_state }}
-  docker_service:
+  docker_compose:
     project_name: wordpress
     definition:
       version: '3.6'
