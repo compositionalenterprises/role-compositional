@@ -1,0 +1,14 @@
+dn: {% for level in environment_domain %}dc={{ domain }}{% if not loop.last %}{% endif %}{% endfor %}
+o: {{ environment_domain }}
+objectClass: top
+objectclass: dcObject
+objectClass: organization
+description: Organization for {{ environment_domain }}
+
+dn: ou=people,{% for level in environment_domain %}dc={{ domain }}{% if not loop.last %}{% endif %}{% endfor %}
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,{% for level in environment_domain %}dc={{ domain }}{% if not loop.last %}{% endif %}{% endfor %}
+objectClass: organizationalUnit
+ou: groups
