@@ -9,6 +9,13 @@ dn: ou=people,{% for level in environment_domain %}dc={{ domain }}{% if not loop
 objectClass: organizationalUnit
 ou: people
 
-dn: ou=groups,{% for level in environment_domain %}dc={{ domain }}{% if not loop.last %}{% endif %}{% endfor %}
+dn: ou=group,{% for level in environment_domain %}dc={{ domain }}{% if not loop.last %}{% endif %}{% endfor %}
 objectClass: organizationalUnit
-ou: groups
+ou: group
+
+dn: uid=ldapcherry_default,{% for level in environment_domain %}dc={{ domain }}{% if not loop.last %}{% endif %}{% endfor %}
+objectClass: inetorgperson
+sn: default
+cn: ldapcherry
+uid: ldapcherry_default
+userPassword: {{ compositional_ldapcherry_admin_pass }}
