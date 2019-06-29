@@ -17,12 +17,12 @@
 
 - name: Skeleton directory directory is present
   file:
-    path: /var/lib/docker/volumes/ldapcherry_ldap.dist/_data
+    path: /var/lib/docker/volumes/ldapcherry_prepopulate/_data
     state: directory
 
 - name: Skeleton init template is deployed
   template:
-    dest: /var/lib/docker/volumes/ldapcherry_ldap.dist/_data/init.ldif
+    dest: /var/lib/docker/volumes/ldapcherry_prepopulate/_data/init.ldif
     src: ldapcherry_init.ldif.j2
 
 - name: (ldapcherry) The latest ldapcherry service is built and {{ compositional_ldapcherry_state }}
