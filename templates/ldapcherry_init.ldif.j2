@@ -1,4 +1,4 @@
-dn: {% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}
+dn: {% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
 o: {{ environment_domain }}
 objectClass: top
 objectclass: dcObject
