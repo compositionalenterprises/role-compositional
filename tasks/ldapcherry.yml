@@ -58,7 +58,6 @@
                 SLAPD_DOMAIN: "{{ environment_domain }}"
                 SLAPD_PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
                 SLAPD_ORGANIZATION: "{{ environment_domain }}"
-                INIT_SCRIPT: "/var/init/init.ldif"
 
               volumes:
                   - ldap-db:/var/lib/ldap
