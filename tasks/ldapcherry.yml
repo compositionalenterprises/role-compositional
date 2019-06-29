@@ -7,9 +7,8 @@
 
 - name: Skeleton directory directory is present
   file:
-    path: /var/lib/docker/volumes/ldapcherrty_init/_data/
+    path: /var/lib/docker/volumes/ldapcherrty_init/_data
     state: directory
-    recurse: yes
 
 - name: Skeleton init template is deployed
   template:
