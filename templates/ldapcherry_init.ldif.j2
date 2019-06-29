@@ -13,7 +13,7 @@ dn: ou=group,{% for level in environment_domain.split('.') %}dc={{ level }}{% if
 objectClass: organizationalUnit
 ou: group
 
-dn: uid=ldapcherry_default,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
+dn: uid=ldapcherry_default,ou=people,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
 objectClass: inetorgperson
 sn: default
 cn: ldapcherry
