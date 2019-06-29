@@ -7,7 +7,7 @@
 
 - name: Skeleton directory directory is present
   file:
-    path: /var/lib/docker/volumes/ldapcherry_init/_data/
+    path: /var/lib/docker/volumes/ldapcherrty_init/_data/
     state: directory
 
 - name: Skeleton init template is deployed
@@ -46,7 +46,7 @@
               environment:
                 DOMAIN: "{{ environment_domain }}"
                 PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
-                ORGANIZATION: "{{ environment.domain }}"
+                ORGANIZATION: "{{ environment_domain }}"
                 INIT_SCRIPT: "/var/init/init.ldif"
                 SCHEMAS: 'inetorgperson'
 
