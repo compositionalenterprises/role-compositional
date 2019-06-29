@@ -49,14 +49,13 @@
                 PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
                 ORGANIZATION: "{{ environment_domain }}"
                 INIT_SCRIPT: "/var/init/init.ldif"
-                # SCHEMAS: 'inetorgperson'
 
               volumes:
                   - ldap-db:/var/lib/ldap
                   - ldap-conf:/etc/ldap
                   - backups:/var/backups
                   - restore:/var/restore
-                  - init:/var/init/init.ldif
+                  - init:/var/init
 
               networks:
                   - identity
