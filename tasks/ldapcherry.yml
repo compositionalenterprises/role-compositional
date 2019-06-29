@@ -5,25 +5,31 @@
     dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/ldapcherry.conf"
   notify: 'Restart Frontend'
 
-#- name: Skeleton directory directory is present
-#  file:
-#    path: /var/lib/docker/volumes/ldapcherry_init/_data
-#    state: directory
 #
-#- name: Skeleton init template is deployed
-#  template:
-#    dest: /var/lib/docker/volumes/ldapcherry_init/_data/init.ldif
-#    src: ldapcherry_init.ldif.j2
-
+# mwaeckerlin/openldap
+#
 - name: Skeleton directory directory is present
   file:
-    path: /var/lib/docker/volumes/ldapcherry_prepopulate/_data
+    path: /var/lib/docker/volumes/ldapcherry_init/_data
     state: directory
 
 - name: Skeleton init template is deployed
   template:
-    dest: /var/lib/docker/volumes/ldapcherry_prepopulate/_data/init.ldif
+    dest: /var/lib/docker/volumes/ldapcherry_init/_data/init.ldif
     src: ldapcherry_init.ldif.j2
+
+#
+# dinkel/openldap
+#
+#- name: Skeleton directory directory is present
+#  file:
+#    path: /var/lib/docker/volumes/ldapcherry_prepopulate/_data
+#    state: directory
+#
+#- name: Skeleton init template is deployed
+#  template:
+#    dest: /var/lib/docker/volumes/ldapcherry_prepopulate/_data/init.ldif
+#    src: ldapcherry_init.ldif.j2
 
 - name: (ldapcherry) The latest ldapcherry service is built and {{ compositional_ldapcherry_state }}
   docker_service:
@@ -51,46 +57,61 @@
                 SUFFIX: "{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}"
 
           directory:
-              image: dinkel/openldap
+              #
+              # dinkel/openldap
+              #
+              #image: dinkel/openldap
+              #container_name: directory
+              #restart: always
+              #environment:
+              #  SLAPD_DOMAIN: "{{ environment_domain }}"
+              #  SLAPD_PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
+              #  SLAPD_ORGANIZATION: "{{ environment_domain }}"
+
+              #volumes:
+              #    - ldap-db:/var/lib/ldap
+              #    - ldap-conf:/etc/ldap
+              #    - prepopulate:/etc/ldap/prepopulate
+
+              #networks:
+              #    - identity
+
+              #
+              # mwaeckerlin/openldap
+              #
+              image: mwaeckerlin/openldap
               container_name: directory
               restart: always
               environment:
-                SLAPD_DOMAIN: "{{ environment_domain }}"
-                SLAPD_PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
-                SLAPD_ORGANIZATION: "{{ environment_domain }}"
-
+                DOMAIN: "{{ environment_domain }}"
+                PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
+                ORGANIZATION: "{{ environment_domain }}"
+                INIT_SCRIPT: "/var/init/init.ldif"
+              
               volumes:
                   - ldap-db:/var/lib/ldap
                   - ldap-conf:/etc/ldap
-                  - prepopulate:/etc/ldap/prepopulate
-
+                  - backups:/var/backups
+                  - restore:/var/restore
+                  - init:/var/init
+              
               networks:
                   - identity
 
-                  #image: mwaeckerlin/openldap
-                  #container_name: directory
-                  #restart: always
-                  #environment:
-                  #  DOMAIN: "{{ environment_domain }}"
-                  #  PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
-                  #  ORGANIZATION: "{{ environment_domain }}"
-                  #  INIT_SCRIPT: "/var/init/init.ldif"
-
-                  #volumes:
-                  #    - ldap-db:/var/lib/ldap
-                  #    - ldap-conf:/etc/ldap
-                  #    - backups:/var/backups
-                  #    - restore:/var/restore
-                  #    - init:/var/init
-
-                  #networks:
-                  #    - identity
-
       volumes:
+          ldapcherry:
           ldap-db:
           ldap-conf:
-          prepopulate:
-          ldapcherry:
+          #
+          # msaeckerlin/openldap
+          #
+          backups:
+          restore:
+          init:
+          #
+          # dinkel/openldap
+          #
+          #prepopulate:
 
       networks:
           frontend:
