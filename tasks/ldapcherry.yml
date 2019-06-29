@@ -63,7 +63,7 @@
               volumes:
                   - ldap-db:/var/lib/ldap
                   - ldap-conf:/etc/ldap
-                  - ldap.dist:/etc/ldap.dist/prepopulate
+                  - prepopulate:/etc/ldap.dist/prepopulate
 
               networks:
                   - identity
@@ -90,10 +90,8 @@
       volumes:
           ldap-db:
           ldap-conf:
-          backups:
-          restore:
+          prepopulate:
           ldapcherry:
-          init:
 
       networks:
           frontend:
