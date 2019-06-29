@@ -87,6 +87,7 @@
                 PASSWORD: "{{ compositional_ldapcherry_admin_pass }}"
                 ORGANIZATION: "{{ environment_domain }}"
                 INIT_SCRIPT: "/var/init/init.ldif"
+                ACCESS_RULES: ' access to dn.base="" by * read access to dn.base="cn=Subschema" by * read access to * by self write by users read by anonymous auth'
               
               volumes:
                   - ldap-db:/var/lib/ldap
