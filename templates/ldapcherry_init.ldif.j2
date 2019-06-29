@@ -5,15 +5,15 @@ objectclass: dcObject
 objectClass: organization
 description: Organization for {{ environment_domain }}
 
-dn: ou=people,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}
+dn: ou=people,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
 objectClass: organizationalUnit
 ou: people
 
-dn: ou=group,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}
+dn: ou=group,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
 objectClass: organizationalUnit
 ou: group
 
-dn: uid=ldapcherry_default,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %}{% endif %}{% endfor %}
+dn: uid=ldapcherry_default,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %}{% endif %}{% endfor %} 
 objectClass: inetorgperson
 sn: default
 cn: ldapcherry
