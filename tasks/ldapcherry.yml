@@ -63,7 +63,7 @@
               volumes:
                   - ldap-db:/var/lib/ldap
                   - ldap-conf:/etc/ldap
-                  - prepopulate:/etc/ldap.dist/prepopulate
+                  - prepopulate:/etc/ldap/prepopulate
 
               networks:
                   - identity
