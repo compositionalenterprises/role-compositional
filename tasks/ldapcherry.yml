@@ -9,7 +9,7 @@
   file:
     path: /var/lib/docker/volumes/ldapcherrty_init/_data/
     state: directory
-    recurse: True
+    recurse: yes
 
 - name: Skeleton init template is deployed
   template:
