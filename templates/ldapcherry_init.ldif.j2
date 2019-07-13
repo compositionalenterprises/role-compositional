@@ -15,7 +15,11 @@ ou: group
 
 dn: uid=ldapcherry_default,ou=people,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
 objectClass: inetorgperson
+objectClass: posixUser
 sn: default
 cn: ldapcherry
 uid: ldapcherry_default
+uidNumber: 1001
+gidNumber: 1001
+homeDirectory: /home/ldapcherry_default
 userPassword: {{ compositional_ldapcherry_admin_pass }}
