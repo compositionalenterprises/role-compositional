@@ -49,7 +49,7 @@
                   - identity
 
               environment:
-                DEBUG_LEVEL: "256"
+                DEBUG: "256"
                 LDAP_DISPLAY_NAME: "Compositional Enterprises"
                 LDAP_URI: "ldap://directory"
                 LDAP_BINDDN: "cn=admin,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %}"
@@ -79,7 +79,7 @@
               #
               # mwaeckerlin/openldap
               #
-              image: mwaeckerlin/openldap
+              image: smacz/openldap:andrewcz-ourcompose-179-b
               container_name: directory
               restart: always
               environment:
