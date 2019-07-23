@@ -89,3 +89,13 @@ compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_mysql_script: |
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
+
+#
+# Manager
+#
+# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
+compositional_manager_server_version: '19.5.13'
+compositional_manager_server_port: '8080'
+compositional_manager_server_data_path: '/data'
+compositional_firefly_build: yes
+compositional_firefly_state: present
