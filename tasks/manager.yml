@@ -18,7 +18,6 @@
                   - data:/var/data
               networks:
                   - frontend
-                  - backend
               environment:
                 MANAGER_SERVER_VERSION: "{{ compositional_manager_server_version }}"
                 MANAGER_SERVER_PORT: "{{ compositional_manager_server_port }}"
