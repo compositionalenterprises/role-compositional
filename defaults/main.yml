@@ -97,5 +97,5 @@ compositional_firefly_mysql_script: |
 compositional_manager_server_version: '19.5.13'
 compositional_manager_server_port: '8080'
 compositional_manager_server_data_path: '/data'
-compositional_firefly_build: yes
-compositional_firefly_state: present
+compositional_manager_build: yes
+compositional_manager_state: present
