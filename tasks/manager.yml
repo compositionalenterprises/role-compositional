@@ -20,9 +20,9 @@
                   - frontend
                   - backend
               environment:
-                MANAGER_SERVER_VERSION: "{{ manager_server_version }}"
-                MANAGER_SERVER_PORT: "{{ manager_server_port }}"
-                MANAGER_SERVER_DATA_PATH: "{{ manager_server_data_path }}"
+                MANAGER_SERVER_VERSION: "{{ compositional_manager_server_version }}"
+                MANAGER_SERVER_PORT: "{{ compositional_manager_server_port }}"
+                MANAGER_SERVER_DATA_PATH: "{{ compositional_manager_server_data_path }}"
       volumes:
           data:
       networks:
