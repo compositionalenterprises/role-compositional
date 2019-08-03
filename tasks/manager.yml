@@ -1,0 +1,32 @@
+---
+- name: (manager) Nginx conf is deployed
+  template:
+    src: "nginx_manager.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/manager.conf"
+  notify: 'Restart Frontend'
+
+- name: (manager) The latest manager service is built and {{ compositional_manager_state }}
+  docker_service:
+    project_name: manager
+    definition:
+      version: '3.6'
+      services:
+          manager:
+              image: smacz/manager:andrewcz-ourcompose-254
+              container_name: manager
+              volumes:
+                  - data:/var/data
+              networks:
+                  - frontend
+              environment:
+                MANAGER_SERVER_VERSION: "{{ compositional_manager_server_version }}"
+                MANAGER_SERVER_PORT: "{{ compositional_manager_server_port }}"
+                MANAGER_SERVER_DATA_PATH: "{{ compositional_manager_server_data_path }}"
+      volumes:
+          data:
+      networks:
+          frontend:
+              external: true
+    build: "{{ compositional_manager_build }}"
+    state: "{{ compositional_manager_state }}"
+  register: compositional_manager_output
