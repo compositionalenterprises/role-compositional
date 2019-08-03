@@ -52,6 +52,14 @@ compositional_nextcloud_admin_password: 'admin'
 compositional_wordpress_backend_password: 'testpassword'
 ```
 
+### Manager
+
+```yaml
+compositional_manager_server_version: '19.5.13'
+compositional_manager_server_port: '8080'
+compositional_manager_server_data_path: '/data'
+```
+
 Dependencies
 ------------
 
