@@ -12,6 +12,7 @@
     # initialized:
     #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
     shell: 'docker exec -i {{ compositional_backend_output.ansible_facts.keys() | list | first }} bash -c "while mysql -uroot -p{{ compositional_mysql_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+    no_log: True
 
   - name: (nextcloud) Set up the database
     # We have to use `.keys() | list | first` to get the name of the container. If we
@@ -22,6 +23,7 @@
     shell: docker exec -i {{ compositional_backend_output.ansible_facts.keys() | list | first }} mysql -uroot -p{{ compositional_mysql_root_password }} <<< "{{ compositional_nextcloud_mysql_script }}"
     args:
       executable: '/bin/bash'
+    no_log: True
 
   - name: (nextcloud) The MYSQL latest nextcloud service is built and {{ compositional_nextcloud_state }}
     docker_service:
@@ -61,6 +63,7 @@
       build: "{{ compositional_nextcloud_build }}"
       state: "{{ compositional_nextcloud_state }}"
     register: compositional_nextcloud_output_1
+    no_log: True
 
   when: compositional_backend_type == 'mysql'
 
@@ -105,6 +108,7 @@
       state: "{{ compositional_nextcloud_state }}"
     register: compositional_nextcloud_output_2
     when: compositional_backend_type == 'postgres'
+    no_log: True
 
   when: compositional_backend_type == 'mysql'
 
