@@ -43,13 +43,13 @@
 
           environment:
             APP_URL: "https://{{ environment_domain }}"
-            FF_APP_KEY: "{{ compositional_firefly_app_key }}"
-            FF_APP_ENV: "local"
-            FF_DB_HOST: "{{ compositional_backend_output.ansible_facts.keys() | list | first }}"
-            FF_DB_NAME: 'firefly'
-            FF_DB_USER: 'firefly'
-            FF_DB_PASSWORD: "{{ compositional_firefly_backend_password }}"
-            FF_DB_CONNECTION: 'mysql'
+            APP_KEY: "{{ compositional_firefly_app_key }}"
+            APP_ENV: "local"
+            DB_HOST: "{{ compositional_backend_output.ansible_facts.keys() | list | first }}"
+            DB_DATABASE: 'firefly'
+            DB_USERNAME: 'firefly'
+            DB_PASSWORD: "{{ compositional_firefly_backend_password }}"
+            DB_CONNECTION: 'mysql'
             MYSQL_PASSWORD: "{{ compositional_firefly_backend_password }}"
             TRUSTED_PROXIES: "**"
 
