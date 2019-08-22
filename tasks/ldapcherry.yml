@@ -79,7 +79,7 @@
               #
               # mwaeckerlin/openldap
               #
-              image: smacz/openldap:andrewcz-ourcompose-179-b
+              image: smacz/openldap:andrewcz-ourcompose-179-c
               container_name: directory
               restart: always
               environment:
