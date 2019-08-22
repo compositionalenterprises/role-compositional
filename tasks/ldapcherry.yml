@@ -90,6 +90,7 @@
                 ACCESS_RULES: ' access to dn.base="" by * read access to dn.base="cn=Subschema" by * read access to * by self write by users read by anonymous auth'
                 INDEXES: ' index default pres,eq index cn,sn,uid,ou'
                 SCHEMAS: ' cosine inetorgperson nis samba ppolicy'
+                PASSWORD_HASH: 'SSHA'
 
               volumes:
                   - ldap-db:/var/lib/ldap
