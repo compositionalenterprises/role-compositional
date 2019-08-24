@@ -15,7 +15,7 @@ ou: group
 
 dn: uid=ldapcherry_default,ou=people,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
 objectClass: inetorgperson
-objectClass: posixUser
+objectClass: posixAccount
 sn: default
 cn: ldapcherry
 uid: ldapcherry_default
