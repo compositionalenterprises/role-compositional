@@ -23,3 +23,29 @@ uidNumber: 1001
 gidNumber: 1001
 homeDirectory: /home/ldapcherry_default
 userPassword: {{ compositional_ldapcherry_admin_pass }}
+
+dn: ou=Policies,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
+ou: Policies
+objectClass: organizationalUnit
+
+dn: cn=passwordDefault,ou=Policies,{% for level in environment_domain.split('.') %}dc={{ level }}{% if not loop.last %},{% endif %}{% endfor %} 
+objectClass: pwdPolicy
+objectClass: inetorgperson
+objectClass: top
+cn: passwordDefault
+sn: passwordDefault
+pwdAttribute: userPassword
+pwdCheckQuality: 0
+pwdMinAge: 0
+pwdMaxAge: 0
+pwdMinLength: 0
+pwdInHistory: 0
+pwdMaxFailure: 0
+pwdFailureCountInterval: 0
+pwdLockout: FALSE
+pwdLockoutDuration: 0
+pwdAllowUserChange: TRUE
+pwdExpireWarning: 0
+pwdGraceAuthNLimit: 0
+pwdMustChange: FALSE
+pwdSafeModify: FALSE
