@@ -40,7 +40,7 @@ compositional_mariadb_version: '10.4'
 #
 compositional_kanboard_build: yes
 compositional_kanboard_state: present
-compositional_kanboard_version: '1.2.8'
+compositional_kanboard_version: 'v1.2.8'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_mysql_script: |
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
