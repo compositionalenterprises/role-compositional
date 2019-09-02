@@ -30,7 +30,7 @@
       version: '3.6'
       services:
         firefly:
-          image: jc5x/firefly-iii:latest
+          image: "jc5x/firefly-iii:{{ compositional_firefly_version }}"
           container_name: firefly
           restart: always
           volumes:

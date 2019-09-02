@@ -6,8 +6,8 @@
       version: '3.6'
       services:
           mariadb:
-              image: mariadb
-              container_name: mariadb
+              image: "mariadb:{{ compositional_mariadb_version }}"
+              container_name: database
               restart: always
               volumes:
                   - mysql:/var/lib/mysql
@@ -15,7 +15,7 @@
               networks:
                   - backend
               environment:
-                  MYSQL_ROOT_PASSWORD: "{{ compositional_mysql_root_password }}"
+                  MYSQL_ROOT_PASSWORD: "{{ compositional_database_root_password }}"
       volumes:
           mysql:
           conf.d:
