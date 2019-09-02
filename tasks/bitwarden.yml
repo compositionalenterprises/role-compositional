@@ -12,7 +12,7 @@
       version: '3.6'
       services:
           bitwarden:
-              image: mprasil/bitwarden:1.7.0-alpine
+              image: "mprasil/bitwarden:{{ compositional_bitwarden_version }}"
               container_name: bitwarden
               restart: always
               volumes:
