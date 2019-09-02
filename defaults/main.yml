@@ -8,9 +8,12 @@ compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_database_root_password: 'testpassword'
 compositional_services:
+  - 'kanboard'
   - 'nextcloud'
   - 'wordpress'
-  - 'kanboard'
+  - 'bitwarden'
+  - 'firefly'
+  - 'manager'
 
 #
 # Environment Vars
@@ -76,16 +79,6 @@ compositional_wordpress_mysql_script: |
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_version: '1.7.0-alpine'
-
-
-#
-# Fusion Directory
-#
-compositional_fusiondirectory_ldap_admin_pass: 'testpassword'
-compositional_fusiondirectory_ldap_config_pass: 'testpassword'
-compositional_fusiondirectory_admin_pass: 'testpassword'
-compositional_fusiondirectory_build: yes
-compositional_fusiondirectory_state: present
 
 #
 # Firefly
