@@ -2,10 +2,10 @@
 # handlers file for role-compositional
 
 - name: Restart Frontend
-  command: docker restart {{ frontend_output.ansible_facts.keys() | list | first }}
+  command: docker restart proxy
 
 - name: Restart Backend
-  command: docker restart {{ backend_output.ansible_facts.keys() | list | first }}
+  command: docker restart database
 
 - name: Restart Kanboard
   command: docker restart kanboard

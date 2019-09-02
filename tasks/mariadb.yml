@@ -22,8 +22,8 @@
       networks:
           backend:
               name: backend
-    build: "{{ compositional_backend_build }}"
-    state: "{{ compositional_backend_state }}"
+    build: "{{ compositional_mariadb_build }}"
+    state: "{{ compositional_mariadb_state }}"
   register: compositional_backend_output
   no_log: True
 
