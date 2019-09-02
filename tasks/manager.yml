@@ -19,8 +19,8 @@
               networks:
                   - frontend
               environment:
-                MANAGER_SERVER_PORT: "{{ compositional_manager_server_port }}"
-                MANAGER_SERVER_DATA_PATH: "{{ compositional_manager_server_data_path }}"
+                MANAGER_SERVER_PORT: "{{ compositional_manager_port }}"
+                MANAGER_SERVER_DATA_PATH: "{{ compositional_manager_data_path }}"
       volumes:
           data:
       networks:
