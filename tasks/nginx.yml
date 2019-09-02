@@ -6,8 +6,8 @@
       version: '3.6'
       services:
           nginx:
-              image: 'nginx:stable'
-              container_name: nginx
+              image: 'nginx:{{ compositional_nginx_version }}'
+              container_name: proxy
               restart: always
               ports:
                   - "80:80"
@@ -24,8 +24,8 @@
       networks:
           frontend:
               name: frontend
-    build: "{{ compositional_frontend_build }}"
-    state: "{{ compositional_frontend_state }}"
+    build: "{{ compositional_nginx_build }}"
+    state: "{{ compositional_nginx_state }}"
   register: frontend_output
 
 - name: (nginx) Nginx default.conf is deployed
