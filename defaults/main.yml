@@ -6,14 +6,14 @@
 #
 compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
-compositional_frontend_build: 'yes'
-compositional_frontend_state: 'present'
-compositional_backend_build: 'yes'
-compositional_backend_state: 'present'
+compositional_database_root_password: 'testpassword'
 compositional_services:
+  - 'kanboard'
   - 'nextcloud'
   - 'wordpress'
-  - 'kanboard'
+  - 'bitwarden'
+  - 'firefly'
+  - 'manager'
 
 #
 # Environment Vars
@@ -22,26 +22,36 @@ environment_domain: 'example.com'
 environment_admin: 'admin'
 
 #
+# Nginx Frontend
+#
+compositional_nginx_build: 'yes'
+compositional_nginx_state: 'present'
+compositional_nginx_version: '1.17'
+
+#
+# MariaDB Backend
+#
+compositional_mariadb_build: 'yes'
+compositional_mariadb_state: 'present'
+compositional_mariadb_version: '10.4'
+
+#
 # Kanboard
 #
 compositional_kanboard_build: yes
 compositional_kanboard_state: present
+compositional_kanboard_version: 'v1.2.8'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_mysql_script: |
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';
 
 #
-# MySQL
-#
-compositional_mysql_root_password: 'testpassword'
-
-#
 # Nextcloud
 #
 compositional_nextcloud_build: yes
-compositional_nextcloud_tag: 'latest'
 compositional_nextcloud_state: present
+compositional_nextcloud_version: '16.0.4'
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
   CREATE USER IF NOT EXISTS 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
@@ -57,6 +67,7 @@ compositional_nextcloud_legacy_dbtableprefix: False
 #
 compositional_wordpress_build: yes
 compositional_wordpress_state: present
+compositional_wordpress_version: '5.2.2'
 compositional_wordpress_backend_password: 'testpassword'
 compositional_wordpress_mysql_script: |
   CREATE DATABASE IF NOT EXISTS wordpress;
@@ -67,23 +78,16 @@ compositional_wordpress_mysql_script: |
 #
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
-
-#
-# Fusion Directory
-#
-compositional_fusiondirectory_ldap_admin_pass: 'testpassword'
-compositional_fusiondirectory_ldap_config_pass: 'testpassword'
-compositional_fusiondirectory_admin_pass: 'testpassword'
-compositional_fusiondirectory_build: yes
-compositional_fusiondirectory_state: present
+compositional_bitwarden_version: '1.7.0-alpine'
 
 #
 # Firefly
 #
 # This value has to be exactly 32 characters, it is the encryption key for your database and sessions
-compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_build: yes
 compositional_firefly_state: present
+compositional_firefly_version: 'release-4.8.0.3'
+compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_mysql_script: |
   CREATE DATABASE IF NOT EXISTS firefly;

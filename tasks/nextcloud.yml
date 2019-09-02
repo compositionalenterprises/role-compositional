@@ -11,7 +11,7 @@
     # We're running a while loop to check to ensure that the mysql database has
     # initialized:
     #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
-    shell: 'docker exec -i {{ compositional_backend_output.ansible_facts.keys() | list | first }} bash -c "while mysql -uroot -p{{ compositional_mysql_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+    shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
     no_log: True
 
   - name: (nextcloud) Set up the database
@@ -20,7 +20,7 @@
     # actual name, but since for the time being we name the name of the service
     # the same as the container, it's not really going to affect us now, as
     # long as we stick to that paradigm.
-    shell: docker exec -i {{ compositional_backend_output.ansible_facts.keys() | list | first }} mysql -uroot -p{{ compositional_mysql_root_password }} <<< "{{ compositional_nextcloud_mysql_script }}"
+    shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_nextcloud_mysql_script }}"
     args:
       executable: '/bin/bash'
     no_log: True
@@ -32,7 +32,7 @@
         version: '3.6'
         services:
             nextcloud:
-                image: "nextcloud:{{ compositional_nextcloud_tag }}"
+                image: "nextcloud:{{ compositional_nextcloud_version }}"
                 container_name: nextcloud
                 volumes:
                     - data:/var/www/html/data
@@ -43,7 +43,7 @@
                     - frontend
                     - backend
                 environment:
-                    MYSQL_HOST: "{{ compositional_backend_output.ansible_facts.keys() | list | first }}"
+                    MYSQL_HOST: "database"
                     MYSQL_DATABASE: "nextcloud"
                     MYSQL_USER: "nextcloud"
                     MYSQL_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
@@ -76,7 +76,7 @@
         version: '3.6'
         services:
             nextcloud:
-                image: nextcloud
+                image: "nextcloud:{{ compositional_nextcloud_version }}"
                 container_name: nextcloud
                 volumes:
                     - data:/var/www/html/data
@@ -90,7 +90,7 @@
                     POSTGRES_DB: "nextcloud"
                     POSTGRES_USER: "nextcloud"
                     POSTGRES_PASSWORD: "{{ compositional_nextcloud_backend_password }}"
-                    POSTGRES_HOST: "{{ compositional_backend_output.ansible_facts.keys() | list | first }}"
+                    POSTGRES_HOST: "database"
                     NEXTCLOUD_ADMIN_USER: "{{ compositional_nextcloud_admin_user }}"
                     NEXTCLOUD_ADMIN_PASSWORD: "{{ compositional_nextcloud_admin_password }}"
                     NEXTCLOUD_TRUSTED_DOMAINS: "{{ environment_domain }} nextcloud"
