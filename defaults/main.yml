@@ -99,6 +99,6 @@ compositional_firefly_mysql_script: |
 # This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_manager_build: yes
 compositional_manager_state: present
-compositional_manager_version: '19.5.13'
+compositional_manager_version: '19.7.71'
 compositional_manager_port: '8080'
 compositional_manager_data_path: '/data'
