@@ -11,7 +11,7 @@
 - name: (kanboard) Nginx conf is deployed
   template:
     src: "nginx_kanboard.conf.j2"
-    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/kanboard.conf"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/kanboard.conf"
   notify: 'Restart Frontend'
 
 - name: (kanboard) The MySQL database service is up and initialized
@@ -43,18 +43,14 @@
               container_name: kanboard
               restart: always
               volumes:
-                  - data:/var/www/app/data
-                  - plugins:/var/www/app/plugins
-                  - nginx:/etc/nginx
+                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_data:/var/www/app/data"
+                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_plugins:/var/www/app/plugins"
+                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_nginx:/etc/nginx"
               networks:
                   - frontend
                   - backend
               environment:
                 DATABASE_URL: "{{ compositional_backend_type }}://kanboard:{{ compositional_kanboard_backend_password }}@database:{{ compositional_backend_port }}/kanboard"
-      volumes:
-          data:
-          plugins:
-          nginx:
       networks:
           frontend:
               external: true
@@ -73,5 +69,5 @@
 - name: (kanboard) nginx.conf is deployed
   copy:
     src: 'kanboard_nginx.conf'
-    dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
+    dest: '/srv/{{ compositional_kanboard_storage }}/kanboard_nginx/nginx.conf'
   notify: 'Restart Kanboard'

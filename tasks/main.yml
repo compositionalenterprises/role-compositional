@@ -1,6 +1,13 @@
 ---
 # tasks file for role-compositional
 
+- name: Ensure that the local and remote directories are configured
+  file:
+    path: "/srv/{{ item }}"
+  loop:
+    - 'local'
+    - 'remote'
+
 - include_tasks: "./{{ item }}.yml"
   with_items:
     - "{{ compositional_frontend_service }}"

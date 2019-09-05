@@ -13,14 +13,11 @@
                   - "80:80"
                   - "443:443"
               volumes:
-                  - conf.d:/etc/nginx/conf.d
-                  - html:/usr/share/nginx/html
+                  - "/srv/{{ compositional_nginx_storage }}/nginx_conf.d:/etc/nginx/conf.d"
+                  - "/srv/{{ compositional_nginx_storage }}/nginx_html:/usr/share/nginx/html"
                   - /etc/letsencrypt:/etc/letsencrypt
               networks:
                   - frontend
-      volumes:
-          conf.d:
-          html:
       networks:
           frontend:
               name: frontend
@@ -32,18 +29,18 @@
 - name: (nginx) Nginx default.conf is deployed
   template:
     src: nginx_default.conf.j2
-    dest: '/var/lib/docker/volumes/nginx_conf.d/_data/default.conf'
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/default.conf"
   notify: 'Restart Frontend'
 
 - name: (nginx) Nginx index.html is deployed
   template:
     src: nginx_index.html.j2
-    dest: '/var/lib/docker/volumes/nginx_html/_data/index.html'
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_html/index.html"
   notify: 'Restart Frontend'
 
 - name: (nginx) Services directory is created
   file:
-    path: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}"
+    path: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}"
     state: directory
 
 - name: (nginx) Set Frontend Type

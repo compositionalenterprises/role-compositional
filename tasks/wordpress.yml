@@ -2,7 +2,7 @@
 - name: (wordpress) Nginx conf is deployed
   template:
     src: "nginx_wordpress.conf.j2"
-    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/wordpress.conf"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/wordpress.conf"
   notify: 'Restart Frontend'
 
 - name: (wordpress) The MySQL database service is up and initialized
@@ -34,9 +34,9 @@
               container_name: wordpress
               restart: always
               volumes:
-                  - themes:/var/www/html/wp-content/themes
-                  - plugins:/var/www/html/wp-content/plugins
-                  - uploads:/var/www/html/wp-content/uploads
+                  - "/srv/{{ compositional_wordpress_storage }}/wordpress_themes:/var/www/html/wp-content/themes"
+                  - "/srv/{{ compositional_wordpress_storage }}/wordpress_plugins:/var/www/html/wp-content/plugins"
+                  - "/srv/{{ compositional_wordpress_storage }}/wordpress_uploads:/var/www/html/wp-content/uploads"
               networks:
                   - frontend
                   - backend
@@ -50,10 +50,6 @@
                   define('WP_SITEURL', 'https://{{ environment_domain }}/blog');
                   define('WP_HOME', 'https://{{ environment_domain }}/blog');
                   define('WP_MEMORY_LIMIT', '2048M');
-      volumes:
-          themes:
-          plugins:
-          uploads:
       networks:
           frontend:
               external: true
