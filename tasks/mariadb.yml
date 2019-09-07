@@ -10,8 +10,8 @@
               container_name: database
               restart: always
               volumes:
-                  - "/srv/{{ compositional_mysql_storage }}/database_mysql:/var/lib/mysql"
-                  - "/srv/{{ compositional_mysql_storage }}/database_conf.d:/etc/mysql/conf.d"
+                  - "/srv/{{ compositional_mariadb_storage }}/database_mysql:/var/lib/mysql"
+                  - "/srv/{{ compositional_mariadb_storage }}/database_conf.d:/etc/mysql/conf.d"
               networks:
                   - backend
               environment:
