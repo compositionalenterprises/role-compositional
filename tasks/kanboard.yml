@@ -45,7 +45,21 @@
               volumes:
                   - "/srv/{{ compositional_kanboard_storage }}/kanboard_data:/var/www/app/data"
                   - "/srv/{{ compositional_kanboard_storage }}/kanboard_plugins:/var/www/app/plugins"
-                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_nginx:/etc/nginx"
+                  # We are not using the storage location here for two reasons. First of all, if we
+                  # use that location currently, it messes with the volumes, since the container natively
+                  # exposes `/etc/nginx/ssl`, and when we try to put this in a separate location other than
+                  # the normal volume directory, it barfs and only includes the `ssl` directory. This _has_
+                  # to have something to do with the volume being exposed, but there is nothing in the docs
+                  # that says that you can't mount a parent directory to a separate location from the
+                  # system location if a subdirectory is exposed. Secondly, since there are no changes made
+                  # during normal system operation to this directory after the setup is complete, and the
+                  # setup (replacing nginx.conf) runs every time we redeploy, the change will be made as
+                  # soon as any run is executed using these tasks. So when migrating a host, we don't need
+                  # to keep the contents of this directory, as we will set them up much like we do for most
+                  # of the other configuration directories. I hate having a one-off like this, but since it
+                  # will always be fixed on _any_ run of this role, we are safe to break the paradigm in
+                  # this case.
+                  - "nginx:/etc/nginx"
               networks:
                   - frontend
                   - backend
@@ -56,6 +70,8 @@
               external: true
           backend:
               external: true
+      volumes:
+        nginx:
     build: "{{ compositional_kanboard_build }}"
     state: "{{ compositional_kanboard_state }}"
     restarted: "{{ compositional_kanboard_restarted }}"
@@ -69,5 +85,5 @@
 - name: (kanboard) nginx.conf is deployed
   copy:
     src: 'kanboard_nginx.conf'
-    dest: '/srv/{{ compositional_kanboard_storage }}/kanboard_nginx/nginx.conf'
+    dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: 'Restart Kanboard'
