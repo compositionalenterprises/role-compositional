@@ -34,8 +34,8 @@
           container_name: firefly
           restart: always
           volumes:
-            - "/srv/{{ compositional_firefly_storage }}/firefly_export:/var/www/firefly-iii/storage/export
-            - "/srv/{{ compositional_firefly_storage }}/firefly_upload:/var/www/firefly-iii/storage/upload
+            - "/srv/{{ compositional_firefly_storage }}/firefly_export:/var/www/firefly-iii/storage/export"
+            - "/srv/{{ compositional_firefly_storage }}/firefly_upload:/var/www/firefly-iii/storage/upload"
           networks:
             - frontend
             - backend
