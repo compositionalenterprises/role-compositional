@@ -4,6 +4,8 @@
 - name: Ensure that the local and remote directories are configured
   file:
     path: "/srv/{{ item }}"
+    recurse: yes
+    state: directory
   loop:
     - 'local'
     - 'remote'
