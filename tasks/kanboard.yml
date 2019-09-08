@@ -59,6 +59,9 @@
                   # of the other configuration directories. I hate having a one-off like this, but since it
                   # will always be fixed on _any_ run of this role, we are safe to break the paradigm in
                   # this case.
+                  #
+                  # See https://forums.docker.com/t/losing-files-when-creating-volume-of-parent-directory-of-exposed-volume-as-bind-mount/80890
+                  # for more info
                   - "nginx:/etc/nginx"
               networks:
                   - frontend
