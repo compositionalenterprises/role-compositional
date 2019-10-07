@@ -1,0 +1,60 @@
+---
+- name: Copy application data from one server to another
+  hosts: compositional
+  gather_facts: False
+  tasks:
+    - name: Generate SSH keys on old server
+      block:
+        - name: Generate ssh keypair
+          shell: ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -q -N ""
+          args:
+            creates: /root/.ssh/id_ed25519
+
+        - name: Get content of public key file
+          shell: cat /root/.ssh/id_ed25519.pub
+          register: old_root_public_key
+
+        - name: Make sure directories' parent directories are present
+          file:
+            path: "{{ item }}"
+            state: directory
+            recurse: yes
+          loop:
+            - '/var/lib/docker/volumes'
+            - '/srv'
+
+      when: "'old' in group_names"
+
+    - name: Add public key of root on old server to root on new server
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ hostvars[groups['old'][0]]['old_root_public_key']['stdout'] }}"
+      when: "'new' in group_names"
+
+    - name: Operate on old server
+      block:
+        - name: rsync directories over
+          shell: rsync -ave "ssh -i /root/.ssh/id_ed25519 -o StrictHostKeyChecking=no" {{ item.src }} root@{{ groups['new'][0] }}:{{ item.dest }}
+          loop:
+            - {'src': '/etc/letsencrypt/', 'dest': '/etc/letsencrypt'}
+            - {'src': '/var/lib/docker/volumes/*_*', 'dest': '/var/lib/docker/volumes'}
+            - {'src': '/srv/', 'dest': '/srv'}
+
+        - name: Remove SSH keypair for root on old server
+          file:
+            path: "/root/.ssh/id_ed25519{{ item }}"
+            state: absent
+          loop:
+            - '.pub'
+            - ''
+
+      when: "'old' in group_names"
+
+    - name: Remove public key of root on old server for root on new server
+      authorized_key:
+        user: root
+        state: absent
+        key: "{{ hostvars[groups['old'][0]]['old_root_public_key']['stdout'] }}"
+      when: "'new' in group_names"
+
