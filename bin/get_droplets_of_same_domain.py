@@ -41,7 +41,7 @@ def main(parser):
             incomplete = False
 
     for droplet in resp_data['droplets']:
-        print("{}${}".format(droplet['name'], droplet['id']))
+        print("{} {}".format(droplet['name'], droplet['id']))
 
 
 def parse_args():

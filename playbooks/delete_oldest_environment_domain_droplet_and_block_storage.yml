@@ -1,0 +1,50 @@
+---
+- name: Get DO Droplet Info
+  hosts: localhost
+  connection: local
+  vars_prompt:
+    - name: oauth_token
+      prompt: "Enter your OAUTH Token"
+      private: True
+  tasks:
+    - name: Run get droplets info script
+      script: ../bin/get_droplets_of_same_domain.py --token {{ oauth_token }}
+      register: my_droplets
+
+    - name: 
+      set_fact:
+        # Here we are taking the formatted list:
+        #
+        #   ['servername1 id', 'servername2 id', 'servername3 id']
+        #
+        # and searching for our environment_domain (formatted with dashes
+        # instead of periods) in its hostname. Then we are converting those
+        # results into a list, and sorting them so that the timestamps make
+        # them organize from oldest to newest. Then, we get the first (aka
+        # oldest) result.
+        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | first }}"
+
+    - name: Detatch associated block storage volume
+      digital_ocean_block_storage:
+        command: attach
+        state: absent
+        volume_name: "{{ oldest_droplet.split()[0] }}"
+        region: 'nyc3'
+        api_token: "{{ oauth_token }}"
+        droplet_id: "{{ oldest_droplet.split()[-1] }}"
+
+    - name: Delete digital_ocean_droplet
+      digital_ocean_droplet:
+        # we have to split the result to get the id which our script returns
+        # in the last spot in that space-separated string
+        id: "{{ oldest_droplet.split()[-1] }}"
+        state: absent
+        oauth_token: "{{ oauth_token }}"
+
+    - name: Delete associated block storage volume
+      digital_ocean_block_storage:
+        command: create
+        state: absent
+        volume_name: "{{ oldest_droplet.split()[0] }}"
+        region: 'nyc3'
+        api_token: "{{ oauth_token }}"
