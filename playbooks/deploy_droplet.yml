@@ -44,10 +44,9 @@
         name: "{{ my_droplet['data']['ip_address'] }}"
         group: 'compositional'
 
-    - debug:
-        msg: "{{ lookup('vars', item) }}"
-      loop: "{{ lookup('varnames', '^compositional_.+_storage').split(',') }}"
-      register: storage_vars
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
 
     - name: Add block volume if we have remote filesystems
       block:
@@ -69,7 +68,7 @@
             region: 'nyc3'
             droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"
 
-      when: "'remote' in storage_vars['results'] | map(attribute='msg') | list"
+      when: "'remote' in storage_vars_list.split(',')"
 
 - name: Mount new volume onto droplet
   gather_facts: False
@@ -79,10 +78,9 @@
       wait_for_connection:
         timeout: 60
 
-    - debug:
-        msg: "{{ lookup('vars', item) }}"
-      loop: "{{ lookup('varnames', '^compositional_.+_storage').split(',') }}"
-      register: storage_vars
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
 
   tasks:
     - name: Only execute when there is a separate filesystem
@@ -109,4 +107,4 @@
             path: '/srv/remote'
             fstype: 'ext4'
 
-      when: "'remote' in storage_vars['results'] | map(attribute='msg') | list"
+      when: "'remote' in storage_vars_list.split(',')"
