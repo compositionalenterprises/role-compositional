@@ -1,0 +1,112 @@
+#
+# This playbook sets up a Kanboard instance on either a single host or on a multi-tiered deployment.
+#
+#   ansible-playbook -i environment/hosts.yml playbooks/site.yml
+#
+---
+- name: DO VM Setup
+  hosts: localhost
+  connection: local
+  vars_prompt:
+    - name: oauth_token
+      prompt: "Enter your OAUTH Token"
+      private: True
+  vars_files:
+    - '../environment/group_vars/compositional/all.yml'
+      #- '../environment/group_vars/compositional/vault.yml'
+    - '../vars/all.yml'
+  pre_tasks:
+    - name: Get SSH key facts
+      digital_ocean_sshkey_facts:
+        oauth_token: "{{ oauth_token }}"
+      register: ssh_key_facts
+
+    - name: Set environment and date-formatted name for things
+      set_fact:
+        do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
+
+  tasks:
+    - name: create a new droplet
+      digital_ocean_droplet:
+        state: present
+        name: "{{ do_object_name }}"
+        size: 's-1vcpu-1gb'
+        oauth_token: "{{ oauth_token }}"
+        region: 'nyc3'
+        image: 'ubuntu-16-04-x64'
+        ssh_keys: "{{ ssh_key_facts['ansible_facts']['ssh_keys'] | map(attribute='id') | list }}"
+        private_networking: True
+        wait_timeout: 500
+      register: my_droplet
+
+    - name: Add newly-created droplet to compositional hosts
+      add_host:
+        name: "{{ my_droplet['data']['ip_address'] }}"
+        group: 'compositional'
+
+    - debug:
+        msg: "{{ lookup('vars', item) }}"
+      loop: "{{ lookup('varnames', '^compositional_.+_storage').split(',') }}"
+      register: storage_vars
+
+    - name: Add block volume if we have remote filesystems
+      block:
+        - name: Create a new block volume
+          digital_ocean_block_storage:
+            state: present
+            command: create
+            volume_name: "{{ do_object_name }}"
+            api_token: "{{ oauth_token }}"
+            region: 'nyc3'
+            block_size: 10
+
+        - name: Attach new block volume to new droplet
+          digital_ocean_block_storage:
+            state: present
+            command: attach
+            api_token: "{{ oauth_token }}"
+            volume_name: "{{ do_object_name }}"
+            region: 'nyc3'
+            droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"
+
+      when: "'remote' in storage_vars['results'] | map(attribute='msg') | list"
+
+- name: Mount new volume onto droplet
+  gather_facts: False
+  hosts: compositional
+  pre_tasks:
+    - name: Wait for connections to become available
+      wait_for_connection:
+        timeout: 60
+
+    - debug:
+        msg: "{{ lookup('vars', item) }}"
+      loop: "{{ lookup('varnames', '^compositional_.+_storage').split(',') }}"
+      register: storage_vars
+
+  tasks:
+    - name: Only execute when there is a separate filesystem
+      block:
+        - name: Create the directory to mount the remote filesystem on
+          file:
+            path: '/srv/remote'
+            recurse: yes
+            state: directory
+
+        - name: Get the device name of the unmounted device
+          shell: lsblk | grep -v "$(mount | cut -d ' ' -f 1 | sort -u | grep '/dev' | cut -d '/' -f 3 | tr -d '[[:digit:]]' | sort -u)" | grep -v "NAME" | cut -d " " -f 1
+          register: umounted_device
+
+        - name: Format the filesystem for the external block device
+          filesystem:
+            dev: "/dev/{{ umounted_device['stdout'] }}"
+            fstype: 'ext4'
+
+        - name: Mount the directory
+          mount:
+            state: mounted
+            src: "/dev/{{ umounted_device['stdout'] }}"
+            path: '/srv/remote'
+            fstype: 'ext4'
+
+      when: "'remote' in storage_vars['results'] | map(attribute='msg') | list"

@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  connection: local
+  vars_prompt:
+    - name: oauth_token
+      prompt: "Enter your OAUTH Token"
+      private: True
+  tasks:
+    - name: ssh_key_facts
+      digital_ocean_sshkey_facts:
+        oauth_token: "{{ oauth_token }}"
+      register: ssh_key_facts
+
+    - debug:
+        msg: "{{ ssh_key_facts['ansible_facts']['ssh_keys'] | map(attribute='id') | list }}"
