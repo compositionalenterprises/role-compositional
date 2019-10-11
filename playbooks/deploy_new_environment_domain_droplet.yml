@@ -7,15 +7,25 @@
 - name: DO VM Setup
   hosts: localhost
   connection: local
-  vars_prompt:
-    - name: oauth_token
-      prompt: "Enter your OAUTH Token"
-      private: True
   vars_files:
     - '../environment/group_vars/compositional/all.yml'
       #- '../environment/group_vars/compositional/vault.yml'
     - '../vars/all.yml'
+
   pre_tasks:
+    - name: Prompt for oauth token
+      block:
+        - pause:
+            prompt: "Enter your OAUTH Token"
+            echo: no
+          register: oauth_token_prompt
+
+        - set_fact:
+            oauth_token: oauth_token_prompt['user_input']
+          no_log: True
+
+      when: not hostvars['localhost']['oauth_token']
+
     - name: Get SSH key facts
       digital_ocean_sshkey_facts:
         oauth_token: "{{ oauth_token }}"
@@ -39,72 +49,3 @@
         wait_timeout: 500
       register: my_droplet
 
-    - name: Add newly-created droplet to compositional hosts
-      add_host:
-        name: "{{ my_droplet['data']['ip_address'] }}"
-        group: 'compositional'
-
-    - name: Gather the values for all of the storage variables
-      set_fact:
-        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
-
-    - name: Add block volume if we have remote filesystems
-      block:
-        - name: Create a new block volume
-          digital_ocean_block_storage:
-            state: present
-            command: create
-            volume_name: "{{ do_object_name }}"
-            api_token: "{{ oauth_token }}"
-            region: 'nyc3'
-            block_size: 10
-
-        - name: Attach new block volume to new droplet
-          digital_ocean_block_storage:
-            state: present
-            command: attach
-            api_token: "{{ oauth_token }}"
-            volume_name: "{{ do_object_name }}"
-            region: 'nyc3'
-            droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"
-
-      when: "'remote' in storage_vars_list.split(',')"
-
-- name: Mount new volume onto droplet
-  gather_facts: False
-  hosts: compositional
-  pre_tasks:
-    - name: Wait for connections to become available
-      wait_for_connection:
-        timeout: 60
-
-    - name: Gather the values for all of the storage variables
-      set_fact:
-        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
-
-  tasks:
-    - name: Only execute when there is a separate filesystem
-      block:
-        - name: Create the directory to mount the remote filesystem on
-          file:
-            path: '/srv/remote'
-            recurse: yes
-            state: directory
-
-        - name: Get the device name of the unmounted device
-          shell: lsblk | grep -v "$(mount | cut -d ' ' -f 1 | sort -u | grep '/dev' | cut -d '/' -f 3 | tr -d '[[:digit:]]' | sort -u)" | grep -v "NAME" | cut -d " " -f 1
-          register: umounted_device
-
-        - name: Format the filesystem for the external block device
-          filesystem:
-            dev: "/dev/{{ umounted_device['stdout'] }}"
-            fstype: 'ext4'
-
-        - name: Mount the directory
-          mount:
-            state: mounted
-            src: "/dev/{{ umounted_device['stdout'] }}"
-            path: '/srv/remote'
-            fstype: 'ext4'
-
-      when: "'remote' in storage_vars_list.split(',')"

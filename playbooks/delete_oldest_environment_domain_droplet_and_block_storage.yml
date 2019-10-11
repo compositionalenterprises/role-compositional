@@ -2,10 +2,25 @@
 - name: Get DO Droplet Info
   hosts: localhost
   connection: local
-  vars_prompt:
-    - name: oauth_token
-      prompt: "Enter your OAUTH Token"
-      private: True
+  vars_files:
+    - '../environment/group_vars/compositional/all.yml'
+      #- '../environment/group_vars/compositional/vault.yml'
+    - '../vars/all.yml'
+
+  pre_tasks:
+    - name: Prompt for oauth token
+      block:
+        - pause:
+            prompt: "Enter your OAUTH Token"
+            echo: no
+          register: oauth_token_prompt
+
+        - set_fact:
+            oauth_token: oauth_token_prompt['user_input']
+          no_log: True
+
+      when: not hostvars['localhost']['oauth_token']
+
   tasks:
     - name: Run get droplets info script
       script: ../bin/get_droplets_of_same_domain.py --token {{ oauth_token }}

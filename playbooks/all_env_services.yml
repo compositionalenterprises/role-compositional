@@ -25,7 +25,7 @@
     - setup:
 
 - name: Roles in Common
-  hosts: compositional
+  hosts: all
   become: yes
   vars_files:
     - '../environment/group_vars/compositional/all.yml'
