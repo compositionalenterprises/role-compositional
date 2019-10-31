@@ -21,10 +21,10 @@
           register: oauth_token_prompt
 
         - set_fact:
-            oauth_token: oauth_token_prompt['user_input']
+            oauth_token: "{{ oauth_token_prompt['user_input'] }}"
           no_log: True
 
-      when: not hostvars['localhost']['oauth_token']
+      when: hostvars['localhost']['oauth_token'] is not defined
 
     - name: Get SSH key facts
       digital_ocean_sshkey_facts:
