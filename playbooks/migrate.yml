@@ -43,4 +43,6 @@
 
 - import_playbook: transfer_data.yml
 
+- import_playbook: transfer_ip.yml
+
 - import_playbook: delete_oldest_environment_domain_droplet_and_block_storage.yml
