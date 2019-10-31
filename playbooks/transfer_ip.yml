@@ -1,0 +1,57 @@
+- name: DO VM Setup
+  hosts: localhost
+  connection: local
+  vars_files:
+    - '../environment/group_vars/compositional/all.yml'
+      #- '../environment/group_vars/compositional/vault.yml'
+    - '../vars/all.yml'
+
+  pre_tasks:
+    - name: Prompt for oauth token
+      block:
+        - pause:
+            prompt: "Enter your OAUTH Token"
+            echo: no
+          register: oauth_token_prompt
+          no_log: True
+
+        - set_fact:
+            oauth_token: "{{ oauth_token_prompt['user_input'] }}"
+          no_log: True
+
+      when: hostvars['localhost']['oauth_token'] is not defined
+
+  tasks:
+
+    - name: Get the facts about the floating IPs
+      digital_ocean_floating_ip_facts:
+        oauth_token: "{{ oauth_token }}"
+        timeout: 300
+      register: floating_ips
+
+    - name: Run get droplets info script
+      script: ../bin/get_droplets_of_same_domain.py --token {{ oauth_token }}
+      register: my_droplets
+
+    - name: Register the oldest and newest droplets of the domain
+      set_fact:
+        # Here we are taking the formatted list:
+        #
+        #   ['servername1 id', 'servername2 id', 'servername3 id']
+        #
+        # and searching for our environment_domain (formatted with dashes
+        # instead of periods) in its hostname. Then we are converting those
+        # results into a list, and sorting them so that the timestamps make
+        # them organize from oldest to newest. Then, we get the first (aka
+        # oldest) and last (aka newest) result.
+        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | first }}"
+        newest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | last }}"
+
+    - name:
+      digital_ocean_floating_ip:
+        droplet_id: "{{ newest_droplet.split()[-1] }}"
+        ip: "{{ item['ip'] }}"
+        state: present
+        oauth_token: "{{ oauth_token }}"
+      when: item['droplet']['id'] == oldest_droplet.split()[-1]
+      loop: "{{ floating_ips['floating_ips'] }}"

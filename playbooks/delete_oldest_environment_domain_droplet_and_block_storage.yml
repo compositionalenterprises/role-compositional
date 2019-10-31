@@ -14,19 +14,20 @@
             prompt: "Enter your OAUTH Token"
             echo: no
           register: oauth_token_prompt
-
-        - set_fact:
-            oauth_token: oauth_token_prompt['user_input']
           no_log: True
 
-      when: not hostvars['localhost']['oauth_token']
+        - set_fact:
+            oauth_token: "{{ oauth_token_prompt['user_input'] }}"
+          no_log: True
+
+      when: hostvars['localhost']['oauth_token'] is not defined
 
   tasks:
     - name: Run get droplets info script
       script: ../bin/get_droplets_of_same_domain.py --token {{ oauth_token }}
       register: my_droplets
 
-    - name: 
+    - name: Register the oldest droplet of the domain
       set_fact:
         # Here we are taking the formatted list:
         #
@@ -39,14 +40,46 @@
         # oldest) result.
         oldest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | first }}"
 
-    - name: Detatch associated block storage volume
-      digital_ocean_block_storage:
-        command: attach
+    - name: Register block storage volume
+      digital_ocean_volume_facts:
+        oauth_token: "{{ oauth_token }}"
+      register: block_storage
+
+    - name: Get the facts about the floating IPs
+      # We're registering it now so we don't have to finagle with the timing of how long the delay is before it reports as unassigned
+      digital_ocean_floating_ip_facts:
+        oauth_token: "{{ oauth_token }}"
+        timeout: 300
+      register: floating_ips
+
+    - name: Delete any floating IP that was connected to the deleted droplet
+      digital_ocean_floating_ip:
+        ip: "{{ item['ip'] }}"
         state: absent
-        volume_name: "{{ oldest_droplet.split()[0] }}"
-        region: 'nyc3'
-        api_token: "{{ oauth_token }}"
-        droplet_id: "{{ oldest_droplet.split()[-1] }}"
+        oauth_token: "{{ oauth_token }}"
+      when: item['droplet']['id'] == oldest_droplet.split()[-1] | int
+      loop: "{{ floating_ips['floating_ips'] }}"
+
+    - name: Delete block storage if attached
+      block:
+        - name: Detatch associated block storage volume
+          digital_ocean_block_storage:
+            command: attach
+            state: absent
+            volume_name: "{{ oldest_droplet.split()[0] }}"
+            region: 'nyc3'
+            api_token: "{{ oauth_token }}"
+            droplet_id: "{{ oldest_droplet.split()[-1] }}"
+
+        - name: Delete associated block storage volume
+          digital_ocean_block_storage:
+            command: create
+            state: absent
+            volume_name: "{{ oldest_droplet.split()[0] }}"
+            region: 'nyc3'
+            api_token: "{{ oauth_token }}"
+
+      when: block_storage['data'] | selectattr('droplet_ids', 'equalto', oldest_droplet.split()[-1]) | list | count > 0
 
     - name: Delete digital_ocean_droplet
       digital_ocean_droplet:
@@ -55,11 +88,3 @@
         id: "{{ oldest_droplet.split()[-1] }}"
         state: absent
         oauth_token: "{{ oauth_token }}"
-
-    - name: Delete associated block storage volume
-      digital_ocean_block_storage:
-        command: create
-        state: absent
-        volume_name: "{{ oldest_droplet.split()[0] }}"
-        region: 'nyc3'
-        api_token: "{{ oauth_token }}"
