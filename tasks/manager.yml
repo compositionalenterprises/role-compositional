@@ -14,6 +14,7 @@
           manager:
               image: "smacz/manager:{{ compositional_manager_version }}"
               container_name: manager
+              restart: always
               volumes:
                   - data:/var/data
               networks:
