@@ -27,6 +27,7 @@
               image: "jekyll/jekyll:{{ compositional_jekyll_version }}"
               container_name: 'jekyll'
               command: "/srv/jekyll/entrypoint.sh"
+              restart: always
               volumes:
                   - jekyll:/srv/jekyll
 
