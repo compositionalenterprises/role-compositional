@@ -117,6 +117,7 @@ compositional_manager_data_path: '/data'
 # This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_jekyll_build: yes
 compositional_jekyll_state: present
+compositional_jekyll_restarted: yes
 compositional_jekyll_version: '3.8'
 compositional_jekyll_port: '8080'
 compositional_jekyll_extra_commands: |

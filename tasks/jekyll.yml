@@ -48,5 +48,5 @@
               external: true
     build: "{{ compositional_jekyll_build }}"
     state: "{{ compositional_jekyll_state }}"
-    restarted: yes
+    restarted: "{{ compositional_jekyll_restarted }}"
   register: compositional_jekyll_output
