@@ -120,8 +120,8 @@ compositional_jekyll_state: present
 compositional_jekyll_version: '3.8'
 compositional_jekyll_port: '8080'
 compositional_jekyll_extra_commands: |
-  git clone https://gitlab.com/smacz/posts.git _posts
-  wget https://andrewcz.com/nextcloud/s/jg4kJePQsbbRZxb/download -O images.tar.gz
-  tar -xvzf images.tar.gz
-  rm -rf images.tar.gz
-  mkdir -p _site
+  git clone https://gitlab.com/smacz/posts.git _posts;
+  wget https://andrewcz.com/nextcloud/s/jg4kJePQsbbRZxb/download -O images.tar.gz;
+  tar -xvzf images.tar.gz;
+  rm -rf images.tar.gz;
+  mkdir -p _site;
