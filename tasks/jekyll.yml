@@ -25,7 +25,7 @@
           jekyll:
               image: "jekyll/jekyll:{{ compositional_jekyll_version }}"
               container_name: jekyll
-              command: "entrypoint.sh"
+              command: "/srv/jekyll/entrypoint.sh"
               volumes:
                   - jekyll:/srv/jekyll
               networks:
