@@ -30,7 +30,7 @@ fi
 
 # Same with the domain name
 if [[ ! -z "${JEKYLL_DOMAIN}" ]]; then
-        sed -i "s#url:.*#url:            '$JEKYLL_DOMAIN'#" _config.yml
+        sed -i "s#^url:.*#url:            '$JEKYLL_DOMAIN'#" _config.yml
 fi
 
 git clone https://gitlab.com/smacz/posts.git _posts
@@ -38,4 +38,4 @@ wget https://andrewcz.com/nextcloud/s/jg4kJePQsbbRZxb/download -O images.tar.gz
 tar -xvzf images.tar.gz
 rm -rf images.tar.gz
 mkdir _site
-jekyll serve -H 0.0.0.0 -P $jekyll_port
+jekyll serve --no-watch -H 0.0.0.0 -P $jekyll_port
