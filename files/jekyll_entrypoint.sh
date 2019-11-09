@@ -33,7 +33,7 @@ if [[ ! -z "${JEKYLL_DOMAIN}" ]]; then
         sed -i "s#url:.*#url:            '$JEKYLL_DOMAIN'#" _config.yml
 fi
 
-git clone git clone https://gitlab.com/smacz/posts.git _posts
+git clone https://gitlab.com/smacz/posts.git _posts
 wget https://andrewcz.com/nextcloud/s/jg4kJePQsbbRZxb/download -O images.tar.gz \
 tar -xvzf images.tar.gz \
 rm -rf images.tar.gz
