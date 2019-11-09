@@ -5,6 +5,12 @@
     dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/jekyll.conf"
   notify: 'Restart Frontend'
 
+- name: (jekyll) The jekyll data dir is created
+  file:
+    path: '/var/lib/docker/volumes/jekyll_jekyll/_data/'
+    state: directory
+    recurse: True
+
 - name: (jekyll) The entrypoint.sh script is deployed
   copy:
     src: '../files/jekyll_entrypoint.sh'
