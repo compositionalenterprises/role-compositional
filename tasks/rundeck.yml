@@ -1,0 +1,43 @@
+---
+- name: (rundeck) Nginx conf is deployed
+  template:
+    src: "nginx_rundeck.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/rundeck.conf"
+  notify: 'Restart Frontend'
+
+- name: (kanboard) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (rundeck) The latest rundeck service is built and {{ compositional_rundeck_state }}
+  docker_service:
+    project_name: rundeck
+    definition:
+      version: '3.6'
+      services:
+          rundeck:
+              image: "rundeck/rundeck:{{ compositional_rundeck_version }}"
+              container_name: rundeck
+              restart: always
+              volumes:
+                  - data:/home/rundeck/server/data
+              networks:
+                  - frontend
+              environment:
+                RUNDECK_GRAILS_URL: "http://{{ environment_domain }}/rundeck"
+                RUNDECK_SERVER_FORWARDED: 'true'
+                RUNDECK_DATABASE_DRIVER: 'com.mysql.jdbc.Driver'
+                RUNDECK_DATABASE_USERNAME: 'rundeck'
+                RUNDECK_DATABASE_PASSWORD: "{{ compositional_rundeck_backend_password }}"
+                RUNDECK_DATABASE_URL: 'jdbc:mysql://database/rundeck?autoReconnect=true&useSSL=false'
+      volumes:
+          data:
+      networks:
+          frontend:
+              external: true
+    build: "{{ compositional_rundeck_build }}"
+    state: "{{ compositional_rundeck_state }}"
+  register: compositional_rundeck_output
