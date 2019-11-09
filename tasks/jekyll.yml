@@ -15,6 +15,7 @@
   copy:
     src: '../files/jekyll_entrypoint.sh'
     dest: '/var/lib/docker/volumes/jekyll_jekyll/_data/entrypoint.sh'
+    mode: '0555'
 
 - name: (jekyll) The latest jekyll service is built and {{ compositional_jekyll_state }}
   docker_service:
