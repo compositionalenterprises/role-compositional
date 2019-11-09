@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 #
 # This file provides the first setup and running of the server in Jekyll, based on a couple
