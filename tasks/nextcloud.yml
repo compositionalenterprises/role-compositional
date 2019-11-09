@@ -34,6 +34,7 @@
             nextcloud:
                 image: "nextcloud:{{ compositional_nextcloud_version }}"
                 container_name: nextcloud
+                restart: always
                 volumes:
                     - data:/var/www/html/data
                     - config:/var/www/html/config
