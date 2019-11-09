@@ -41,6 +41,7 @@
           kanboard:
               image: "kanboard/kanboard:{{ compositional_kanboard_version }}"
               container_name: kanboard
+              restart: always
               volumes:
                   - data:/var/www/app/data
                   - plugins:/var/www/app/plugins
