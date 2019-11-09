@@ -38,6 +38,7 @@
                   - data:/home/rundeck/server/data
               networks:
                   - frontend
+                  - backend
               environment:
                 RUNDECK_GRAILS_URL: "http://{{ environment_domain }}/rundeck"
                 RUNDECK_SERVER_FORWARDED: 'true'
@@ -49,6 +50,8 @@
           data:
       networks:
           frontend:
+              external: true
+          backend:
               external: true
     build: "{{ compositional_rundeck_build }}"
     state: "{{ compositional_rundeck_state }}"
