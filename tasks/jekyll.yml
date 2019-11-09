@@ -18,7 +18,7 @@
     mode: '0555'
 
 - name: (jekyll) The latest jekyll service is built and {{ compositional_jekyll_state }}
-  docker_compose:
+  docker_service:
     project_name: jekyll
     definition:
       version: '3.6'
@@ -27,7 +27,6 @@
               image: "jekyll/jekyll:{{ compositional_jekyll_version }}"
               container_name: 'jekyll'
               command: "/srv/jekyll/entrypoint.sh"
-              restarted: yes
               volumes:
                   - jekyll:/srv/jekyll
 
@@ -48,4 +47,5 @@
               external: true
     build: "{{ compositional_jekyll_build }}"
     state: "{{ compositional_jekyll_state }}"
+    restarted: yes
   register: compositional_jekyll_output
