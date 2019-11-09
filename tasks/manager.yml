@@ -29,4 +29,5 @@
               external: true
     build: "{{ compositional_manager_build }}"
     state: "{{ compositional_manager_state }}"
+    restarted: "{{ compositional_manager_restarted }}"
   register: compositional_manager_output
