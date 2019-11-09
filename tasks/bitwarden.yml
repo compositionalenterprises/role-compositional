@@ -26,4 +26,5 @@
               external: true
     build: "{{ compositional_bitwarden_build }}"
     state: "{{ compositional_bitwarden_state }}"
+    restarted: "{{ compositional_bitwarden_restarted }}"
   register: compositional_bitwarden_output

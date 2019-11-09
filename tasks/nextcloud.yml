@@ -63,6 +63,7 @@
                 external: true
       build: "{{ compositional_nextcloud_build }}"
       state: "{{ compositional_nextcloud_state }}"
+      restarted: "{{ compositional_nextcloud_restarted }}"
     register: compositional_nextcloud_output_1
     no_log: True
 
@@ -107,6 +108,7 @@
                 external: true
       build: "{{ compositional_nextcloud_build }}"
       state: "{{ compositional_nextcloud_state }}"
+      restarted: "{{ compositional_nextcloud_restarted }}"
     register: compositional_nextcloud_output_2
     when: compositional_backend_type == 'postgres'
     no_log: True
