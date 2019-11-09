@@ -41,6 +41,6 @@ if [[ ! -z "${JEKYLL_DOMAIN}" ]]; then
         sed -i "s#^url:.*#url:            '$JEKYLL_DOMAIN'#" _config.yml
 fi
 
-$JEKYLL_EXTRA_COMMANDS
+/bin/bash -c "${JEKYLL_EXTRA_COMMANDS}"
 
 jekyll serve --no-watch -H 0.0.0.0 -P $jekyll_port
