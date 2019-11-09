@@ -34,8 +34,8 @@ if [[ ! -z "${JEKYLL_DOMAIN}" ]]; then
 fi
 
 git clone https://gitlab.com/smacz/posts.git _posts
-wget https://andrewcz.com/nextcloud/s/jg4kJePQsbbRZxb/download -O images.tar.gz \
-tar -xvzf images.tar.gz \
+wget https://andrewcz.com/nextcloud/s/jg4kJePQsbbRZxb/download -O images.tar.gz
+tar -xvzf images.tar.gz
 rm -rf images.tar.gz
 mkdir _site
 jekyll serve -H 0.0.0.0 -P $jekyll_port
