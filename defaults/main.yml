@@ -26,6 +26,7 @@ environment_admin: 'admin'
 #
 compositional_nginx_build: 'yes'
 compositional_nginx_state: 'present'
+compositional_nginx_restarted: no
 compositional_nginx_version: '1.17'
 
 #
@@ -33,6 +34,7 @@ compositional_nginx_version: '1.17'
 #
 compositional_mariadb_build: 'yes'
 compositional_mariadb_state: 'present'
+compositional_mariadb_restarted: no
 compositional_mariadb_version: '10.4'
 
 #
@@ -40,6 +42,7 @@ compositional_mariadb_version: '10.4'
 #
 compositional_kanboard_build: yes
 compositional_kanboard_state: present
+compositional_kanboard_restarted: no
 compositional_kanboard_version: 'v1.2.8'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_mysql_script: |
@@ -51,6 +54,7 @@ compositional_kanboard_mysql_script: |
 #
 compositional_nextcloud_build: yes
 compositional_nextcloud_state: present
+compositional_nextcloud_restarted: no
 compositional_nextcloud_version: '16.0.4'
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
@@ -67,6 +71,7 @@ compositional_nextcloud_legacy_dbtableprefix: False
 #
 compositional_wordpress_build: yes
 compositional_wordpress_state: present
+compositional_wordpress_restarted: no
 compositional_wordpress_version: '5.2.2'
 compositional_wordpress_backend_password: 'testpassword'
 compositional_wordpress_mysql_script: |
@@ -78,6 +83,7 @@ compositional_wordpress_mysql_script: |
 #
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
+compositional_bitwarden_restarted: no
 compositional_bitwarden_version: '1.7.0-alpine'
 
 #
@@ -86,6 +92,7 @@ compositional_bitwarden_version: '1.7.0-alpine'
 # This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_firefly_build: yes
 compositional_firefly_state: present
+compositional_firefly_restarted: no
 compositional_firefly_version: 'release-4.8.0.3'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'

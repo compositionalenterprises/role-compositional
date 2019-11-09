@@ -24,6 +24,7 @@
               name: backend
     build: "{{ compositional_mariadb_build }}"
     state: "{{ compositional_mariadb_state }}"
+    restarted: "{{ compositional_mariadb_restarted }}"
   register: compositional_backend_output
   no_log: True
 
