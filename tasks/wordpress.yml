@@ -55,6 +55,7 @@
               external: true
     build: "{{ compositional_wordpress_build }}"
     state: "{{ compositional_wordpress_state }}"
+    restarted: "{{ compositional_wordpress_restarted }}"
   register: compositional_wordpress_output
 
 - name: (wordpress) Symlink blog directory

@@ -26,6 +26,7 @@
               name: frontend
     build: "{{ compositional_frontend_build }}"
     state: "{{ compositional_frontend_state }}"
+    restarted: "{{ compositional_nginx_restarted }}"
   register: frontend_output
 
 - name: (nginx) Nginx default.conf is deployed

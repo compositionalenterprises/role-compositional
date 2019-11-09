@@ -24,6 +24,7 @@
               name: backend
     build: "{{ compositional_backend_build }}"
     state: "{{ compositional_backend_state }}"
+    restarted: "{{ compositional_mariadb_restarted }}"
   register: compositional_backend_output
 
 - name: (mariadb) Set Backend Type
