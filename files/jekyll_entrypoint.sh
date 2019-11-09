@@ -12,6 +12,13 @@
 
 jekyll_port="${JEKYLL_PORT:-8080}"
 
+# Remove everything in here except for this very script
+find . -not -name 'entrypoint.sh'\
+       -not -name '.'\
+       -not -name '..' \
+       -print0 |\
+       xargs -0 rm -rf --
+
 git init
 git remote add origin https://gitlab.com/smacz/docker-andrewcz-blog.git
 git fetch
