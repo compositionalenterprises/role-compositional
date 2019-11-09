@@ -66,6 +66,7 @@
 
     build: "{{ compositional_firefly_build }}"
     state: "{{ compositional_firefly_state }}"
+    restarted: "{{ compositional_firefly_restarted }}"
   register: compositional_firefly_output
   no_log: True
 
