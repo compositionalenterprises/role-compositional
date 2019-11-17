@@ -4,6 +4,7 @@
 # This file provides the first setup and running of the server in Jekyll, based on a couple
 # environment variables:
 #
+#       - JEKYLL_GIT_URL
 #       - JEKYLL_PORT
 #       - JEKYLL_BASE_URL
 #       - JEKYLL_DOMAIN
@@ -20,7 +21,7 @@ find . -not -name 'entrypoint.sh'\
        xargs -0 rm -rf --
 
 git init
-git remote add origin https://gitlab.com/smacz/docker-andrewcz-blog.git
+git remote add origin "${JEKYLL_GIT_URL}"
 git fetch
 git reset --hard origin/master
 
