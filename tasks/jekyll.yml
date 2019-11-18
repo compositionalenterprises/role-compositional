@@ -1,0 +1,53 @@
+---
+- name: (jekyll) Nginx conf is deployed
+  template:
+    src: "nginx_jekyll.conf.j2"
+    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/jekyll.conf"
+  notify: 'Restart Frontend'
+
+- name: (jekyll) The jekyll data dir is created
+  file:
+    path: '/var/lib/docker/volumes/jekyll_jekyll/_data/'
+    state: directory
+    recurse: True
+
+- name: (jekyll) The entrypoint.sh script is deployed
+  copy:
+    src: '../files/jekyll_entrypoint.sh'
+    dest: '/var/lib/docker/volumes/jekyll_jekyll/_data/entrypoint.sh'
+    mode: '0555'
+
+- name: (jekyll) The latest jekyll service is built and {{ compositional_jekyll_state }}
+  docker_service:
+    project_name: jekyll
+    definition:
+      version: '3.6'
+      services:
+          jekyll:
+              image: "jekyll/jekyll:{{ compositional_jekyll_version }}"
+              container_name: 'jekyll'
+              command: "/srv/jekyll/entrypoint.sh"
+              restart: always
+              volumes:
+                  - jekyll:/srv/jekyll
+
+              networks:
+                  - frontend
+
+              environment:
+                JEKYLL_GIT_URL: "{{ compositional_jekyll_git_url }}"
+                JEKYLL_DOMAIN: "{{ environment_domain }}"
+                JEKYLL_BASE_URL: "/jekyll/"
+                JEKYLL_PORT: "{{ compositional_jekyll_port }}"
+                JEKYLL_EXTRA_COMMANDS: "{{ compositional_jekyll_extra_commands }}"
+
+      volumes:
+          jekyll:
+
+      networks:
+          frontend:
+              external: true
+    build: "{{ compositional_jekyll_build }}"
+    state: "{{ compositional_jekyll_state }}"
+    restarted: "{{ compositional_jekyll_restarted }}"
+  register: compositional_jekyll_output
