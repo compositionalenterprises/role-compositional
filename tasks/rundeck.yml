@@ -2,8 +2,20 @@
 - name: (rundeck) Nginx conf is deployed
   template:
     src: "nginx_rundeck.conf.j2"
-    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/rundeck.conf"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/rundeck.conf"
   notify: 'Restart Frontend'
+
+- name: (rundeck) The rundeck data dir is created
+  file:
+    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_data/"
+    state: directory
+    recurse: True
+
+- name: (rundeck) The entrypoint.sh script is deployed
+  copy:
+    src: '../files/rundeck_entrypoint.sh'
+    dest: '/srv/{{ compositional_rundeck_storage }}/rundeck_data/entrypoint.sh'
+    mode: '0555'
 
 - name: (rundeck) The MySQL database service is up and initialized
   # We're running a while loop to check to ensure that the mysql database has
@@ -13,16 +25,10 @@
   no_log: True
 
 - name: (rundeck) Set up the MySQL database
-  # We have to use `.keys() | list | first` to get the name of the container. If we
-  # wanted to, we should probably walk down the data structure to get the
-  # actual name, but since for the time being we name the name of the service
-  # the same as the container, it's not really going to affect us now, as
-  # long as we stick to that paradigm.
   shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_rundeck_mysql_script }}"
   args:
     executable: '/bin/bash'
   no_log: True
-
 
 - name: (rundeck) The latest rundeck service is built and {{ compositional_rundeck_state }}
   docker_service:
@@ -34,8 +40,9 @@
               image: "rundeck/rundeck:{{ compositional_rundeck_version }}"
               container_name: rundeck
               restart: always
+              command: "/home/rundeck/server/data/entrypoint.sh"
               volumes:
-                  - data:/home/rundeck/server/data
+                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_data:/home/rundeck/server/data"
               networks:
                   - frontend
                   - backend
