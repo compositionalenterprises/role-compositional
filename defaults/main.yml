@@ -28,6 +28,7 @@ compositional_nginx_build: 'yes'
 compositional_nginx_state: 'present'
 compositional_nginx_restarted: no
 compositional_nginx_version: '1.17'
+compositional_nginx_storage: 'local'
 
 #
 # MariaDB Backend
@@ -36,6 +37,7 @@ compositional_mariadb_build: 'yes'
 compositional_mariadb_state: 'present'
 compositional_mariadb_restarted: no
 compositional_mariadb_version: '10.4'
+compositional_mariadb_storage: 'local'
 
 #
 # Kanboard
@@ -44,6 +46,7 @@ compositional_kanboard_build: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: no
 compositional_kanboard_version: 'v1.2.8'
+compositional_kanboard_storage: 'local'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_mysql_script: |
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -56,6 +59,7 @@ compositional_nextcloud_build: yes
 compositional_nextcloud_state: present
 compositional_nextcloud_restarted: no
 compositional_nextcloud_version: '16.0.4'
+compositional_nextcloud_storage: 'local'
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
   CREATE USER IF NOT EXISTS 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
@@ -73,6 +77,7 @@ compositional_wordpress_build: yes
 compositional_wordpress_state: present
 compositional_wordpress_restarted: no
 compositional_wordpress_version: '5.2.2'
+compositional_wordpress_storage: 'local'
 compositional_wordpress_backend_password: 'testpassword'
 compositional_wordpress_mysql_script: |
   CREATE DATABASE IF NOT EXISTS wordpress;
@@ -85,6 +90,7 @@ compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: no
 compositional_bitwarden_version: '1.7.0-alpine'
+compositional_bitwarden_storage: 'local'
 
 #
 # Firefly
@@ -94,6 +100,7 @@ compositional_firefly_build: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: no
 compositional_firefly_version: 'release-4.8.0.3'
+compositional_firefly_storage: 'local'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_mysql_script: |
@@ -108,6 +115,7 @@ compositional_manager_build: yes
 compositional_manager_state: present
 compositional_manager_restarted: no
 compositional_manager_version: '19.7.71'
+compositional_manager_storage: 'local'
 compositional_manager_port: '8080'
 compositional_manager_data_path: '/data'
 
@@ -119,6 +127,7 @@ compositional_jekyll_build: yes
 compositional_jekyll_state: present
 compositional_jekyll_restarted: yes
 compositional_jekyll_version: '3.8'
+compositional_jekyll_storage: 'local'
 compositional_jekyll_port: '8080'
 compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.git'
 compositional_jekyll_extra_commands: |
