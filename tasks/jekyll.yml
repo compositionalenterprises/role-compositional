@@ -7,14 +7,14 @@
 
 - name: (jekyll) The jekyll data dir is created
   file:
-    path: "/srv/{{ compositional_firefly_storage }}/jekyll_jekyll/"
+    path: "/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/"
     state: directory
     recurse: True
 
 - name: (jekyll) The entrypoint.sh script is deployed
   copy:
     src: '../files/jekyll_entrypoint.sh'
-    dest: '/var/lib/docker/volumes/jekyll_jekyll/_data/entrypoint.sh'
+    dest: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/entrypoint.sh'
     mode: '0555'
 
 - name: (jekyll) The latest jekyll service is built and {{ compositional_jekyll_state }}
@@ -29,7 +29,7 @@
               command: "/srv/jekyll/entrypoint.sh"
               restart: always
               volumes:
-                - "/srv/{{ compositional_firefly_storage }}/jekyll_jekyll:/srv/jekyll"
+                - "/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll:/srv/jekyll"
 
               networks:
                   - frontend
