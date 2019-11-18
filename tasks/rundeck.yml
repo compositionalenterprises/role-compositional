@@ -40,7 +40,7 @@
               image: "rundeck/rundeck:{{ compositional_rundeck_version }}"
               container_name: rundeck
               restart: always
-              entrypoint: "/tini -- docker-lib/entry.sh -Dserver.web.context=/rundeck"
+              entrypoint: "/home/rundeck/server/data/entrypoint.sh"
               volumes:
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_data:/home/rundeck/server/data"
               networks:
