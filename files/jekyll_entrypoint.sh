@@ -44,4 +44,5 @@ fi
 
 /bin/bash -c "${JEKYLL_EXTRA_COMMANDS}"
 
+mkdir -p _site
 jekyll serve --no-watch -H 0.0.0.0 -P $jekyll_port
