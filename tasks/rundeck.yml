@@ -5,18 +5,6 @@
     dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/rundeck.conf"
   notify: 'Restart Frontend'
 
-- name: (rundeck) The rundeck data dir is created
-  file:
-    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_data/"
-    state: directory
-    recurse: True
-
-- name: (rundeck) The entrypoint.sh script is deployed
-  copy:
-    src: '../files/rundeck_entrypoint.sh'
-    dest: '/srv/{{ compositional_rundeck_storage }}/rundeck_data/entrypoint.sh'
-    mode: '0555'
-
 - name: (rundeck) The MySQL database service is up and initialized
   # We're running a while loop to check to ensure that the mysql database has
   # initialized:
