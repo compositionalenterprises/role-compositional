@@ -11,7 +11,7 @@
 - name: (kanboard) Nginx conf is deployed
   template:
     src: "nginx_kanboard.conf.j2"
-    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/kanboard.conf"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/kanboard.conf"
   notify: 'Restart Frontend'
 
 - name: (kanboard) The MySQL database service is up and initialized
@@ -22,11 +22,6 @@
   no_log: True
 
 - name: (kanboard) Set up the MySQL database
-  # We have to use `.keys() | list | first` to get the name of the container. If we
-  # wanted to, we should probably walk down the data structure to get the
-  # actual name, but since for the time being we name the name of the service
-  # the same as the container, it's not really going to affect us now, as
-  # long as we stick to that paradigm.
   shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_kanboard_mysql_script }}"
   args:
     executable: '/bin/bash'
@@ -43,23 +38,38 @@
               container_name: kanboard
               restart: always
               volumes:
-                  - data:/var/www/app/data
-                  - plugins:/var/www/app/plugins
-                  - nginx:/etc/nginx
+                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_data:/var/www/app/data"
+                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_plugins:/var/www/app/plugins"
+                  # We are not using the storage location here for two reasons. First of all, if we
+                  # use that location currently, it messes with the volumes, since the container natively
+                  # exposes `/etc/nginx/ssl`, and when we try to put this in a separate location other than
+                  # the normal volume directory, it barfs and only includes the `ssl` directory. This _has_
+                  # to have something to do with the volume being exposed, but there is nothing in the docs
+                  # that says that you can't mount a parent directory to a separate location from the
+                  # system location if a subdirectory is exposed. Secondly, since there are no changes made
+                  # during normal system operation to this directory after the setup is complete, and the
+                  # setup (replacing nginx.conf) runs every time we redeploy, the change will be made as
+                  # soon as any run is executed using these tasks. So when migrating a host, we don't need
+                  # to keep the contents of this directory, as we will set them up much like we do for most
+                  # of the other configuration directories. I hate having a one-off like this, but since it
+                  # will always be fixed on _any_ run of this role, we are safe to break the paradigm in
+                  # this case.
+                  #
+                  # See https://forums.docker.com/t/losing-files-when-creating-volume-of-parent-directory-of-exposed-volume-as-bind-mount/80890
+                  # for more info
+                  - "nginx:/etc/nginx"
               networks:
                   - frontend
                   - backend
               environment:
                 DATABASE_URL: "{{ compositional_backend_type }}://kanboard:{{ compositional_kanboard_backend_password }}@database:{{ compositional_backend_port }}/kanboard"
-      volumes:
-          data:
-          plugins:
-          nginx:
       networks:
           frontend:
               external: true
           backend:
               external: true
+      volumes:
+        nginx:
     build: "{{ compositional_kanboard_build }}"
     state: "{{ compositional_kanboard_state }}"
     restarted: "{{ compositional_kanboard_restarted }}"

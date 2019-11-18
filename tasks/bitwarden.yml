@@ -2,7 +2,7 @@
 - name: (bitwarden) Nginx conf is deployed
   template:
     src: "nginx_bitwarden.conf.j2"
-    dest: "/var/lib/docker/volumes/nginx_conf.d/_data/{{ environment_domain }}/bitwarden.conf"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/bitwarden.conf"
   notify: 'Restart Frontend'
 
 - name: (bitwarden) The latest bitwarden service is built and {{ compositional_bitwarden_state }}
@@ -16,14 +16,15 @@
               container_name: bitwarden
               restart: always
               volumes:
-                  - data:/data/
+                  - "/srv/{{ compositional_bitwarden_storage}}/bitwarden_data:/data/"
+
               networks:
                   - frontend
-      volumes:
-          data:
+
       networks:
           frontend:
               external: true
+
     build: "{{ compositional_bitwarden_build }}"
     state: "{{ compositional_bitwarden_state }}"
     restarted: "{{ compositional_bitwarden_restarted }}"
