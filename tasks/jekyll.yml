@@ -2,7 +2,7 @@
 - name: (jekyll) Nginx conf is deployed
   template:
     src: "nginx_jekyll.conf.j2"
-    dest: "/srv/{{ compositional_nginx_storage/nginx_conf.d/{{ environment_domain }}/jekyll.conf"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/jekyll.conf"
   notify: 'Restart Frontend'
 
 - name: (jekyll) The jekyll data dir is created
