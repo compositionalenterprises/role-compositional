@@ -13,12 +13,12 @@
   no_log: True
 
 - name: (homstatic) Set up the MySQL database
-  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_hom_mysql_script }}"
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_homstatic_mysql_script }}"
   args:
     executable: '/bin/bash'
   no_log: True
 
-- name: (homstatic) The latest homstatic service is built and {{ compositional_kanboard_state }}
+- name: (homstatic) The latest homstatic service is built and {{ compositional_homstatic_state }}
   docker_service:
     project_name: homstatic
     definition:
@@ -29,7 +29,7 @@
               container_name: homstatic
               restart: always
               volumes:
-                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_credentials:/app/config/credentials"
+                  - "/srv/{{ compositional_homstatic_storage }}/homstatic_credentials:/app/config/credentials"
               networks:
                   - frontend
                   - backend
@@ -44,8 +44,8 @@
               external: true
           backend:
               external: true
-    build: "{{ compositional_kanboard_build }}"
-    state: "{{ compositional_kanboard_state }}"
-    restarted: "{{ compositional_kanboard_restarted }}"
-  register: compositional_kanboard_output
+    build: "{{ compositional_homstatic_build }}"
+    state: "{{ compositional_homstatic_state }}"
+    restarted: "{{ compositional_homstatic_restarted }}"
+  register: compositional_homstatic_output
   no_log: True
