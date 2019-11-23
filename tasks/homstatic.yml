@@ -1,0 +1,51 @@
+---
+- name: (homstatic) Nginx conf is deployed
+  template:
+    src: "nginx_homstatic.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/homstatic.conf"
+  notify: 'Restart Frontend'
+
+- name: (homstatic) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (homstatic) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_hom_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (homstatic) The latest homstatic service is built and {{ compositional_kanboard_state }}
+  docker_service:
+    project_name: homstatic
+    definition:
+      version: '3.6'
+      services:
+          homstatic:
+              image: "compositionalenterprises/homstatic:{{ compositional_homstatic_version }}"
+              container_name: homstatic
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_kanboard_storage }}/kanboard_credentials:/app/config/credentials"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DB_HOST: 'database'
+                DB_NAME: 'homstatic'
+                DB_USER: 'homstatic'
+                DB_PASS: "{{ compositional_homstatic_backend_password }}"
+                services: "{{ compositional_services | join(' ') }}"
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_kanboard_build }}"
+    state: "{{ compositional_kanboard_state }}"
+    restarted: "{{ compositional_kanboard_restarted }}"
+  register: compositional_kanboard_output
+  no_log: True

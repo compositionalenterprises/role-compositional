@@ -95,12 +95,12 @@ compositional_bitwarden_storage: 'local'
 #
 # Firefly
 #
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_firefly_build: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: no
 compositional_firefly_version: 'release-4.8.0.3'
 compositional_firefly_storage: 'local'
+# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_mysql_script: |
@@ -110,7 +110,6 @@ compositional_firefly_mysql_script: |
 #
 # Manager
 #
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_manager_build: yes
 compositional_manager_state: present
 compositional_manager_restarted: no
@@ -122,7 +121,6 @@ compositional_manager_data_path: '/data'
 #
 # Jekyll
 #
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_jekyll_build: yes
 compositional_jekyll_state: present
 compositional_jekyll_restarted: yes
@@ -133,3 +131,15 @@ compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.gi
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
+
+#
+# Homstatic
+#
+compositional_homstatic_build: yes
+compositional_homstatic_state: present
+compositional_homstatic_restarted: yes
+compositional_homstatic_version: 'latest'
+compositional_homstatic_storage: 'local'
+compositional_homstatic_backend_password: 'testpassword'
+  CREATE DATABASE IF NOT EXISTS homstatic;
+  GRANT ALL PRIVILEGES ON homstatic.* TO 'homstatic'@'%' IDENTIFIED BY '{{ compositional_homstatic_backend_password }}';
