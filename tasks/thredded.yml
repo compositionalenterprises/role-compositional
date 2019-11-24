@@ -1,0 +1,49 @@
+---
+- name: (thredded) Nginx conf is deployed
+  template:
+    src: "nginx_thredded.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/thredded.conf"
+  notify: 'Restart Frontend'
+
+- name: (thredded) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (thredded) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_thredded_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (thredded) The latest thredded service is built and {{ compositional_thredded_state }}
+  docker_service:
+    project_name: thredded
+    definition:
+      version: '3.6'
+      services:
+          thredded:
+              image: "compositionalenterprises/thredded:{{ compositional_thredded_version }}"
+              container_name: thredded
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_thredded_storage }}/thredded_config:/thredded/config"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DB: 'mysql2'
+                DB_USERNAME: 'thredded'
+                DB_PASSWORD: "{{ compositional_thredded_backend_password }}"
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_thredded_build }}"
+    state: "{{ compositional_thredded_state }}"
+    restarted: "{{ compositional_thredded_restarted }}"
+  register: compositional_thredded_output
+  no_log: True
