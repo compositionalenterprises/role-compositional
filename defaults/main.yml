@@ -141,6 +141,6 @@ compositional_homstatic_restarted: yes
 compositional_homstatic_version: 'latest'
 compositional_homstatic_storage: 'local'
 compositional_homstatic_backend_password: 'testpassword'
-compositional_hom_mysql_script: |
+compositional_homstatic_mysql_script: |
   CREATE DATABASE IF NOT EXISTS homstatic;
   GRANT ALL PRIVILEGES ON homstatic.* TO 'homstatic'@'%' IDENTIFIED BY '{{ compositional_homstatic_backend_password }}';
