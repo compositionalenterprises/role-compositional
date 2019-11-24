@@ -144,5 +144,5 @@ compositional_thredded_version: 'v0.16.14'
 compositional_thredded_storage: 'local'
 compositional_thredded_backend_password: 'testpassword'
 compositional_thredded_mysql_script: |
-  CREATE DATABASE IF NOT EXISTS thredded CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-  GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON thredded.* TO 'thredded'@'%' IDENTIFIED BY '{{ compositional_thredded_backend_password }}';
+  CREATE DATABASE IF NOT EXISTS thredded_gem_production CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON thredded_gem_production.* TO 'thredded'@'%' IDENTIFIED BY '{{ compositional_thredded_backend_password }}';
