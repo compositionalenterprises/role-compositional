@@ -33,7 +33,6 @@
               networks:
                   - frontend
                   - backend
-              environment:
       networks:
           frontend:
               external: true
@@ -44,7 +43,3 @@
     restarted: "{{ compositional_vanilla_restarted }}"
   register: compositional_vanilla_output
   no_log: True
-
-- name: (vanilla) Symlink vanilla directory
-  shell: docker exec -i vanilla bash -c "ln -sT /var/www/html/ /var/www/html/vanilla"
-  when: compositional_vanilla.changed
