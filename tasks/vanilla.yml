@@ -1,0 +1,50 @@
+---
+- name: (vanilla) Nginx conf is deployed
+  template:
+    src: "nginx_vanilla.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/vanilla.conf"
+  notify: 'Restart Frontend'
+
+- name: (vanilla) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (vanilla) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_vanilla_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (vanilla) The latest vanilla service is built and {{ compositional_vanilla_state }}
+  docker_service:
+    project_name: vanilla
+    definition:
+      version: '3.6'
+      services:
+          vanilla:
+              image: "compositionalenterprises/vanilla:{{ compositional_vanilla_version }}"
+              container_name: vanilla
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_vanilla_storage }}/vanilla_uploads:/var/www/html/uploads"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_vanilla_build }}"
+    state: "{{ compositional_vanilla_state }}"
+    restarted: "{{ compositional_vanilla_restarted }}"
+  register: compositional_vanilla_output
+  no_log: True
+
+- name: (vanilla) Symlink vanilla directory
+  shell: docker exec -i vanilla bash -c "ln -sT /var/www/html/ /var/www/html/vanilla"
+  when: compositional_vanilla.changed
