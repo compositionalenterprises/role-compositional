@@ -18,6 +18,12 @@
     executable: '/bin/bash'
   no_log: True
 
+- name: (vanilla) Entrypoint script is copied into /usr/local/bin/
+  copy:
+    src: '../files/vanilla_entrypoint.sh'
+    dest: '/usr/local/bin/vanilla_entrypoint.sh'
+    mode: '0766'
+
 - name: (vanilla) The latest vanilla service is built and {{ compositional_vanilla_state }}
   docker_service:
     project_name: vanilla
@@ -28,8 +34,11 @@
               image: "compositionalenterprises/vanilla:{{ compositional_vanilla_version }}"
               container_name: vanilla
               restart: always
+              entrypoint: "/vanilla_entrypoint.sh"
               volumes:
                   - "/srv/{{ compositional_vanilla_storage }}/vanilla_uploads:/var/www/html/uploads"
+                  - "/srv/{{ compositional_vanilla_storage }}/vanilla_conf:/var/www/html/conf"
+                  - "/usr/local/bin/vanilla_entrypoint.sh:/vanilla_entrypoint.sh"
               networks:
                   - frontend
                   - backend
