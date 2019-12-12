@@ -1,0 +1,50 @@
+---
+- name: (wikijs) Nginx conf is deployed
+  template:
+    src: "nginx_wikijs.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/wikijs.conf"
+  notify: 'Restart Frontend'
+
+- name: (wikijs) The database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (wikijs) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_wikijs_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (wikijs) The latest wikijs service is built and {{ compositional_wikijs_state }}
+  docker_service:
+    project_name: wikijs
+    definition:
+      version: '3.6'
+      services:
+        wikijs:
+          image: "requarks/wiki:{{ compositional_wikijs_version }}"
+          container_name: wikijs
+          restart: always
+          networks:
+            - frontend
+            - backend
+          environment:
+            DB_TYPE: 'mariadb'
+            DB_HOST: 'database'
+            DB_PORT: '3306'
+            DB_USER: 'wikijs'
+            DB_PASS: "{{ compositional_wikijs_backend_password }}"
+            DB_NAME: 'wikijs'
+      networks:
+        frontend:
+          external: true
+        backend:
+          external: true
+    build: "{{ compositional_wikijs_build }}"
+    state: "{{ compositional_wikijs_state }}"
+    restarted: "{{ compositional_wikijs_restarted }}"
+  register: compositional_wikijs_output
+  no_log: True

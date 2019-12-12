@@ -133,3 +133,18 @@ compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.gi
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
+
+#
+# WikiJS
+#
+# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
+compositional_wikijs_build: yes
+compositional_wikijs_state: present
+compositional_wikijs_restarted: no
+compositional_wikijs_version: '2'
+compositional_wikijs_storage: 'local'
+compositional_wikijs_backend_password: 'testpassword'
+compositional_wikijs_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS wikijs;
+  GRANT ALL PRIVILEGES ON wikijs.* TO 'wikijs'@'%' IDENTIFIED BY '{{ compositional_wikijs_backend_password }}';
+
