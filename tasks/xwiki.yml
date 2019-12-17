@@ -1,0 +1,50 @@
+---
+- name: (xwiki) Nginx conf is deployed
+  template:
+    src: "nginx_xwiki.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/xwiki.conf"
+  notify: 'Restart Frontend'
+
+- name: (xwiki) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (xwiki) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_xwiki_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (xwiki) The latest xwkik service is built and {{ compositional_xwkik_state }}
+  docker_service:
+    project_name: xwiki
+    definition:
+      version: '3.6'
+      services:
+          kanboard:
+              image: "xwiki:{{ compositional_xwiki_version }}"
+              container_name: xwiki
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_kanboard_storage }}/xwiki_xwiki:/usr/local/xwiki"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DB_USER: 'xwiki'
+                DB_PASSWORD: "{{ compositional_xwiki_backend_password }}"
+                DB_HOST: 'database'
+                CONTEXT_PATH: '/xwiki'
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_xwiki_build }}"
+    state: "{{ compositional_xwiki_state }}"
+    restarted: "{{ compositional_xwiki_restarted }}"
+  register: compositional_xwiki_output
+  no_log: True
