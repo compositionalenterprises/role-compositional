@@ -18,7 +18,7 @@
     executable: '/bin/bash'
   no_log: True
 
-- name: (xwiki) The latest xwkik service is built and {{ compositional_xwkik_state }}
+- name: (xwiki) The latest xwiki service is built and {{ compositional_xwiki_state }}
   docker_service:
     project_name: xwiki
     definition:
@@ -37,7 +37,6 @@
                 DB_USER: 'xwiki'
                 DB_PASSWORD: "{{ compositional_xwiki_backend_password }}"
                 DB_HOST: 'database'
-                CONTEXT_PATH: '/xwiki'
       networks:
           frontend:
               external: true
