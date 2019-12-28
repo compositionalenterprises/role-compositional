@@ -8,12 +8,13 @@ compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_database_root_password: 'testpassword'
 compositional_services:
-  - 'kanboard'
-  - 'nextcloud'
-  - 'wordpress'
   - 'bitwarden'
   - 'firefly'
+  - 'kanboard'
   - 'manager'
+  - 'nextcloud'
+  - 'rundeck'
+  - 'wordpress'
 
 #
 # Environment Vars
