@@ -36,7 +36,7 @@
                   - backend
 
               environment:
-                RUNDECK_GRAILS_URL: "http://{{ environment_domain }}/rundeck"
+                RUNDECK_GRAILS_URL: "https://{{ environment_domain }}/rundeck"
                 RUNDECK_SERVER_FORWARDED: 'true'
                 RUNDECK_SERVER_CONTEXTPATH: '/rundeck'
                 RUNDECK_DATABASE_DRIVER: 'com.mysql.jdbc.Driver'
