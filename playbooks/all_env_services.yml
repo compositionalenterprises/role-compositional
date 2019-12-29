@@ -9,6 +9,11 @@
   become: yes
   vars:
     ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - role: swapfile
+      swapfile_size: '4G'
+
   tasks:
     - name: Install Python on Ubuntu or Debian servers
       shell: apt update -y && apt install -y python
@@ -29,7 +34,7 @@
   become: yes
   vars_files:
     - '../environment/group_vars/compositional/all.yml'
-      #- '../environment/group_vars/compositional/vault.yml'
+    - '../environment/group_vars/compositional/vault.yml'
     - '../vars/all.yml'
   vars:
     docker__pip_packages:
@@ -45,6 +50,8 @@
       - domains:
         - "{{ environment_domain }}"
   roles:
-    - { role: docker }
-    - { role: certbot }
-    - { role: compositional, tags: ['comp'], ansible_python_interpreter: "/usr/bin/env python-docker"}
+    - role: docker
+    - role: certbot
+    - role: compositional
+      tags: ['comp']
+      ansible_python_interpreter: "/usr/bin/env python-docker"

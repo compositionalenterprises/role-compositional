@@ -4,7 +4,9 @@
   name: docker
 - src: git@gitlab.com:smacz/role-compositional
   scm: git
-  version: stable-1.3
+  version: v2.1.0
   name: compositional
 - src: geerlingguy.certbot
   name: certbot
+- src: oefenweb.swapfile
+  name: swapfile

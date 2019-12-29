@@ -9,7 +9,8 @@
   connection: local
   vars_files:
     - '../environment/group_vars/compositional/all.yml'
-      #- '../environment/group_vars/compositional/vault.yml'
+    - '../environment/group_vars/compositional/vault.yml'
+    - '../environment/group_vars/all/all.yml'
     - '../vars/all.yml'
 
   pre_tasks:
