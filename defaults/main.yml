@@ -8,12 +8,13 @@ compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_database_root_password: 'testpassword'
 compositional_services:
-  - 'kanboard'
-  - 'nextcloud'
-  - 'wordpress'
   - 'bitwarden'
   - 'firefly'
+  - 'kanboard'
   - 'manager'
+  - 'nextcloud'
+  - 'rundeck'
+  - 'wordpress'
 
 #
 # Environment Vars
@@ -133,3 +134,16 @@ compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.gi
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
+
+#
+# Rundeck
+#
+# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
+compositional_rundeck_build: yes
+compositional_rundeck_state: present
+compositional_rundeck_version: '3.1'
+compositional_rundeck_storage: 'local'
+compositional_rundeck_backend_password: 'testpassword'
+compositional_rundeck_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS rundeck;
+  GRANT ALL PRIVILEGES ON rundeck.* TO 'rundeck'@'%' IDENTIFIED BY '{{ compositional_rundeck_backend_password }}';
