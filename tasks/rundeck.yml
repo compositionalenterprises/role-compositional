@@ -25,7 +25,7 @@
       version: '3.6'
       services:
           rundeck:
-              image: "rundeck/rundeck:{{ compositional_rundeck_version }}"
+              image: "compositionalenterprises/rundeck:{{ compositional_rundeck_version }}"
               container_name: rundeck
               restart: always
               volumes:
