@@ -54,13 +54,3 @@
     restarted: "{{ compositional_bookstack_restarted }}"
   register: compositional_bookstack_output
   no_log: True
-
-- name: (bookstack) Symlink bookstack directory
-  shell: docker exec -i bookstack bash -c "ln -sT /var/www/app/ /var/www/app/bookstack"
-  when: compositional_bookstack_output.changed
-
-- name: (bookstack) nginx.conf is deployed
-  copy:
-    src: 'bookstack_nginx.conf'
-    dest: '/var/lib/docker/volumes/bookstack_nginx/_data/nginx.conf'
-  notify: 'Restart bookstack'
