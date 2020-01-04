@@ -1,0 +1,66 @@
+---
+- name: (bookstack) Nginx conf is deployed
+  template:
+    src: "nginx_bookstack.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/bookstack.conf"
+  notify: 'Restart Frontend'
+
+- name: (bookstack) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (bookstack) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_bookstack_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (bookstack) The latest bookstack service is built and {{ compositional_bookstack_state }}
+  docker_service:
+    project_name: bookstack
+    definition:
+      version: '3.6'
+      services:
+          bookstack:
+              image: "solidnerd/bookstack:{{ compositional_bookstack_version }}"
+              container_name: bookstack
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_bookstack_storage }}/bookstack_uploads:/var/www/bookstack/public/uploads"
+                  - "/srv/{{ compositional_bookstack_storage }}/bookstack_storage:/var/www/bookstack/public/storage"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DB_HOST: 'database'
+                DB_DATABASE: 'bookstack'
+                DB_USERNAME: 'bookstack'
+                DB_PASSWORD: "{{ compositional_bookstack_backend_password }}"
+                DISABLE_EXTERNAL_SERVICES: 'true'
+                APP_URL: "https://{{ environment_domain }}/bookstack"
+
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+      volumes:
+        nginx:
+    build: "{{ compositional_bookstack_build }}"
+    state: "{{ compositional_bookstack_state }}"
+    restarted: "{{ compositional_bookstack_restarted }}"
+  register: compositional_bookstack_output
+  no_log: True
+
+- name: (bookstack) Symlink bookstack directory
+  shell: docker exec -i bookstack bash -c "ln -sT /var/www/app/ /var/www/app/bookstack"
+  when: compositional_bookstack_output.changed
+
+- name: (bookstack) nginx.conf is deployed
+  copy:
+    src: 'bookstack_nginx.conf'
+    dest: '/var/lib/docker/volumes/bookstack_nginx/_data/nginx.conf'
+  notify: 'Restart bookstack'

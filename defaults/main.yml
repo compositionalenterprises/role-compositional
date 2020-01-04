@@ -138,12 +138,25 @@ compositional_jekyll_extra_commands: |
 #
 # Rundeck
 #
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_rundeck_build: yes
 compositional_rundeck_state: present
+compositional_rundeck_restarted: yes
 compositional_rundeck_version: '3.1'
 compositional_rundeck_storage: 'local'
 compositional_rundeck_backend_password: 'testpassword'
 compositional_rundeck_mysql_script: |
   CREATE DATABASE IF NOT EXISTS rundeck;
   GRANT ALL PRIVILEGES ON rundeck.* TO 'rundeck'@'%' IDENTIFIED BY '{{ compositional_rundeck_backend_password }}';
+
+#
+# BookStack
+#
+compositional_bookstack_build: yes
+compositional_bookstack_state: present
+compositional_bookstack_restarted: yes
+compositional_bookstack_version: '0.27.5'
+compositional_bookstack_storage: 'local'
+compositional_bookstack_backend_password: 'testpassword'
+compositional_bookstack_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS bookstack;
+  GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%' IDENTIFIED BY '{{ compositional_bookstack_backend_password }}';
