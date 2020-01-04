@@ -9,6 +9,7 @@ compositional_backend_service: 'mariadb'
 compositional_database_root_password: 'testpassword'
 compositional_services:
   - 'bitwarden'
+  - 'bookstack'
   - 'firefly'
   - 'kanboard'
   - 'manager'
