@@ -1,5 +1,5 @@
 #
-# This playbook sets up a Kanboard instance on either a single host or on a multi-tiered deployment.
+# This playbook deploys a DigitalOcean droplet
 #
 #   ansible-playbook -i environment/hosts.yml playbooks/site.yml
 #
@@ -41,7 +41,7 @@
       digital_ocean_droplet:
         state: present
         name: "{{ do_object_name }}"
-        size: 's-1vcpu-1gb'
+        size: "{{ do_droplet_size }}"
         oauth_token: "{{ oauth_token }}"
         region: 'nyc3'
         image: 'ubuntu-16-04-x64'
@@ -49,4 +49,3 @@
         private_networking: True
         wait_timeout: 500
       register: my_droplet
-
