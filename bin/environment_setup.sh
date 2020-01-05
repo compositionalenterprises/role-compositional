@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 function usage() {
         cat << EOF
@@ -71,7 +72,7 @@ cd "${jobexecid}"
 # Clone the environment down giving the domain we're working on
 # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
 # We also want to insert in the vault pass at this time too.
-environment_domain=$(sed 's/\./_/g' "${domain}")
+environment_domain=$(sed 's/\./_/g' <<<"${domain}")
 git clone https://gitlab.com/smacz/environment-"${environment_domain}".git environment
 # TODO: Make this a URL call somewhere in the future.
 echo "${vaultpass}" > environment/.vault_pass
