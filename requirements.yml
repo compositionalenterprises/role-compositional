@@ -4,7 +4,7 @@
   name: docker
 - src: git@gitlab.com:smacz/role-compositional
   scm: git
-  version: tags/v2.2.0
+  version: v2.2.0
   name: compositional
 - src: geerlingguy.certbot
   name: certbot
