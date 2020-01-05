@@ -4,7 +4,7 @@
   name: docker
 - src: https://gitlab.com/smacz/play-compositional.git
   scm: git
-  version: v2.2.0
+  version: tags/v2.2.0
   name: compositional
 - src: geerlingguy.certbot
   name: certbot
