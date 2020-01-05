@@ -1,10 +1,10 @@
-- name: Migrate
+- name: Fact Gathering
   hosts: localhost
   connection: local
   gather_facts: False
   vars_files:
     - '../environment/group_vars/compositional/all.yml'
-      #- '../environment/group_vars/compositional/vault.yml'
+    - '../environment/group_vars/compositional/vault.yml'
     - '../vars/all.yml'
 
   vars_prompt:
@@ -22,9 +22,11 @@
         oauth_token: "{{ oauth_token }}"
       no_log: True
 
-- import_playbook: deploy_new_environment_domain_droplet.yml
+- name: Deploy Droplet
+  import_playbook: deploy_new_environment_domain_droplet.yml
 
-- hosts: localhost
+- name: Inventory Management
+  hosts: localhost
   connection: local
   gather_facts: False
   tasks:
@@ -33,7 +35,9 @@
         name: "{{ hostvars['localhost']['my_droplet']['data']['ip_address'] }}"
         group: 'new'
 
-- import_playbook: ./deploy_new_block_storage_volume.yml
+- name: Block Storage
+  import_playbook: ./deploy_new_block_storage_volume.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
-- import_playbook: all_env_services.yml
+- name: Setup Services
+  import_playbook: all_env_services.yml
