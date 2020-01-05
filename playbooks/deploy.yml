@@ -37,7 +37,7 @@
 
 - name: Establish Connection
   gather_facts: False
-  hosts: compositional
+  hosts: new
   tasks:
     - name: Establish an ssh connection once the droplet is ready for it
       wait_for_connection:
