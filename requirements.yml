@@ -2,7 +2,7 @@
 - src: nickjj.docker
   version: 'v1.8.0'
   name: docker
-- src: https://gitlab.com/smacz/play-compositional.git
+- src: git@gitlab.com:smacz/role-compositional
   scm: git
   version: tags/v2.2.0
   name: compositional
