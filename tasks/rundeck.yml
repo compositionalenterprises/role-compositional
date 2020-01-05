@@ -54,3 +54,13 @@
     build: "{{ compositional_rundeck_build }}"
     state: "{{ compositional_rundeck_state }}"
   register: compositional_rundeck_output
+
+- name: Ensure correct ownership of config directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: 1000
+  loop:
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_data"
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_config"
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs"

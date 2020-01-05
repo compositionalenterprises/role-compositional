@@ -148,6 +148,7 @@ compositional_rundeck_backend_password: 'testpassword'
 compositional_rundeck_mysql_script: |
   CREATE DATABASE IF NOT EXISTS rundeck;
   GRANT ALL PRIVILEGES ON rundeck.* TO 'rundeck'@'%' IDENTIFIED BY '{{ compositional_rundeck_backend_password }}';
+compositional_rundeck_ansible_version: '2.8'
 
 #
 # BookStack
