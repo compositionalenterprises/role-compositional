@@ -7,9 +7,9 @@ Usage:
         $ ${0} [OPTION] ...
 
 Options:
-        -i | --jobexecid
+        -j | --jobuuid
                 REQUIRED
-                The ID of the job execution
+                A unique ID for this run
         -d | --domain
                 REQUIRED
                 The domain to of the environment
@@ -17,7 +17,7 @@ Options:
                 REQUIRED
                 The vault password
         -h | --help
-                Optional
+                OPTIONAL
                 Show this usage message and exit
 EOF
 }
@@ -26,9 +26,9 @@ while [[ "${1}" != "" ]]; do
         if [[ "${1}" =~ '-' ]]; then
                 # Check for flags
                 case "${1}" in
-                        -i | --jobexecid )
+                        -j | --jobuuid )
                                 shift
-                                jobexecid="${1}"
+                                jobuuid="${1}"
                                 ;;
                         -d | --domain )
                                 shift
@@ -54,7 +54,7 @@ while [[ "${1}" != "" ]]; do
 done
 
 # Make sure the necessary vars are defined
-if [[ -z "${jobexecid}" ]]; then
+if [[ -z "${jobuuid}" ]]; then
         usage
         exit 5
 elif [[ -z "${domain}" ]]; then
@@ -66,8 +66,8 @@ elif [[ -z "${vaultpass}" ]]; then
 fi
 
 # Clone into the unique job exec id for this run
-git clone https://gitlab.com/smacz/play-compositional.git "${jobexecid}"
-cd "${jobexecid}"
+git clone https://gitlab.com/smacz/play-compositional.git "${jobuuid}"
+cd "${jobuuid}"
 
 # Clone the environment down giving the domain we're working on
 # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
