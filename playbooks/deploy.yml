@@ -23,7 +23,7 @@
       no_log: True
 
 - name: Deploy Droplet
-  import_playbook: deploy_new_environment_domain_droplet.yml
+  import_playbook: create_droplet.yml
 
 - name: Inventory Management
   hosts: localhost
@@ -43,8 +43,8 @@
       wait_for_connection:
 
 - name: Block Storage
-  import_playbook: ./deploy_new_block_storage_volume.yml
+  import_playbook: block_storage.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Infrastructure Services
-  import_playbook: all_env_services.yml
+  import_playbook: infrastructure_services.yml
