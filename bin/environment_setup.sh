@@ -66,13 +66,13 @@ elif [[ -z "${vaultpass}" ]]; then
 fi
 
 # Clone into the unique job exec id for this run
-git clone https://gitlab.com/smacz/play-compositional.git "${jobuuid}"
+git clone https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
 cd "${jobuuid}"
 
 # Clone the environment down giving the domain we're working on
 # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
 # We also want to insert in the vault pass at this time too.
 environment_domain=$(sed 's/\./_/g' <<<"${domain}")
-git clone https://gitlab.com/smacz/environment-"${environment_domain}".git environment
+git clone https://gitlab.com/compositionalenterprises/environment-"${environment_domain}".git environment
 # TODO: Make this a URL call somewhere in the future.
 echo "${vaultpass}" > environment/.vault_pass
