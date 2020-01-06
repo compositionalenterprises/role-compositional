@@ -1,0 +1,6 @@
+---
+oauth_token: "{{ vault_oauth_token }}"
+do_droplet_size: 's-1vcpu-1gb'
+
+cloudns_api_user: 'ourcomposebot'
+cloudns_api_pass: "{{ vault_cloudns_api_pass }}"
