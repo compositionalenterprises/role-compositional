@@ -25,13 +25,12 @@
   hosts: new
   tasks:
     - name: Add Droplet to DNS while it finishes spinning up
-      script:
-        cmd: >
-          ../bin/cloudns.py
-            --apiuser "{{ cloudns_api_user }}"
-            --apipass "{{ cloudns_api_pass }}"
-            --address "{{ inventory_hostname }}"
-            --type 'add'
+      command: >
+        ../bin/cloudns.py 
+        --apiuser "{{ cloudns_api_user }}" 
+        --apipass "{{ cloudns_api_pass }}" 
+        --address "{{ inventory_hostname }}" 
+        --type 'add'
       delegate_to: localhost
 
     - name: Establish an ssh connection once the droplet is ready for it
