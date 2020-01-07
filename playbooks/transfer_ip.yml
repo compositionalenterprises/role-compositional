@@ -1,28 +1,7 @@
 - name: DO VM Setup
   hosts: localhost
   connection: local
-  vars_files:
-    - '../environment/group_vars/compositional/all.yml'
-      #- '../environment/group_vars/compositional/vault.yml'
-    - '../vars/all.yml'
-
-  pre_tasks:
-    - name: Prompt for oauth token
-      block:
-        - pause:
-            prompt: "Enter your OAUTH Token"
-            echo: no
-          register: oauth_token_prompt
-          no_log: True
-
-        - set_fact:
-            oauth_token: "{{ oauth_token_prompt['user_input'] }}"
-          no_log: True
-
-      when: hostvars['localhost']['oauth_token'] is not defined
-
   tasks:
-
     - name: Get the facts about the floating IPs
       digital_ocean_floating_ip_facts:
         oauth_token: "{{ oauth_token }}"

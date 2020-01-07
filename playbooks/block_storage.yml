@@ -2,30 +2,13 @@
 - name: Deploy new block storage volume
   hosts: localhost
   connection: local
-  vars_files:
-    - '../environment/group_vars/compositional/all.yml'
-      #- '../environment/group_vars/compositional/vault.yml'
-    - '../vars/all.yml'
 
   pre_tasks:
     - name: Gather the values for all of the storage variables
       set_fact:
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
 
-    - name: Prompt for oauth token
-      block:
-        - pause:
-            prompt: "Enter your OAUTH Token"
-            echo: no
-          register: oauth_token_prompt
-
-        - set_fact:
-            oauth_token: oauth_token_prompt['user_input']
-          no_log: True
-
-      when: not hostvars['localhost']['oauth_token']
-
-    - name: Prompt for oauth token
+    - name: Prompt for DO Object Name
       block:
         - pause:
             prompt: "Enter the DO Object Name"

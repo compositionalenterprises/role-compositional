@@ -2,20 +2,10 @@
   hosts: localhost
   connection: local
   gather_facts: False
-  vars_prompt:
-    - name: oauth_token
-      prompt: "Enter your OAUTH Token"
-      private: True
-
   pre_tasks:
     - name: Gather the values for all of the storage variables
       set_fact:
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
-
-  tasks:
-    - set_fact:
-        oauth_token: "{{ oauth_token }}"
-      no_log: True
 
 - name: Deploy Droplet
   import_playbook: create_droplet.yml

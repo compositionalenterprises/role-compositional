@@ -9,19 +9,6 @@
   connection: local
 
   pre_tasks:
-    - name: Prompt for oauth token
-      block:
-        - pause:
-            prompt: "Enter your OAUTH Token"
-            echo: no
-          register: oauth_token_prompt
-
-        - set_fact:
-            oauth_token: "{{ oauth_token_prompt['user_input'] }}"
-          no_log: True
-
-      when: hostvars['localhost']['oauth_token'] is not defined
-
     - name: Get SSH key facts
       digital_ocean_sshkey_facts:
         oauth_token: "{{ oauth_token }}"
