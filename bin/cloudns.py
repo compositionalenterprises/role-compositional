@@ -36,7 +36,7 @@ def change_dns(args):
     change_type = args['type']
     if change_type == 'modify':
         change_type = 'mod'
-    url = f"https://api.cloudns.net/dns/{change_type}-record.json"
+    url = "https://api.cloudns.net/dns/{}-record.json".format(change_type)
     params = {
             'sub-auth-user': args['apiuser'],
             'auth-password': args['apipass'],
