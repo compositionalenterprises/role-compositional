@@ -89,7 +89,7 @@ cd "${jobuuid}"
 # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
 # We also want to insert in the vault pass at this time too.
 environment_domain=$(sed 's/\./_/g' <<<"${domain}")
-git clone https://gitlab.com/compositionalenterprises/environment-"${environment_domain}".git environment
+git clone git@gitlab.com:compositionalenterprises/environment-"${environment_domain}".git environment
 # TODO: Make this a URL call somewhere in the future.
 echo "${envvaultpass}" > environment/.vault_pass
 echo "${playvaultpass}" > .vault_pass
