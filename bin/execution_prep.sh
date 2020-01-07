@@ -94,5 +94,3 @@ git clone git@gitlab.com:compositionalenterprises/environment-${environment_doma
 # TODO: Make this a URL call somewhere in the future.
 echo "${envvaultpass}" > environment/.vault_pass
 echo "${playvaultpass}" > .vault_pass
-
-$HOME/.local/bin/ansible-vault view playbooks/group_vars/all/vault.yml
