@@ -30,6 +30,7 @@
         --apiuser "{{ cloudns_api_user }}" 
         --apipass "{{ cloudns_api_pass }}" 
         --address "{{ inventory_hostname }}" 
+        --fqdn "{{ environment_domain }}" 
         --type 'add'
       delegate_to: localhost
 
