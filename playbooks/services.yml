@@ -32,10 +32,6 @@
 - name: Roles in Common
   hosts: all
   become: yes
-  vars_files:
-    - '../environment/group_vars/compositional/all.yml'
-    - '../environment/group_vars/compositional/vault.yml'
-    - '../vars/all.yml'
   vars:
     docker__pip_packages:
       - "docker"

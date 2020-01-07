@@ -60,10 +60,6 @@
 - name: Mount new volume onto droplet
   gather_facts: False
   hosts: new
-  vars_files:
-    - '../environment/group_vars/compositional/all.yml'
-      #- '../environment/group_vars/compositional/vault.yml'
-    - '../vars/all.yml'
   pre_tasks:
     - name: Wait for connections to become available
       wait_for_connection:
