@@ -50,10 +50,12 @@ while [[ "${1}" != "" ]]; do
                                 exit
                                 ;;
                         * )
+                                >&2 echo "Invalid Argument: \'${1}\'"
                                 usage
                                 exit 2
                 esac
         else
+                >&2 echo "Unknown Positional Argument: \'${1}\'"
                 usage
                 exit 3
         fi
