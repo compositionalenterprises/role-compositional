@@ -13,9 +13,12 @@ Options:
         -d | --domain
                 REQUIRED
                 The domain to of the environment
-        -v | --vaultpass
+        -e | --envvaultpass
                 REQUIRED
-                The vault password
+                The environment's vault password
+        -p | --playsvaultpass
+                REQUIRED
+                The play's vault password
         -h | --help
                 OPTIONAL
                 Show this usage message and exit
@@ -34,9 +37,13 @@ while [[ "${1}" != "" ]]; do
                                 shift
                                 domain="${1}"
                                 ;;
-                        -v | --vaultpass )
+                        -p | --playvaultpass )
                                 shift
-                                vaultpass="${1}"
+                                playvaultpass="${1}"
+                                ;;
+                        -e | --envvaultpass )
+                                shift
+                                envvaultpass="${1}"
                                 ;;
                         -h | --help )
                                 usage
@@ -55,12 +62,19 @@ done
 
 # Make sure the necessary vars are defined
 if [[ -z "${jobuuid}" ]]; then
+        >&2 echo "No Job UUID Specified"
         usage
         exit 5
 elif [[ -z "${domain}" ]]; then
+        >&2 echo "No Domain Specified"
         usage
         exit 6
-elif [[ -z "${vaultpass}" ]]; then
+elif [[ -z "${envvaultpass}" ]]; then
+        >&2 echo "No Environment Vault Password Specified"
+        usage
+        exit 7
+elif [[ -z "${playvaultpass}" ]]; then
+        >&2 echo "No Play Vault Password Specified"
         usage
         exit 7
 fi
@@ -75,4 +89,5 @@ cd "${jobuuid}"
 environment_domain=$(sed 's/\./_/g' <<<"${domain}")
 git clone https://gitlab.com/compositionalenterprises/environment-"${environment_domain}".git environment
 # TODO: Make this a URL call somewhere in the future.
-echo "${vaultpass}" > environment/.vault_pass
+echo "${envvaultpass}" > environment/.vault_pass
+echo "${playvaultpass}" > .vault_pass
