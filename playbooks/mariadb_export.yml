@@ -4,9 +4,9 @@
     - name: Backups directory exists
       file:
         path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
-        state: directory
-        owner: 999
-        group: docker
+        state: 'directory'
+        owner: '999'
+        group: 'docker'
         mode: 0740
 
     - name: Perform mysqldump
