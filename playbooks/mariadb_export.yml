@@ -1,12 +1,9 @@
 ---
 - hosts: compositional
-  vars_files:
-    - '../roles/compositional/defaults/main.yml'
-
   tasks:
     - name: Backups directory exists
       file:
-        path: '/srv/{{ compositional_mariadb_storage }}/database_mysql/backups'
+        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
         state: directory
         owner: 999
         group: docker
