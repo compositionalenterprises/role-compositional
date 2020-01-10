@@ -1,0 +1,23 @@
+---
+- hosts: compositional
+  tasks:
+    - name: Backups directory exists
+      file:
+        path: '/srv/{{ compositional_mariadb_storage }}/database_mysql/backups'
+        state: directory
+        owner: 999
+        group: docker
+        mode: 740
+
+    - name: Perform mysqldump
+      shell: "
+        docker exec -it mariadb bash -c '
+          mysqldump -u root -p{{ compositional_database_root_password }}
+            --single-transaction
+            --quick
+            --lock-tables=false
+            > /var/lib/mysql/backups/full-backup-\
+              {{ ansible_date_time['date'] }}-\
+              {{ ansible_date_time['hour'] }}-\
+              {{ ansible_date_time['minute'] }}'
+        "
