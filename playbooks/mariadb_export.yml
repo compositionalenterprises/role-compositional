@@ -16,6 +16,7 @@
       shell: "
         docker exec -it database bash -c '
           mysqldump -u root -p{{ compositional_database_root_password }}
+            --all-databases
             --single-transaction
             --quick
             --lock-tables=false
