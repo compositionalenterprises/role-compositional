@@ -7,7 +7,7 @@
         state: directory
         owner: 999
         group: docker
-        mode: 740
+        mode: 0740
 
     - name: Perform mysqldump
       shell: "
