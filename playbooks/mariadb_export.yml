@@ -14,7 +14,7 @@
 
     - name: Perform mysqldump
       shell: "
-        docker exec -it mariadb bash -c '
+        docker exec -it database bash -c '
           mysqldump -u root -p{{ compositional_database_root_password }}
             --single-transaction
             --quick
