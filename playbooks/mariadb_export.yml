@@ -1,5 +1,8 @@
 ---
 - hosts: compositional
+  vars_files:
+    - '../roles/compositional/defaults/main.yml'
+
   tasks:
     - name: Backups directory exists
       file:
