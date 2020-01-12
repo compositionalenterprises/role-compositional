@@ -27,6 +27,7 @@
   hosts: compositional
   tasks:
     - name: Add Droplet to DNS while it finishes spinning up
+       # Yes, these lines should end with trailing whitespace
       command: >
         ../bin/cloudns.py 
         --apiuser "{{ cloudns_api_user }}" 
@@ -36,7 +37,7 @@
         --type 'add'
       delegate_to: localhost
 
-    - name: Establish an ssh connection once the droplet is ready for it
+    - name: Establish an ssh connection
       wait_for_connection:
 
 - name: Block Storage
