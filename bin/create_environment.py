@@ -146,7 +146,7 @@ def create_vaulted_passwords(local_repo, service, vault_pass, binpath):
         else:
             # Create the vault file entirely from scratch
             ansible_vault_command = 'ansible-vault'
-            if length(binpath) != 0:
+            if len(binpath) != 0:
                 ansible_vault_command = "{}/ansible-vault".format(binpath)
             create_vault_command = [
                     ansible_vault_command,
