@@ -11,7 +11,7 @@
   pre_tasks:
     - name: Get SSH key facts
       digital_ocean_sshkey_facts:
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
       register: ssh_key_facts
 
     - name: Set environment and date-formatted name for things
@@ -24,7 +24,7 @@
         state: present
         name: "{{ do_object_name }}"
         size: "{{ do_droplet_size }}"
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
         region: 'nyc3'
         image: 'ubuntu-16-04-x64'
         ssh_keys: "{{ ssh_key_facts['ansible_facts']['ssh_keys'] | map(attribute='id') | list }}"

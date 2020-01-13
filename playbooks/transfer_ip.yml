@@ -4,12 +4,12 @@
   tasks:
     - name: Get the facts about the floating IPs
       digital_ocean_floating_ip_facts:
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
         timeout: 300
       register: floating_ips
 
     - name: Run get droplets info script
-      script: ../bin/get_droplets_of_same_domain.py --token {{ oauth_token }}
+      script: ../bin/get_droplets_of_same_domain.py --token {{ do_oauth_token }}
       register: my_droplets
 
     - name: Register the oldest and newest droplets of the domain
@@ -31,6 +31,6 @@
         droplet_id: "{{ newest_droplet.split()[-1] }}"
         ip: "{{ item['ip'] }}"
         state: present
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
       when: item['droplet']['id'] == oldest_droplet.split()[-1]
       loop: "{{ floating_ips['floating_ips'] }}"

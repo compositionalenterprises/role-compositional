@@ -4,7 +4,7 @@
   connection: local
   tasks:
     - name: Run get droplets info script
-      script: ../bin/get_droplets_of_same_domain.py --token {{ oauth_token }}
+      script: ../bin/get_droplets_of_same_domain.py --token {{ do_oauth_token }}
       register: my_droplets
 
     - name: Register the oldest droplet of the domain
@@ -22,13 +22,13 @@
 
     - name: Register block storage volume
       digital_ocean_volume_facts:
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
       register: block_storage
 
     - name: Get the facts about the floating IPs
       # We're registering it now so we don't have to finagle with the timing of how long the delay is before it reports as unassigned
       digital_ocean_floating_ip_facts:
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
         timeout: 300
       register: floating_ips
 
@@ -36,7 +36,7 @@
       digital_ocean_floating_ip:
         ip: "{{ item['ip'] }}"
         state: absent
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
       when: item['droplet']['id'] == oldest_droplet.split()[-1] | int
       loop: "{{ floating_ips['floating_ips'] }}"
 
@@ -48,7 +48,7 @@
             state: absent
             volume_name: "{{ oldest_droplet.split()[0] }}"
             region: 'nyc3'
-            api_token: "{{ oauth_token }}"
+            api_token: "{{ do_oauth_token }}"
             droplet_id: "{{ oldest_droplet.split()[-1] }}"
 
         - name: Delete associated block storage volume
@@ -57,7 +57,7 @@
             state: absent
             volume_name: "{{ oldest_droplet.split()[0] }}"
             region: 'nyc3'
-            api_token: "{{ oauth_token }}"
+            api_token: "{{ do_oauth_token }}"
 
       when: block_storage['data'] | selectattr('droplet_ids', 'equalto', oldest_droplet.split()[-1]) | list | count > 0
 
@@ -67,4 +67,4 @@
         # in the last spot in that space-separated string
         id: "{{ oldest_droplet.split()[-1] }}"
         state: absent
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"

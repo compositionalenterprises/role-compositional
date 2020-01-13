@@ -44,7 +44,7 @@
             state: present
             command: create
             volume_name: "{{ do_object_name }}"
-            api_token: "{{ oauth_token }}"
+            api_token: "{{ do_oauth_token }}"
             region: 'nyc3'
             block_size: 10
 
@@ -52,7 +52,7 @@
           digital_ocean_block_storage:
             state: present
             command: attach
-            api_token: "{{ oauth_token }}"
+            api_token: "{{ do_oauth_token }}"
             volume_name: "{{ do_object_name }}"
             region: 'nyc3'
             droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"

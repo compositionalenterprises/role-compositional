@@ -1,5 +1,5 @@
 ---
-oauth_token: "{{ vault_oauth_token }}"
+do_oauth_token: "{{ vault_oauth_token }}"
 do_droplet_size: 's-1vcpu-1gb'
 
 cloudns_api_user: 'ourcomposebot'

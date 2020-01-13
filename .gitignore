@@ -4,3 +4,4 @@ environment
 .retry_files/
 site-data/
 .vault_pass
+__pycache__/

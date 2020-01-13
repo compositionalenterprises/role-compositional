@@ -4,7 +4,7 @@
   tasks:
     - name: ssh_key_facts
       digital_ocean_sshkey_facts:
-        oauth_token: "{{ oauth_token }}"
+        oauth_token: "{{ do_oauth_token }}"
       register: ssh_key_facts
 
     - debug:
