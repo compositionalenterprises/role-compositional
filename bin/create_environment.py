@@ -116,7 +116,7 @@ def create_pass(pass_len=16):
     return new_pass
 
 
-def create_vaulted_passwords(local_repo, service, vault_pass):
+def create_vaulted_passwords(local_repo, service, vault_pass, binpath):
     """
     Set up the passwords for the services that we need to vault
     """
@@ -145,8 +145,11 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
             vault_string = vault.dump(vault_content).decode()
         else:
             # Create the vault file entirely from scratch
+            ansible_vault_command = 'ansible-vault'
+            if length(binpath) != 0:
+                ansible_vault_command = "{}/ansible-vault".format(binpath)
             create_vault_command = [
-                    'ansible-vault',
+                    ansible_vault_command,
                     'encrypt_string',
                     '--vault-password-file',
                     '/tmp/vault_pass_file',
@@ -219,6 +222,9 @@ def parse_args():
                         help='''The list of services that should be deployed to
                         this instance, in comma-separated form''',
                         required=False)
+    parser.add_argument('-b', '--binpath',
+                        help='Path to the ansible bin directory',
+                        required=False)
 
     args = vars(parser.parse_args())
 
@@ -264,7 +270,8 @@ def main():
 
     # Add passwords for all of the services that we need
     for service in args['services']:
-        create_vaulted_passwords(local_repo, service, vault_pass)
+        create_vaulted_passwords(local_repo, service, vault_pass,
+                args['binpath'])
 
     put_repo_in_gitlab(local_repo, args['domain'])
 
