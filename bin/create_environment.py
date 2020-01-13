@@ -87,6 +87,14 @@ def put_repo_in_gitlab(local_repo, domain):
             'visibility': 'private'
             })
 
+    # Add all files
+    subprocess.run(['git', 'add', '-A', '.'],
+            cwd="/tmp/{}".format(domained_environment))
+
+    # Commit those files
+    subprocess.run(['git', 'commit', '-m', 'Setup Commit'],
+            cwd="/tmp/{}".format(domained_environment))
+
     # Push the repo up
     subprocess.run(['git', 'push', '-u', 'origin', 'master'],
             cwd="/tmp/{}".format(domained_environment))
@@ -119,7 +127,7 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
     for password_var in SERVICES[service]['passwords'].keys():
         # Write the reference to the password in the vars file
         with open("{}/all.yml".format(vars_dir), 'a') as vars_file:
-            vars_file.write("{0}: vault_{0}".format(password_var))
+            vars_file.write('\n{0}: "{{ vault_{0} }}"'.format(password_var))
 
         # Set the password length
         pass_len = 16
