@@ -13,16 +13,19 @@
 
 - import_playbook: 'create_droplet.yml'
 
-- hosts: localhost
-  connection: local
+- hosts: all
   gather_facts: False
   tasks:
     - name: Add existing droplet to old group
       add_host:
-        name: "{{ groups['compositional'][1] }}"
+        name: "{{ groups['compositional'][0] }}"
         groups:
           - 'old'
 
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
     - name: Add newly-created droplet to new and compositional groups
       add_host:
         name: "{{ hostvars['localhost']['my_droplet']['data']['ip_address'] }}"
