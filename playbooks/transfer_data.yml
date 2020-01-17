@@ -37,13 +37,6 @@
 
     - name: Finish Sync on compositional server
       block:
-        - name: Perform a mariabackup for the database
-          shell: 'docker exec -i database bash -c "mariabackup ----user=root --password={{ compositional_database_root_password }}'
-          no_log: True
-          loop:
-            - 'mariabackup --backup --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
-            - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
-
         - name: rsync directories over
           shell: rsync -ave "ssh -i /root/.ssh/id_ed25519 -o StrictHostKeyChecking=no" {{ item.src }} root@{{ groups['new'][0] }}:{{ item.dest }}
           loop:

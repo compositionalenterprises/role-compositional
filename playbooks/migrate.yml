@@ -48,7 +48,7 @@
 
     - name: Set fact for most recent mysql backup file
       set_fact:
-        latest_full_backup: full_backups['files'] | map(attribute='path') | map('regex_replace', '^.*\/', '') | list | sort | last
+        latest_full_backup: "{{ full_backups['files'] | map(attribute='path') | map('regex_replace', '^.*\/', '') | list | sort | last }}"
 
     - name: Load MariaDB Backup
       shell: "

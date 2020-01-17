@@ -29,4 +29,3 @@
       loop:
         - 'mariabackup --backup --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
         - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
-
