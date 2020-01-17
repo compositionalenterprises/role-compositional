@@ -8,7 +8,7 @@
 
     - name: Backups directory exists
       file:
-        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/'
+        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/{{ item }}'
         state: 'directory'
         owner: '999'
         group: 'docker'
