@@ -90,7 +90,7 @@
     - name: Replace the old server's IP with the new server's IP in the hosts.yml file
       local_action:
         module: shell
-        cmd: ../bin/replace_host.py -i "{{ inventory_hostname }}" -f "{{ hosts_realpath['stdout'].strip() }}"
+        cmd: ../bin/replace_host.py -i "{{ groups['new'][0] }}" -f "{{ hosts_realpath['stdout'].strip() }}"
 
     - name: Add the hosts.yml file with the new host present
       local_action:
@@ -101,7 +101,7 @@
     - name: Commit the hosts.yml file with the new host present
       local_action:
         module: shell
-        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Updated to new inventory host {{ inventory_hostname }} on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Updated to new inventory host {{ groups['new'][0] }} on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
         chdir: ../environment/
 
     - name: Push that latest commit
