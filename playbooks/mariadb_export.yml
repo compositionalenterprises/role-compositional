@@ -1,13 +1,22 @@
 ---
 - hosts: compositional
   tasks:
+    - name: Remove previous mariabackup
+      file:
+        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/binary'
+        state: absent
+
     - name: Backups directory exists
       file:
-        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
+        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/'
         state: 'directory'
         owner: '999'
         group: 'docker'
         mode: 0740
+      loop:
+        - ''
+        - 'binary'
+        - 'logical'
 
     - name: Perform mysqldump
       shell: "
@@ -17,27 +26,14 @@
             --single-transaction
             --quick
             --lock-tables=false
-            > /var/lib/mysql/backups/full-backup-\
+            > /var/lib/mysql/backups/logical/full-backup-\
               {{ ansible_date_time['date'] }}-\
               {{ ansible_date_time['hour'] }}-\
               {{ ansible_date_time['minute'] }}'
         "
 
-    - name: Find all files to delete
-      find:
-        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
-        excludes: 'full-backup*'
-        recurse: yes
-      register: old_backups
-
-    - name: Remove previous mariabackup
-      file:
-        path: "{{ item['path'] }}"
-        state: absent
-      loop: "{{ old_backups['files'] }}"
-
     - name: Perform mariabackup
       shell: "docker exec -it database bash -c '{{ item }}'"
       loop:
-        - 'mariabackup --backup --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
-        - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
+        - 'mariabackup --backup --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'
+        - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'

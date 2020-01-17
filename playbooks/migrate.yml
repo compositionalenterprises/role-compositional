@@ -39,9 +39,9 @@
 - name: Restore the most recently-copied-over database from dump files
   hosts: new
   tasks:
-    - name: Determine latest backup file
+    - name: Determine latest logical mysqldump SQL backup file
       find:
-        paths: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
+        paths: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/logical'
         use_regex: yes
         patterns: "^full-backup-(.*)$"
       register: full_backups
@@ -54,7 +54,7 @@
       shell: "
         docker exec -it database bash -c '
           mysql -uroot -p{{ compositional_database_root_password }}
-            < /var/lib/mysql/backups/{{ latest_full_backup }}'
+            < /var/lib/mysql/backups/logical/{{ latest_full_backup }}'
         "
 
 - import_playbook: 'transfer_ip.yml'
