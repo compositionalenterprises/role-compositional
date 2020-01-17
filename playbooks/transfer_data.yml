@@ -3,7 +3,7 @@
   hosts: all
   gather_facts: False
   tasks:
-    - name: Generate SSH keys on compositional server
+    - name: Generate SSH keys on old server
       block:
         - name: Generate ssh keypair
           shell: ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -q -N ""
@@ -14,7 +14,7 @@
           shell: cat /root/.ssh/id_ed25519.pub
           register: compositional_root_public_key
 
-      when: "'compositional' in group_names"
+      when: "'old' in group_names"
 
     - name: Setup new server to receive data
       block:
@@ -27,15 +27,15 @@
             - '/var/lib/docker/volumes'
             - '/srv'
 
-        - name: Add public key of root on compositional server to root on new server
+        - name: Add public key of root on old server to root on new server
           authorized_key:
             user: root
             state: present
-            key: "{{ hostvars[groups['compositional'][0]]['compositional_root_public_key']['stdout'] }}"
+            key: "{{ hostvars[groups['old'][0]]['compositional_root_public_key']['stdout'] }}"
 
       when: "'new' in group_names"
 
-    - name: Finish Sync on compositional server
+    - name: Finish Sync on old server
       block:
         - name: rsync directories over
           shell: rsync -ave "ssh -i /root/.ssh/id_ed25519 -o StrictHostKeyChecking=no" {{ item.src }} root@{{ groups['new'][0] }}:{{ item.dest }}
@@ -44,7 +44,7 @@
             - {'src': '/etc/letsencrypt/', 'dest': '/etc/letsencrypt'}
             - {'src': '/var/lib/docker/volumes/*_*', 'dest': '/var/lib/docker/volumes'}
 
-        - name: Remove SSH keypair for root on compositional server
+        - name: Remove SSH keypair for root on old server
           file:
             path: "/root/.ssh/id_ed25519{{ item }}"
             state: absent
@@ -52,12 +52,12 @@
             - '.pub'
             - ''
 
-      when: "'compositional' in group_names"
+      when: "'old' in group_names"
 
-    - name: Remove public key of root on compositional server for root on new server
+    - name: Remove public key of root on old server for root on new server
       authorized_key:
         user: root
         state: absent
-        key: "{{ hostvars[groups['compositional'][0]]['compositional_root_public_key']['stdout'] }}"
+        key: "{{ hostvars[groups['old'][0]]['compositional_root_public_key']['stdout'] }}"
       when: "'new' in group_names"
 

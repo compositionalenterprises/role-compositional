@@ -17,23 +17,31 @@
   connection: local
   gather_facts: False
   tasks:
-    - name: Add newly-created droplet to new compositional host
+    - name: Add existing droplet to old group
+      add_host:
+        name: groups['compositional'][0]
+        groups:
+          - 'old'
+
+    - name: Add newly-created droplet to new and compositional groups
       add_host:
         name: "{{ hostvars['localhost']['my_droplet']['data']['ip_address'] }}"
-        group: 'new'
+        groups:
+          - 'compositional'
+          - 'new'
 
 - import_playbook: 'block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - import_playbook: 'mariadb_export.yml'
-  when: inventory_hostname in groups['compositional']
+  when: inventory_hostname in groups['old']
 - import_playbook: 'transfer_data.yml'
 
 - import_playbook: 'services.yml'
   when: inventory_hostname in groups['new']
 
 - import_playbook: 'mariadb_export.yml'
-  when: inventory_hostname in groups['compositional']
+  when: inventory_hostname in groups['old']
 - import_playbook: 'transfer_data.yml'
 
 - name: Restore the most recently-copied-over database from dump files
