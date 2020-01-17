@@ -23,6 +23,19 @@
               {{ ansible_date_time['minute'] }}'
         "
 
+    - name: Find all files to delete
+      find:
+        path: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
+        excludes: 'full-backup*'
+        recurse: yes
+      register: old_backups
+
+    - name: Remove previous mariabackup
+      file:
+        path: "{{ item['path'] }}"
+        state: absent
+      loop: "{{ old_backups['files'] }}"
+
     - name: Perform mariabackup
       shell: "docker exec -it database bash -c '{{ item }}'"
       loop:
