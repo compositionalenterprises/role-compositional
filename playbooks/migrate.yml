@@ -54,7 +54,7 @@
       shell: "
         docker exec -it database bash -c '
           mysql -uroot -p{{ compositional_database_root_password }}
-            < /var/lib/mysql/backups/{{ latest_full_backup }}
+            < /var/lib/mysql/backups/{{ latest_full_backup }}'
         "
 
 - import_playbook: 'transfer_ip.yml'
