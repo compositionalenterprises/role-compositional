@@ -30,6 +30,13 @@
           - 'compositional'
           - 'new'
 
+- name: Establish Connection
+  gather_facts: False
+  hosts: compositional
+  tasks:
+    - name: Establish an ssh connection
+      wait_for_connection:
+
 - import_playbook: 'block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
