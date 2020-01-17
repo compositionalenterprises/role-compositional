@@ -32,5 +32,6 @@
         ip: "{{ item['ip'] }}"
         state: present
         oauth_token: "{{ do_oauth_token }}"
-      when: item['droplet']['id'] == oldest_droplet.split()[-1]
+      # Because of course it's a fucking int
+      when: item['droplet']['id'] == oldest_droplet.split()[-1] | int
       loop: "{{ floating_ips['floating_ips'] }}"
