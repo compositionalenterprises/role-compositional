@@ -22,3 +22,11 @@
               {{ ansible_date_time['hour'] }}-\
               {{ ansible_date_time['minute'] }}'
         "
+
+    - name: Perform mariabackup
+      shell: 'docker exec -it database bash -c "{{ item }}"'
+      no_log: True
+      loop:
+        - 'mariabackup --backup --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
+        - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups --user=root --password={{ compositional_database_root_password }}'
+

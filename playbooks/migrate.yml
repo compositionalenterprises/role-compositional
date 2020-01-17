@@ -6,6 +6,7 @@
     - name: Gather the values for all of the storage variables
       set_fact:
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+        delete_droplet: False
 
 - import_playbook: 'create_droplet.yml'
 
@@ -21,14 +22,41 @@
 - import_playbook: 'block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
+- import_playbook: 'mariadb_export.yml'
+  when: inventory_hostname in groups['compositional']
 - import_playbook: 'transfer_data.yml'
 
 - import_playbook: 'services.yml'
   when: inventory_hostname in groups['new']
 
+- import_playbook: 'mariadb_export.yml'
+  when: inventory_hostname in groups['compositional']
 - import_playbook: 'transfer_data.yml'
+
+- name: Restore the most recently-copied-over database from dump files
+  hosts: new
+  tasks:
+    - name: Determine latest backup file
+      find:
+        paths: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups'
+        use_regex: yes
+        patterns: "^full-backup-(.*)$"
+      register: full_backups
+
+    - name: Set fact for most recent mysql backup file
+      set_fact:
+        latest_full_backup: full_backups['files'] | map(attribute='path') | map('regex_replace', '^.*\/', '') | list | sort | last
+
+    - name: Load MariaDB Backup
+      shell: "
+        docker exec -it database bash -c '
+          mysql -uroot -p{{ compositional_database_root_password }}
+            < /var/lib/mysql/backups/{{ latest_full_backup }}
+        "
+
 - import_playbook: 'transfer_ip.yml'
-- import_playbook: 'delete_droplet.yml'
+  #- import_playbook: 'delete_droplet.yml'
+  #  when: delete_droplet
 
 - name: Update the hosts file with the new droplet's address
   hosts: localhost
