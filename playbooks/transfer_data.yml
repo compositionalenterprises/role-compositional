@@ -20,12 +20,15 @@
       block:
         - name: Make sure directories' parent directories are present
           file:
-            path: "{{ item }}"
+            path: "{{ item['path'] }}"
             state: directory
             recurse: yes
+            owner: "{{ item['user'] }}"
+            group: "{{ item['group'] }}"
           loop:
-            - '/var/lib/docker/volumes'
-            - '/srv'
+            - {'user': 'root', 'group': 'root', 'path': '/srv'}
+            - {'user': 'root', 'group': 'root', 'path': '/var/lib/docker/volumes'}
+            - {'user': '999', 'group': 'docker', 'path': '/srv/local/database_mysql'}
 
         - name: Add public key of root on old server to root on new server
           authorized_key:
@@ -40,9 +43,10 @@
         - name: rsync directories over
           shell: rsync -ave "ssh -i /root/.ssh/id_ed25519 -o StrictHostKeyChecking=no" {{ item.src }} root@{{ groups['new'][0] }}:{{ item.dest }}
           loop:
-            - {'src': '--exclude local/database_mysql /srv/', 'dest': '/srv'}
             - {'src': '/etc/letsencrypt/', 'dest': '/etc/letsencrypt'}
+            - {'src': '--exclude local/database_mysql /srv/', 'dest': '/srv'}
             - {'src': '/var/lib/docker/volumes/*_*', 'dest': '/var/lib/docker/volumes'}
+            - {'src': '/srv/local/database_mysql/backups', 'dest': '/srv/local/database_mysql'}
 
         - name: Remove SSH keypair for root on old server
           file:
