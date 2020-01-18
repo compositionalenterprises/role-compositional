@@ -15,7 +15,8 @@
         mode: 0740
       loop:
         - ''
-        - 'binary'
+        # See below for binary explanation
+        # - 'binary'
         - 'logical'
 
     - name: Perform mysqldump
@@ -33,9 +34,15 @@
               {{ ansible_date_time['minute'] }}'
         "
 
-    - name: Perform mariabackup
-      shell: "docker exec -it database bash -c '{{ item }}'"
-      no_log: True
-      loop:
-        - 'mariabackup --backup --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'
-        - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'
+    #
+    # This crashes 100% of the time with andrewcz.com, and may with other sites too.
+    # We'll eventually want to get binary backups working again since it would ease the
+    # recover and restoration after migration. For the time being though, simply loading
+    # the mysql files during migration should work fine.
+    #
+    #- name: Perform mariabackup
+    #  shell: "docker exec -it database bash -c '{{ item }}'"
+    #  no_log: True
+    #  loop:
+    #    - 'mariabackup --backup --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'
+    #    - 'mariabackup --prepare --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'

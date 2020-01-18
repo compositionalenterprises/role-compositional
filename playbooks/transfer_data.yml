@@ -40,7 +40,7 @@
         - name: rsync directories over
           shell: rsync -ave "ssh -i /root/.ssh/id_ed25519 -o StrictHostKeyChecking=no" {{ item.src }} root@{{ groups['new'][0] }}:{{ item.dest }}
           loop:
-            - {'src': '/srv/', 'dest': '/srv'}
+            - {'src': '--exclude local/database_mysql /srv/', 'dest': '/srv'}
             - {'src': '/etc/letsencrypt/', 'dest': '/etc/letsencrypt'}
             - {'src': '/var/lib/docker/volumes/*_*', 'dest': '/var/lib/docker/volumes'}
 
