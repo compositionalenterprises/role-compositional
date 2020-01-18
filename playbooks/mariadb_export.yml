@@ -20,18 +20,7 @@
 
     - name: Perform mysqldump
       no_log: True
-      shell: '
-        docker exec -i database bash -c "
-          mysqldump -u root -p{{ compositional_database_root_password }}
-            --all-databases
-            --single-transaction
-            --quick
-            --lock-tables=false
-            > /var/lib/mysql/backups/logical/full-backup-\
-              {{ ansible_date_time['date'] }}-\
-              {{ ansible_date_time['hour'] }}-\
-              {{ ansible_date_time['minute'] }}"
-        '
+      shell: 'docker exec -i database bash -c "mysqldump -u root -p{{ compositional_database_root_password }} --all-databases --single-transaction --quick --lock-tables=false > /var/lib/mysql/backups/logical/full-backup-{{ ansible_date_time["date"] }}-{{ ansible_date_time["hour"] }}-{{ ansible_date_time["minute"] }}"'
 
     - name: Perform mariabackup
       shell: 'docker exec -i database bash -c "{{ item }}"'
