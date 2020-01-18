@@ -21,7 +21,7 @@
     - name: Perform mysqldump
       no_log: True
       shell: "
-        docker exec -it database bash -c '
+        docker exec -i database bash -c '
           mysqldump -u root -p{{ compositional_database_root_password }}
             --all-databases
             --single-transaction
@@ -34,7 +34,7 @@
         "
 
     - name: Perform mariabackup
-      shell: "docker exec -it database bash -c '{{ item }}'"
+      shell: "docker exec -i database bash -c '{{ item }}'"
       no_log: True
       loop:
         - 'mariabackup --backup --target-dir=/var/lib/mysql/backups/binary --user=root --password={{ compositional_database_root_password }}'
