@@ -68,7 +68,7 @@
     - name: Load MariaDB Backup
       shell: "
         docker exec -it database bash -c '
-          mysql -uroot -p{{ compositional_database_root_password }}
+          mysql -uroot -p{{ compositional_database_root_password }} --force
             < /var/lib/mysql/backups/logical/{{ latest_full_backup }}'
         "
 
