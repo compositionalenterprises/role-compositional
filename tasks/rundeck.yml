@@ -25,7 +25,7 @@
       version: '3.6'
       services:
           rundeck:
-              image: "compositionalenterprises/rundeck:{{ compositional_rundeck_version }}"
+              image: "rundeck/rundeck:{{ compositional_rundeck_version }}"
               container_name: rundeck
               restart: always
               volumes:
@@ -54,3 +54,9 @@
     build: "{{ compositional_rundeck_build }}"
     state: "{{ compositional_rundeck_state }}"
   register: compositional_rundeck_output
+
+- name: (rundeck) Run additional setup commands in rundeck container
+  shell: docker exec -u 0 -i rundeck bash -c "{{ compositional_rundeck_additional_setup }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
