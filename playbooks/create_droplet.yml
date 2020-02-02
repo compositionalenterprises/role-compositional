@@ -7,6 +7,8 @@
 - name: DO VM Setup
   hosts: localhost
   connection: local
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 
   pre_tasks:
     - name: Get SSH key facts
