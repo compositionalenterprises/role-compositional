@@ -1,0 +1,41 @@
+---
+- name: Deploy new block storage volume
+  hosts: localhost
+  connection: local
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+
+  vars:
+    do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
+
+  tasks:
+    - name: Return a list of droplet snapshots
+      uri:
+        url: 'https://api.digitalocean.com/v2/snapshots?resource_type=droplet'
+        body_format: 'json'
+        headers:
+          Authorization: "Bearer {{ do_oauth_token }}"
+      register: droplet_snapshots
+
+    - debug:
+        var: droplet_snapshots
+        verbosity: 2
+
+    - name: Get the values for the oldest snapshot
+      set_fact:
+        oldest_snapshot: "{{
+            droplet_snapshots['json']['snapshots']
+            | selectattr('name', 'search', environment_domain | replace('.', '-'))
+            | list
+            | sort(attribute='name')
+            | first
+          }}"
+
+    - name: Delete the snapshot
+      uri:
+        url: "https://api.digitalocean.com/v2/snapshots/{{ oldest_snapshot['id'] }}"
+        body_format: 'json'
+        method: DELETE
+        headers:
+          Authorization: "Bearer {{ do_oauth_token }}"
+        status_code: 204

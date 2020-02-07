@@ -1,0 +1,62 @@
+---
+- name: Deploy new block storage volume
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+
+  vars:
+    do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
+
+  pre_tasks:
+    - name: Find the droplet ID for this domain
+      uri:
+        url: 'http://169.254.169.254/metadata/v1/id'
+      register: droplet_id
+
+    - debug:
+        var: droplet_id
+        verbosity: 2
+
+  tasks:
+    - name: Create Snapshot by Droplet ID
+      uri:
+        url: "https://api.digitalocean.com/v2/droplets/{{ droplet_id['json'] }}/actions"
+        body_format: 'json'
+        body:
+          type: 'snapshot'
+          name: "{{ do_object_name }}"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ do_oauth_token }}"
+        status_code: 201
+      register: create_snapshot_result
+
+    - debug:
+        var: create_snapshot_result
+        verbosity: 2
+
+    - name: Wait for snapshot creation to finish
+      uri:
+        url: "https://api.digitalocean.com/v2/droplets/{{ droplet_id['json'] }}/actions/{{ create_snapshot_result['json']['action']['id'] }}"
+        body_format: 'json'
+        headers:
+          Authorization: "Bearer {{ do_oauth_token }}"
+        status_code:
+          - 200
+          - 404
+      register: create_snapshot_status
+      until: create_snapshot_status['json']['action']['status'] in ['completed', 'errored']
+      # Let's try 30 minutes. I don't have a good estimate of how long it will realistically take
+      retries: 60
+      delay: 30
+
+    - name: Snapshot couldn't be created, so fail
+      block:
+        - fail:
+            msg: "Snapshot unable to be completed within the allotted timeframe. The result was {{ create_snapshot_status['json']['action']['status'] }}. Check it manually."
+
+        - debug:
+            var: create_snapshot_status
+            verbosity: 2
+
+      when: create_snapshot_status['json']['action']['status'] in ['in-progress', 'errored']
