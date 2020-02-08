@@ -45,7 +45,7 @@
   when: inventory_hostname in groups['old']
 - import_playbook: 'transfer_data.yml'
 
-- import_playbook: 'services.yml'
+- import_playbook: 'install_services.yml'
   when: inventory_hostname in groups['new']
 
 - import_playbook: 'mariadb_export.yml'

@@ -45,7 +45,7 @@
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Infrastructure Services
-  import_playbook: services.yml
+  import_playbook: install_services.yml
 
 - name: Update the hosts file with the new droplet's address
   hosts: localhost
