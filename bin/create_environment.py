@@ -4,7 +4,6 @@
 import os
 import yaml
 import common
-import gitlab
 import random
 import shutil
 import string
