@@ -50,11 +50,6 @@ SERVICES = {
                 'compositional_rundeck_backend_password': {}
                 }
             },
-        'rundeck': {
-            'passwords': {
-                'compositional_bookstack_backend_password': {}
-                }
-            }
         }
 
 

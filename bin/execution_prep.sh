@@ -87,9 +87,9 @@ else
         # Clone the environment down giving the domain we're working on
         # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
         # We also want to insert in the vault pass at this time too.
-        environment_domain=$(sed 's/\./_/g' <<<"${domain}")
-        >&2 echo "git clone git@gitlab.com:compositionalenterprises/environment-${environment_domain}.git environment"
-        git clone git@gitlab.com:compositionalenterprises/environment-${environment_domain}.git environment
+        environment_domain=$(sed 's/\./-/g' <<<"${domain}")
+        >&2 echo "git clone ${environment_domain} git@gitlab.com:compositionalenterprises/environment.git environment"
+        git clone --depth 1 --single-branch --branch ${environment_domain} git@gitlab.com:compositionalenterprises/environment
         # TODO: Make this a URL call somewhere in the future.
         echo "${envvaultpass}" > environment/.vault_pass
 fi
