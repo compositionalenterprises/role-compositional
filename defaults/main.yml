@@ -207,3 +207,17 @@ compositional_portal_mysql_script: |
   CREATE USER IF NOT EXISTS 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
+  GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%' IDENTIFIED BY '{{ compositional_bookstack_backend_password }}';
+
+#
+# CommandCenter
+#
+compositional_commandcenter_build: yes
+compositional_commandcenter_state: present
+compositional_commandcenter_restarted: yes
+compositional_commandcenter_version: '1.0.3'
+compositional_commandcenter_storage: 'local'
+compositional_commandcenter_backend_password: 'testpassword'
+compositional_commandcenter_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS commandcenter;
+  GRANT ALL PRIVILEGES ON commandcenter.* TO 'commandcenter'@'%' IDENTIFIED BY '{{ compositional_commandcenter_backend_password }}';
