@@ -1,0 +1,2 @@
+- import_playbook: 'create_snapshot.yml'
+- import_playbook: 'delete_snapshot.yml'
