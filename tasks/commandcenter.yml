@@ -1,0 +1,53 @@
+---
+- name: (commandcenter) Nginx conf is deployed
+  template:
+    src: "nginx_commandcenter.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/commandcenter.conf"
+  notify: 'Restart Frontend'
+
+- name: (commandcenter) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (commandcenter) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_commandcenter_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (commandcenter) The commandcenter service version {{ compositional_commandcenter_version }} is built and {{ compositional_commandcenter_state }}
+  docker_service:
+    project_name: commandcenter
+    definition:
+      version: '3.6'
+      services:
+          commandcenter:
+              image: "compositionalenterprises/commandcenter:{{ compositional_commandcenter_version }}"
+              container_name: commandcenter
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials:/app/config/credentials"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DB_HOST: 'database'
+                DB_NAME: 'commandcenter'
+                DB_USER: 'commandcenter'
+                DB_PASS: "{{ compositional_commandcenter_backend_password }}"
+                RAILS_RELATIVE_URL_ROOT: '/commandcenter'
+
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+
+    build: "{{ compositional_commandcenter_build }}"
+    state: "{{ compositional_commandcenter_state }}"
+    restarted: "{{ compositional_commandcenter_restarted }}"
+  register: compositional_commandcenter_output
+  no_log: True
