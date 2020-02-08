@@ -58,7 +58,7 @@ def put_repo_in_gitlab(local_repo, domain):
     # It takes a lot to keep these lines to a limit of chars under 79 chars
     # long
     #
-    environment_domain = domain.replace('.', '_')
+    environment_domain = domain.replace('.', '-')
     gitlab_prefix = 'git@gitlab.com:compositionalenterprises'
     origin_url = "{}/environment.git".format(gitlab_prefix)
     dirpath_to_script = os.path.dirname(os.path.realpath(__file__))
@@ -165,7 +165,7 @@ def create_local_repo(domain):
     Creates a local repo from the upstream environment repo
     """
     # Set up shorthand strings to use below
-    environment_domain = domain.replace('.', '_')
+    environment_domain = domain.replace('.', '-')
     gitlab_prefix = 'git@gitlab.com:compositionalenterprises'
     origin_url = "{}/environment.git".format(gitlab_prefix)
 

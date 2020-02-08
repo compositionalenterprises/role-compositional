@@ -65,3 +65,4 @@
       # Also, we're maping the `all_droplets` list to ints since they are strings and the id attr of
       # a droplet is an int; one of them has got to budge...
       when: all_droplets | map('int') | list | intersect(floating_ips['floating_ips'] | map(attribute='droplet') | list | map(attribute='id') | list) | length == 0
+      register: new_floating_ip
