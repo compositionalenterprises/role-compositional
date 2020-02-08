@@ -58,14 +58,13 @@ def put_repo_in_gitlab(local_repo, domain):
     # It takes a lot to keep these lines to a limit of chars under 79 chars
     # long
     #
-    underscored_domain = domain.replace('.', '_')
-    domained_environment = "environment-{}".format(underscored_domain)
+    environment_domain = domain.replace('.', '_')
     gitlab_prefix = 'git@gitlab.com:compositionalenterprises'
-    origin_url = "{}/{}.git".format(gitlab_prefix, domained_environment)
+    origin_url = "{}/environment.git".format(gitlab_prefix)
     dirpath_to_script = os.path.dirname(os.path.realpath(__file__))
-    path_to_vault_pass = "{}/../.vault_pass".format(dirpath_to_script)
     path_to_vault = 'playbooks/group_vars/all/vault.yml'
     vault_file_path = "{}/../{}".format(dirpath_to_script, path_to_vault)
+    path_to_vault_pass = "{}/../.vault_pass".format(dirpath_to_script)
 
     # Get the GitLab API personal oauth token
     with open(path_to_vault_pass, 'r') as plays_vault_pass_file:
@@ -74,28 +73,20 @@ def put_repo_in_gitlab(local_repo, domain):
     vault_content = vault.load(open(vault_file_path).read())
     private_token = vault_content['vault_gitlab_oauth_token']
 
-    gl = gitlab.Gitlab('https://gitlab.com', private_token=private_token)
-    group_id = gl.groups.list(search='compositionalenterprises')[0].id
-    project = gl.projects.create({
-            'name': domained_environment,
-            'namespace_id': group_id,
-            'visibility': 'private'
-            })
-
     # Add all files
     subprocess.run(['git', 'add', '-A', '.'],
-            cwd="/tmp/{}".format(domained_environment))
+            cwd="/tmp/{}".format(environment_domain))
 
     # Commit those files
     subprocess.run(['git', 'commit', '-m', 'Setup Commit'],
-            cwd="/tmp/{}".format(domained_environment))
+            cwd="/tmp/{}".format(environment_domain))
 
     # Push the repo up
-    subprocess.run(['git', 'push', '-u', 'origin', 'master'],
-            cwd="/tmp/{}".format(domained_environment))
+    subprocess.run(['git', 'push', '-u', 'origin', environment_domain],
+            cwd="/tmp/{}".format(environment_domain))
 
     # Remove the environment
-    shutil.rmtree("/tmp/{}".format(domained_environment))
+    shutil.rmtree("/tmp/{}".format(environment_domain))
 
 def create_pass(pass_len=16):
     """
@@ -141,7 +132,7 @@ def create_vaulted_passwords(local_repo, service, vault_pass, binpath):
         else:
             # Create the vault file entirely from scratch
             ansible_vault_command = 'ansible-vault'
-            if len(binpath) != 0:
+            if binpath:
                 ansible_vault_command = "{}/ansible-vault".format(binpath)
             create_vault_command = [
                     ansible_vault_command,
@@ -174,22 +165,18 @@ def create_local_repo(domain):
     Creates a local repo from the upstream environment repo
     """
     # Set up shorthand strings to use below
-    underscored_domain = domain.replace('.', '_')
-    domained_environment = "environment-{}".format(underscored_domain)
+    environment_domain = domain.replace('.', '_')
     gitlab_prefix = 'git@gitlab.com:compositionalenterprises'
-    origin_url = "{}/{}.git".format(gitlab_prefix, domained_environment)
+    origin_url = "{}/environment.git".format(gitlab_prefix)
 
     # Clone down the template 'environment' repo
     subprocess.run(['git', 'clone', "{}/environment.git".format(gitlab_prefix),
-        domained_environment], cwd='/tmp')
-    # Rename the remote origin to upstream
-    subprocess.run(['git', 'remote', 'rename', 'origin', 'upstream'],
-            cwd="/tmp/{}".format(domained_environment))
-    # Set the new origin url
-    subprocess.run(['git', 'remote', 'add', 'origin', origin_url],
-            cwd="/tmp/{}".format(domained_environment))
+        environment_domain], cwd='/tmp')
+    # Checkout a new branch
+    subprocess.run(['git', 'checkout', '-b', environment_domain],
+            cwd="/tmp/{}".format(environment_domain))
 
-    return "/tmp/{}".format(domained_environment)
+    return "/tmp/{}".format(environment_domain)
 
 
 def format_services(services):
