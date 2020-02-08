@@ -18,6 +18,16 @@
     executable: '/bin/bash'
   no_log: True
 
+- name: Create credentials files
+  template:
+    src: 'commandcenter_{{ item }}.j2'
+    dest: "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials/{{ item }}"
+    mode: 0600
+    owner: root
+  loop:
+    - 'production.key'
+    - 'production.yml.enc'
+
 - name: (commandcenter) The commandcenter service version {{ compositional_commandcenter_version }} is built and {{ compositional_commandcenter_state }}
   docker_service:
     project_name: commandcenter
@@ -39,6 +49,8 @@
                 DB_USER: 'commandcenter'
                 DB_PASS: "{{ compositional_commandcenter_backend_password }}"
                 RAILS_RELATIVE_URL_ROOT: '/commandcenter'
+                RAILS_MASTER_KEY:
+                RAILS_
 
       networks:
           frontend:

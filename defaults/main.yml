@@ -174,6 +174,8 @@ compositional_commandcenter_restarted: yes
 compositional_commandcenter_version: '1.0.3'
 compositional_commandcenter_storage: 'local'
 compositional_commandcenter_backend_password: 'testpassword'
+compositional_commandcenter_production_key: 'testpassword'
+compositional_commandcenter_production_yml_enc: 'testencstring=='
 compositional_commandcenter_mysql_script: |
   CREATE DATABASE IF NOT EXISTS commandcenter;
   GRANT ALL PRIVILEGES ON commandcenter.* TO 'commandcenter'@'%' IDENTIFIED BY '{{ compositional_commandcenter_backend_password }}';
