@@ -49,6 +49,8 @@
                 DB_USER: 'commandcenter'
                 DB_PASS: "{{ compositional_commandcenter_backend_password }}"
                 RAILS_RELATIVE_URL_ROOT: '/commandcenter'
+                ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
+                ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
 
       networks:
           frontend:
