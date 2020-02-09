@@ -24,6 +24,18 @@
     state: directory
 
 - name: Create credentials files
+  # So, let's review POSIX standards, shall we?
+  #
+  #     3.206 Line
+  #     A sequence of zero or more non- <newline> characters plus a terminating
+  #     <newline> character.
+  #
+  # So, these _files_, as we graciously call what we are templating below,
+  # contain no lines. Now, wouldn't that mean that they are blank files? No! To
+  # the contrary according to ruby developers around the world. These files are
+  # to the standard of these blaggards who snub the very idea of
+  # interoperability. So, be aware! These files **MUST** not have a line that
+  # ends in a newline.
   template:
     src: 'commandcenter_{{ item }}.j2'
     dest: "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials/{{ item }}"
