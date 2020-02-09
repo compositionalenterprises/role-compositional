@@ -18,6 +18,11 @@
     executable: '/bin/bash'
   no_log: True
 
+- name: (commandcenter) Ensure commandcenter_credentials directory exists
+  file:
+    path: "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials"
+    state: directory
+
 - name: Create credentials files
   template:
     src: 'commandcenter_{{ item }}.j2'
