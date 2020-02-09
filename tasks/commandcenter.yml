@@ -69,9 +69,6 @@
                 ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
                 ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
 
-              entrypoint: sleep
-              command: infinity
-
       networks:
           frontend:
               external: true
