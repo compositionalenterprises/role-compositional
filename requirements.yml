@@ -4,7 +4,7 @@
   name: docker
 - src: git@gitlab.com:compositionalenterprises/role-compositional
   scm: git
-  version: andrewcz.com-ourcompose-557
+  version: andrewcz.com-ourcompose-558
   name: compositional
 - src: geerlingguy.certbot
   name: certbot

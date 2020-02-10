@@ -49,6 +49,11 @@ SERVICES = {
                 'compositional_rundeck_backend_password': {}
                 }
             },
+        'mysql': {
+            'passwords': {
+                'compositional_database_root_password': {}
+                }
+            },
         }
 
 
@@ -253,6 +258,9 @@ def main():
     for service in args['services']:
         create_vaulted_passwords(local_repo, service, vault_pass,
                 args['binpath'])
+
+    # Add the mysql root user too, because we need that always
+    create_vaulted_passwords(local_repo, 'mysql', vault_pass, args['binpath'])
 
     put_repo_in_gitlab(local_repo, args['domain'])
 
