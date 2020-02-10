@@ -178,6 +178,7 @@ compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'testpassword'
 compositional_portal_production_yml_enc: 'testpassword'
 compositional_portal_admin_password: 'testpassword'
+compositional_portal_org_name: "{{ environment_domain.split('.')[0].upper() }}"
 compositional_portal_mysql_script: |
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
