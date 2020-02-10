@@ -61,13 +61,14 @@
                   - frontend
                   - backend
               environment:
-                DB_HOST: database
+                DB_HOST: 'database'
                 DB_NAME: 'commandcenter'
                 DB_USER: 'commandcenter'
                 DB_PASS: "{{ compositional_commandcenter_backend_password }}"
                 RAILS_RELATIVE_URL_ROOT: '/commandcenter'
                 ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
                 ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
+                HOST: "https://{{ environment_domain }}"
 
       networks:
           frontend:
