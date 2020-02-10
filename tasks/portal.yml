@@ -70,6 +70,7 @@
                 ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
                 ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
                 SERVICES: "{{ compositional_services | join(' ') }}"
+		RAILS_RELATIVE_URL_ROOT: '/portal'
 
       networks:
           frontend:
