@@ -62,9 +62,9 @@
                   - backend
               environment:
                 DB_HOST: 'database'
-                DB_DATABASE: 'portal'
-                DB_USERNAME: 'portal'
-                DB_PASSWORD: "{{ compositional_portal_backend_password }}"
+                DB_NAME: 'portal'
+                DB_USER: 'portal'
+                DB_PASS: "{{ compositional_portal_backend_password }}"
                 BASE_URL: "{{ environment_domain }}"
                 ORG_NAME: "{{ environment_domain.split('.')[0].upper() }}"
                 ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
