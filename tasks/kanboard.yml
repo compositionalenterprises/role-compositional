@@ -76,6 +76,15 @@
   register: compositional_kanboard_output
   no_log: True
 
+- name: (kanboard) Copy the generated config file to a custom location
+  shell: docker exec -i kanboard bash -c "cp /var/www/app/config.php /var/www/app/data/config.php"
+
+- name: (kanboard) Add custom config lines to the file
+  lineinfile:
+    path: "/srv/{{ compositional_kanboard_storage }}/kanboard_data/config.php"
+    line: "{{ item }}"
+  with_items: "{{ compositional_kanboard_custom_config_lines }}"
+
 - name: (kanboard) Symlink kanboard directory
   shell: docker exec -i kanboard bash -c "ln -sT /var/www/app/ /var/www/app/kanboard"
   when: compositional_kanboard_output.changed
