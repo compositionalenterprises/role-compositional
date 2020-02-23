@@ -19,6 +19,10 @@ Options:
         -p | --playsvaultpass
                 REQUIRED
                 The play's vault password
+        -b | --branch
+                OPTIONAL
+                DEFAULT: 'master'
+                The branch (or tag) to use for role-compositional
         -h | --help
                 OPTIONAL
                 Show this usage message and exit
@@ -44,6 +48,10 @@ while [[ "${1}" != "" ]]; do
                         -e | --envvaultpass )
                                 shift
                                 envvaultpass="${1}"
+                                ;;
+                        -b | --branch )
+                                shift
+                                branch="${1}"
                                 ;;
                         -h | --help )
                                 usage
@@ -77,9 +85,15 @@ elif [[ -z "${playvaultpass}" ]]; then
         exit 7
 fi
 
+if [[ -z "${branch}" ]]; then
+        branch='master'
+fi
+
 # Clone into the unique job exec id for this run
 git clone https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
 cd "${jobuuid}"
+
+sed -i "s/version: master/version: ${branch}/" 'requirements.yml'
 
 if [[ -z "${envvaultpass}" ]]; then
         >&2 echo "No Environment Vault Password Specified, Skipping Environment Clone"
