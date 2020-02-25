@@ -54,6 +54,12 @@ SERVICES = {
                 'compositional_database_root_password': {}
                 }
             },
+        'commandcenter': {
+            'passwords': {
+                'compositional_commandcenter_backend_password': {},
+                'compositional_commandcenter_admin_password ': {}
+                }
+            },
         }
 
 
