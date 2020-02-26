@@ -57,7 +57,7 @@ SERVICES = {
         'commandcenter': {
             'passwords': {
                 'compositional_commandcenter_backend_password': {},
-                'compositional_commandcenter_admin_password ': {}
+                'compositional_commandcenter_admin_password': {}
                 }
             },
         }
