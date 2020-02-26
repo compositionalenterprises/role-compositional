@@ -4,31 +4,6 @@
 #   ansible-playbook -i environment/hosts.yml playbooks/site.yml
 #
 ---
-- name: Infrastructure Setup
-  hosts: all
-  become: yes
-  vars:
-    ansible_python_interpreter: "/usr/bin/python3"
-
-  roles:
-    - role: swapfile
-      swapfile_size: '4G'
-
-  tasks:
-    - name: Install Python on Ubuntu or Debian servers
-      shell: apt update -y && apt install -y python
-      when: ansible_distribution in ['Ubuntu', 'Debian']
-
-    - name: Install Python on Fedora or CentOS servers
-      shell: yum install -y python
-      when: ansible_distribution in ['Fedora', 'CentOS']
-
-- name: Setup
-  hosts: all
-  become: yes
-  tasks:
-    - setup:
-
 - name: Roles in Common
   hosts: all
   become: yes
@@ -46,6 +21,8 @@
       - domains:
         - "{{ environment_domain }}"
   roles:
+    - role: swapfile
+      swapfile_size: '4G'
     - role: docker
     - role: certbot
     - role: compositional

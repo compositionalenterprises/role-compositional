@@ -28,7 +28,7 @@
         size: "{{ do_droplet_size }}"
         oauth_token: "{{ do_oauth_token }}"
         region: 'nyc3'
-        image: 'ubuntu-16-04-x64'
+        image: 'ubuntu-18-04-x64'
         ssh_keys: "{{ ssh_key_facts['ansible_facts']['ssh_keys'] | map(attribute='id') | list }}"
         private_networking: True
         wait_timeout: 500
