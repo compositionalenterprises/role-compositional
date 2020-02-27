@@ -10,6 +10,7 @@ compositional_database_root_password: 'testpassword'
 compositional_services:
   - 'bitwarden'
   - 'bookstack'
+  - 'commandcenter'
   - 'firefly'
   - 'kanboard'
   - 'manager'
