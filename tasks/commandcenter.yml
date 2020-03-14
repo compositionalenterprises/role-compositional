@@ -81,3 +81,10 @@
     restarted: "{{ compositional_commandcenter_restarted }}"
   register: compositional_commandcenter_output
   no_log: True
+
+- name: (commandcenter) The commandcenter cron job to update the database with daily data
+  cron:
+    name: "CC Update Data"
+    hour: "4"
+    day: "*"
+    job: "/usr/bin/docker exec commandcenter /app/bin/daily.sh"
