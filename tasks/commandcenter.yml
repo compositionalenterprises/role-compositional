@@ -87,4 +87,4 @@
     name: "CC Update Data"
     hour: "4"
     day: "*"
-    job: "/usr/bin/docker exec commandcenter /app/bin/daily.sh"
+    job: "/usr/bin/docker exec commandcenter /app/bin/seeds/daily.sh"
