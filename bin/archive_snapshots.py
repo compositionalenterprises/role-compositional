@@ -1,26 +1,38 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import minio
 import common
 import getpass
 import argparse
 import datetime
 import requests
 
-BACKUP_URL = 'https://home.andrewcz.com'
+BACKUP_URL = 'backups.compositional.enterprise'
 
 
-def delete_domain_archive(archive):
+def minio_client(args):
+    """
+    Abstraction to set up a minio client
+    """
+    client = minio.Minio(BACKUP_URL, access_key=args['apiuser'],
+            secret_key=args['apipass'], secure=True)
+
+    return client
+
+
+def delete_domain_archive(args, archive):
     """
     Deletes an object in the archive.
     """
     pass
 
 
-def archive_new_snapshot():
+def archive_new_snapshot(args):
     """
     Stores the current DigitalOcean snapshot in the archive.
     """
+    client = minio_client(args)
     pass
 
 
@@ -159,7 +171,7 @@ def archive_snapshots(args):
         elif promotion and generation == 'son'
             # Store the current DigitalOcean snapshot as it is due to become
             # the latest snapshot of the son generation
-            domain_archives[generation] = archive_new_snapshot()
+            domain_archives[generation] = archive_new_snapshot(args)
 
     #
     # Set up the results and start storing the current generations
@@ -176,7 +188,7 @@ def archive_snapshots(args):
     for archive in archives:
         if (archive['domain'] == args['domain'] and
                 archive['object'] not in archive_objects):
-            delete_domain_archive(archive)
+            delete_domain_archive(args, archive)
             results['deleted'].update(archive)
 
     return results
