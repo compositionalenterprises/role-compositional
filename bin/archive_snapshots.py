@@ -7,8 +7,11 @@ import getpass
 import argparse
 import datetime
 import requests
+import digitalocean
 
 BACKUP_URL = 'backups.compositional.enterprise'
+DO_URL = 'https://api.digitalocean.com'
+DO_SNAPSHOTS_PATH = '/v2/snapshots'
 
 
 def minio_client(args):
@@ -16,7 +19,7 @@ def minio_client(args):
     Abstraction to set up a minio client
     """
     client = minio.Minio(BACKUP_URL, access_key=args['apiuser'],
-            secret_key=args['apipass'], secure=True)
+            secret_key=args['secretkey'], secure=True)
 
     return client
 
@@ -32,7 +35,7 @@ def archive_new_snapshot(args):
     """
     Stores the current DigitalOcean snapshot in the archive.
     """
-    client = minio_client(args)
+    minio_client = minio_client(args)
     pass
 
 
@@ -198,10 +201,13 @@ def parse_args():
     """Parse the passed in arguments"""
     parser = argparse.ArgumentParser(description="Archives droplet snapshots")
     parser.add_argument('-u', '--apiuser',
-                        help='The user to connect with to the storage service',
+                        help='The user to use for the snapshotstorage service',
                         required=False)
-    parser.add_argument('-p', '--apipass',
-                        help='The pass to connect with to the storage service',
+    parser.add_argument('-s', '--secretkey',
+                        help='The key to use for the snapshot storage service',
+                        required=False)
+    parser.add_argument('-p', '--dotoken',
+                        help='The access token to use for DigitalOcean',
                         required=False)
     parser.add_argument('-d', '--domain',
                         help='The domain to work on',
@@ -214,10 +220,12 @@ def parse_args():
     #
     if not args['apiuser']:
         args['apiuser'] = input("Username: ")
-    if not args['apipass']:
-        args['apipass'] = getpass.getpass("Password: ")
-    if not args['fqdn']:
-        args['fqdn'] = input("FQDN: ")
+    if not args['secretkey']:
+        args['secretkey'] = getpass.getpass("Secret Key: ")
+    if not args['dotoken']:
+        args['dotoken'] = getpass.getpass("Token: ")
+    if not args['domain']:
+        args['domain'] = input("Domain: ")
 
     return args
 
