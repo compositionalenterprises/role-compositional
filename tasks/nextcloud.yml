@@ -66,10 +66,11 @@
   lineinfile:
     path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_config/config.php"
     insertafter: "overwrite.cli.url"
-    line:
+    line: "{{ item }}"
   loop:
     - "  'overwritewebroot' => '/nextcloud',"
     - "  'overwriteprotocol' => 'https',"
+  notify: 'Restart Nextcloud'
 
 - name: (nextcloud) config.php is configured with dbtableprefix
   lineinfile:
@@ -77,6 +78,7 @@
     regexp: "dbtableprefix"
     line: "  'dbtableprefix' => 'oc_',"
   when: compositional_nextcloud_legacy_dbtableprefix
+  notify: 'Restart Nextcloud'
 
 #
 # See https://github.com/Yetangitu/owncloud-apps/pull/108#issuecomment-429428310
@@ -88,9 +90,11 @@
     src: 'https://github.com/manvalls/owncloud-apps/raw/master/dist/files_reader-1.2.3-patched-5-OC.tar.gz'
     dest: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_custom_apps/"
     remote_src: yes
+  notify: 'Restart Nextcloud'
 
 - name: (nextcloud) files_reader app has the max-version adjusted
   lineinfile:
     path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_custom_apps/files_reader/appinfo/info.xml"
     regexp: '.*max-version="14.0"'
     line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
+  notify: 'Restart Nextcloud'
