@@ -62,6 +62,13 @@
     search_regex: 'overwrite.cli.url'
     state: present
 
+- name: (nextcloud) Restart Nextcloud
+  # Yeah, I know this seems kinda silly, but it's not initializing fully just by testing the above.
+  # It seems like that file is still being written to even when it's there, and overwriting the changes
+  # being made in the tasks below. Here we restart nextcloud to try to force it to finish initializing
+  # so that we can add the things in below
+  command: docker restart nextcloud
+
 - name: (nextcloud) config.php is configured with overwritewebroot
   lineinfile:
     path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_config/config.php"
