@@ -55,19 +55,12 @@
   register: compositional_nextcloud_output_1
   no_log: True
 
-- name: (nextcloud) Wait for config.php to be generated
-  wait_for:
-    delay: 15
-    path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_config/config.php"
-    search_regex: 'overwrite.cli.url'
-    state: present
-
-- name: (nextcloud) Restart Nextcloud
-  # Yeah, I know this seems kinda silly, but it's not initializing fully just by testing the above.
-  # It seems like that file is still being written to even when it's there, and overwriting the changes
-  # being made in the tasks below. Here we restart nextcloud to try to force it to finish initializing
-  # so that we can add the things in below
-  command: docker restart nextcloud
+- name: (nextcloud) Make sure Nextcloud has fully initialized
+  shell: 'docker exec -i nextcloud bash -c "ps -ef | grep apache2 | grep -v grep"'
+  retries: 15
+  delay: 15
+  register: nextcloud_initialized
+  until: nextcloud_initialized['rc'] == 0
 
 - name: (nextcloud) config.php is configured with overwritewebroot
   lineinfile:
