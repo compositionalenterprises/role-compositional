@@ -18,7 +18,7 @@
     executable: '/bin/bash'
   no_log: True
 
-- name: (nextcloud) The MYSQL latest nextcloud service is built and {{ compositional_nextcloud_state }}
+- name: (nextcloud) The nextcloud service is built and {{ compositional_nextcloud_state }}
   docker_service:
     project_name: nextcloud
     definition:
@@ -56,7 +56,7 @@
   no_log: True
 
 - name: (nextcloud) Make sure Nextcloud has fully initialized
-  shell: 'docker exec -i nextcloud bash -c "ps -ef | grep apache2 | grep -v grep"'
+  shell: 'docker exec -i nextcloud bash -c "ps -ef | grep apache2 | grep -ve grep -e entrypoint"'
   retries: 15
   delay: 15
   register: nextcloud_initialized
