@@ -9,3 +9,6 @@
 
 - name: Restart Kanboard
   command: docker restart kanboard
+
+- name: Restart Nextcloud
+  command: docker restart nextcloud

@@ -60,7 +60,7 @@ compositional_kanboard_mysql_script: |
 compositional_nextcloud_build: yes
 compositional_nextcloud_state: present
 compositional_nextcloud_restarted: no
-compositional_nextcloud_version: '17.0'
+compositional_nextcloud_version: '18'
 compositional_nextcloud_storage: 'local'
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
