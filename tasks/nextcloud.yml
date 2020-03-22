@@ -18,7 +18,7 @@
     executable: '/bin/bash'
   no_log: True
 
-- name: (nextcloud) The MYSQL latest nextcloud service is built and {{ compositional_nextcloud_state }}
+- name: (nextcloud) The nextcloud service is built and {{ compositional_nextcloud_state }}
   docker_service:
     project_name: nextcloud
     definition:
@@ -55,18 +55,22 @@
   register: compositional_nextcloud_output_1
   no_log: True
 
-- name: (nextcloud) Wait for config.php to be generated
-  wait_for:
-    delay: 15
-    path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_config/config.php"
-    search_regex: 'overwrite.cli.url'
-    state: present
+- name: (nextcloud) Make sure Nextcloud has fully initialized
+  shell: 'docker exec -i nextcloud bash -c "ps -ef | grep apache2 | grep -ve grep -e entrypoint"'
+  retries: 15
+  delay: 15
+  register: nextcloud_initialized
+  until: nextcloud_initialized['rc'] == 0
 
 - name: (nextcloud) config.php is configured with overwritewebroot
   lineinfile:
     path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_config/config.php"
     insertafter: "overwrite.cli.url"
-    line: "  'overwritewebroot' => '/nextcloud',"
+    line: "{{ item }}"
+  loop:
+    - "  'overwritewebroot' => '/nextcloud',"
+    - "  'overwriteprotocol' => 'https',"
+  notify: 'Restart Nextcloud'
 
 - name: (nextcloud) config.php is configured with dbtableprefix
   lineinfile:
@@ -74,6 +78,7 @@
     regexp: "dbtableprefix"
     line: "  'dbtableprefix' => 'oc_',"
   when: compositional_nextcloud_legacy_dbtableprefix
+  notify: 'Restart Nextcloud'
 
 #
 # See https://github.com/Yetangitu/owncloud-apps/pull/108#issuecomment-429428310
@@ -85,9 +90,11 @@
     src: 'https://github.com/manvalls/owncloud-apps/raw/master/dist/files_reader-1.2.3-patched-5-OC.tar.gz'
     dest: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_custom_apps/"
     remote_src: yes
+  notify: 'Restart Nextcloud'
 
 - name: (nextcloud) files_reader app has the max-version adjusted
   lineinfile:
     path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_custom_apps/files_reader/appinfo/info.xml"
     regexp: '.*max-version="14.0"'
     line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
+  notify: 'Restart Nextcloud'
