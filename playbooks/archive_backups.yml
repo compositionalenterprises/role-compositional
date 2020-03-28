@@ -1,0 +1,15 @@
+---
+- hosts: all
+  tasks:
+    - name: Install jq
+      apt:
+        name: jq
+        state: latest
+
+    - name: Get all of the bucket names
+      shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep {{ environment_domain | replace('.', '-') }}"
+      register: archive_backups_domain_archives
+
+    - name: Determine if we need a new one
+      script:
+        cmd: ../bin/archive_backups.py --backups "{{ backup_services_domain_archives['stdout_lines'] | join(',') }}"
