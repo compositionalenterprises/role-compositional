@@ -1,29 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import common
+# import common
 import argparse
 import datetime
 
 
-def get_promotion(generation, domain_backups):
+def get_promotion(args, generation, domain_backups):
     """
     Determine whether or not to promote the generation or not given how much
     time is left before its next expiration.
     """
-    timelines = {
-            'son': {
-                'expiration': datetime.timedelta(days=7),
-                'lifespan': datetime.timedelta(days=2),
-                },
-            'father': {
-                'expiration': datetime.timedelta(days=30),
-                'lifespan': datetime.timedelta(days=7)
-                },
-            'grandfather': {
-                'expiration': datetime.timedelta(days=90),
-                'lifespan': datetime.timedelta(days=30),
-                }
+    lifespan = datetime.timedelta(days=args['interval'])
+    expirations = {
+            'son': datetime.timedelta(days=7),
+            'father': datetime.timedelta(days=30),
+            'grandfather': datetime.timedelta(days=90)
             }
 
     #
@@ -41,8 +33,12 @@ def get_promotion(generation, domain_backups):
     #
     domain_backup = get_backups([domain_backups[generation]])
     backup_datetime = domain_backup[domain_backups[generation]]
-    expiration = datetime.datetime.now() + timelines[generation]['expiration']
-    if backup_datetime + timelines[generation]['lifespan'] >= expiration:
+    expiration_date = backup_datetime + expirations[generation]
+    expiration_delta = expiration_date - datetime.datetime.now()
+    # common.eprint("In another {} days, {} will expire."
+    #         .format(expiration_delta.days, generation))
+    if datetime.datetime.now() + lifespan >= expiration_date:
+        # common.eprint('Which means we need to promote its replacement now.')
         return True
 
     return False
@@ -67,7 +63,7 @@ def get_backups(backup_objects):
     return backups
 
 
-def get_results(backups):
+def get_results(args, backups):
     """
     Determines what the end result of the backups should be.
 
@@ -119,24 +115,27 @@ def get_results(backups):
     # generation yet.
     #
     lineage = ('grandfather', 'father', 'son')
+    # common.eprint("The generations will be checked again in {} days"
+    #         .format(args['interval']))
     for generation in lineage:
         # Returns a bool
-        promotion = get_promotion(generation, domain_backups)
+        promotion = get_promotion(args, generation, domain_backups)
         if promotion and generation != 'son':
             # Change the archive to reflect the change after the promotion
-            new_generation = domain_backups[lineage.index(generation) + 1]
+            replacement = lineage[lineage.index(generation) + 1]
+            new_generation = domain_backups[replacement]
             domain_backups[generation] = new_generation
         elif promotion and generation == 'son':
             # Store a current backup as it is due to become the latest snapshot
             # of the son generation
-            domain_backups['son'] = ''
+            domain_backups['son'] = args['newbackup']
 
     #
     # Set up the results and start storing the current generations
     #
     results = {}
     results['current'] = domain_backups
-    results['delete'] = {}
+    results['delete'] = []
 
     #
     # Delete any snapshots that aren't specified as either a son, father or
@@ -144,8 +143,7 @@ def get_results(backups):
     #
     for backup in backups:
         if backup not in list(domain_backups.values()):
-            delete_domain_archive(args, archive)
-            results['delete'].update(archive)
+            results['delete'].append(backup)
 
     return results
 
@@ -157,9 +155,17 @@ def parse_args():
                         help='''The comma-separated list of backups that are
                         already present''',
                         required=False)
-
+    parser.add_argument('-n', '--newbackup',
+                        help='The new backup that we could add if we need to',
+                        required=False)
+    parser.add_argument('-i', '--interval',
+                        help='''The interval which we are scheduled to check
+                        again in days''',
+                        required=False)
 
     args = vars(parser.parse_args())
+
+    args['interval'] = int(args['interval'])
 
     return args
 
@@ -182,10 +188,11 @@ def main():
     backups = get_backups(args['backups'].split(','))
 
     # Perform the API call
-    results = get_results(backups)
+    results = get_results(args, backups)
 
     # Display the results
-    common.json_print(results)
+    # common.json_print(results)
+    print('"{}"'.format(results))
 
 if __name__ == '__main__':
     #

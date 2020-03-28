@@ -8,3 +8,5 @@ cloudns_api_pass: "{{ vault_cloudns_api_pass }}"
 minio_server: 'https://backups.compositional.enterprises'
 minio_access_key: 'ourcomposebot'
 minio_secret_key: "{{ vault_minio_secret_key }}"
+
+archive_backups_interval: 2

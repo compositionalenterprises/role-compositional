@@ -5,6 +5,11 @@
       apt:
         name: jq
         state: latest
+        update_cache: True
+
+    - name: Set environment and date-formatted name for things
+      set_fact:
+        do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
 
     - name: Get all of the bucket names
       shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep {{ environment_domain | replace('.', '-') }}"
@@ -12,4 +17,17 @@
 
     - name: Determine if we need a new one
       script:
-        cmd: ../bin/archive_backups.py --backups "{{ backup_services_domain_archives['stdout_lines'] | join(',') }}"
+        cmd: ../bin/archive_backups.py --backups "{{ archive_backups_domain_archives['stdout_lines'] | join(',') }}" --newbackup "{{ do_object_name }}" --interval "{{ archive_backups_interval }}"
+      register: archive_backups_results
+
+    - name: Save the results as a dictionary to use
+      set_fact:
+        archive_backups_destinations: "{{ archive_backups_results['stdout'] | from_json }}"
+
+    - name: Save new backup if needed
+      shell: "tar cvzf - /srv | mc pipe backups/ocbackups/{{ do_object_name }}.tar.gz"
+      when: archive_backups_destinations['current']['son'].startswith(do_object_name)
+
+    - name: Delete any images that need deleting
+      command: "mc rm backups/ocbackups/{{ item }}"
+      loop: "{{ archive_backups_destinations['delete'] }}"
