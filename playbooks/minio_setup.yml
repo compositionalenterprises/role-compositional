@@ -1,0 +1,13 @@
+---
+- hosts: all
+  tasks:
+    - name: MinIO Client is installed
+      uri:
+        url: 'https://dl.min.io/client/mc/release/linux-amd64/mc'
+        dest: '/usr/local/bin/'
+        creates: '/usr/local/bin/mc'
+        mode: '0755'
+
+    - name: MinIO Client is registered with our domain
+      command: mc config host add backups {{ minio_server }} {{ minio_access_key }} {{ minio_secret_key }}
+      no_log: True

@@ -4,3 +4,7 @@ do_droplet_size: 's-1vcpu-1gb'
 
 cloudns_api_user: 'ourcomposebot'
 cloudns_api_pass: "{{ vault_cloudns_api_pass }}"
+
+minio_server: 'https://backups.compositional.enterprises/minio'
+minio_access_key: 'ourcomposebot'
+minio_secret_key: "{{ vault_minio_secret_key }}"
