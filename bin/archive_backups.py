@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# import common
+import common
 import argparse
 import datetime
 
@@ -35,10 +35,10 @@ def get_promotion(args, generation, domain_backups):
     backup_datetime = domain_backup[domain_backups[generation]]
     expiration_date = backup_datetime + expirations[generation]
     expiration_delta = expiration_date - datetime.datetime.now()
-    # common.eprint("In another {} days, {} will expire."
-    #         .format(expiration_delta.days, generation))
+    common.eprint("In another {} days, {} will expire."
+             .format(expiration_delta.days, generation))
     if datetime.datetime.now() + lifespan >= expiration_date:
-        # common.eprint('Which means we need to promote its replacement now.')
+        common.eprint('Which means we need to promote its replacement now.')
         return True
 
     return False
@@ -57,7 +57,7 @@ def get_backups(backup_objects):
     for backup_object in backup_objects:
         # Get the date string
         datestr = backup_object.split('--')[1].split('.')[0]
-        dateobj = datetime.datetime.strptime(datestr, '%Y-%m-%d-%H-%M-%S')
+        dateobj = datetime.datetime.strptime(datestr, '%Y-%m-%d-%H-%M')
         backups[backup_object] = dateobj
 
     return backups
@@ -110,14 +110,18 @@ def get_results(args, backups):
         else:
             domain_backups['grandfather'] = backup
 
+    common.eprint("The current backups are: {}".format(domain_backups))
     #
     # Determine whether or not the snapshot needs to be promoted to the next
     # generation yet.
     #
     lineage = ('grandfather', 'father', 'son')
-    # common.eprint("The generations will be checked again in {} days"
-    #         .format(args['interval']))
+    common.eprint("The generations will be checked again in {} days"
+             .format(args['interval']))
     for generation in lineage:
+        if not generation in domain_backups:
+            # We don't have a backup that's old enough for this generation yet
+            continue
         # Returns a bool
         promotion = get_promotion(args, generation, domain_backups)
         if promotion and generation != 'son':
@@ -134,7 +138,7 @@ def get_results(args, backups):
     # Set up the results and start storing the current generations
     #
     results = {}
-    results['current'] = domain_backups
+    results['keep'] = domain_backups
     results['delete'] = []
 
     #
@@ -185,13 +189,23 @@ def main():
     #       'andrewcz-com--2020-01-01-01-01-02.tar.gz': 'datetime.datetime(2020, 01, 01, 01, 01, 02)'
     #   }
     #
-    backups = get_backups(args['backups'].split(','))
+    if len(args['backups'].split(',')[0]) > 0:
+        # If there are any backups there to get, get them now
+        backups = get_backups(args['backups'].split(','))
+        # Perform the API call
+        results = get_results(args, backups)
+    else:
+        # This is the first backup we've attempted to take
+        # Create a skeleton results dict
+        results = {}
+        results['keep'] = {}
+        results['keep']['son'] = args['newbackup']
+        results['delete'] = []
 
-    # Perform the API call
-    results = get_results(args, backups)
-
-    # Display the results
-    # common.json_print(results)
+    # Pretty print the results to stderr
+    common.json_eprint(results)
+    # Output the results in parsable json, which includes surrounding
+    # double-quotes
     print('"{}"'.format(results))
 
 if __name__ == '__main__':

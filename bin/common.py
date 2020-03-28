@@ -12,3 +12,10 @@ def eprint(*args, **kwargs):
 def json_print(data):
     """Prints json-formatted and dictionary data in human-readable form"""
     print(json.dumps(data, indent=4, sort_keys=True))
+
+
+def json_eprint(data):
+    """
+    Prints json-formatted and dictionary data in human-readable form to stderr
+    """
+    print(json.dumps(data, indent=4, sort_keys=True), file=sys.stderr)
