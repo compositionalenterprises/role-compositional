@@ -31,7 +31,7 @@
         image: 'ubuntu-18-04-x64'
         ssh_keys: "{{ ssh_key_facts['ansible_facts']['ssh_keys'] | map(attribute='id') | list }}"
         private_networking: True
-        wait_timeout: 500
+        wait_timeout: 600
       register: my_droplet
 
     - name: Get the facts about the floating IPs
