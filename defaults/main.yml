@@ -92,7 +92,7 @@ compositional_wordpress_mysql_script: |
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: no
-compositional_bitwarden_version: '1.7.0-alpine'
+compositional_bitwarden_version: '1.14.1-alpine'
 compositional_bitwarden_storage: 'local'
 
 #
