@@ -74,8 +74,8 @@
         "
 
 - import_playbook: 'transfer_ip.yml'
-  #- import_playbook: 'delete_droplet.yml'
-  #  when: delete_droplet
+- import_playbook: 'delete_droplet.yml'
+  when: delete_droplet
 
 - name: Update the hosts file with the new droplet's address
   hosts: localhost
