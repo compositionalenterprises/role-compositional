@@ -55,6 +55,6 @@ server {
     # Direct {{ environment_domain }}/ without any indicator to the portal webapp
     #
     location = / {
-      return 301 https://$host{{ compositional_webroot_redirect }}/;
+      return 301 https://$host/{{ compositional_webroot_redirect }}/;
     }
 }
