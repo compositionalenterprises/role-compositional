@@ -71,6 +71,7 @@
                 ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
                 SERVICES: "{{ compositional_services | join(' ') }}"
                 RAILS_RELATIVE_URL_ROOT: '/portal'
+                HOST: "{{ environment_domain }}"
 
       networks:
           frontend:
