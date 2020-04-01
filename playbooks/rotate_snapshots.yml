@@ -1,2 +1,6 @@
 - import_playbook: 'create_snapshot.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 - import_playbook: 'delete_snapshot.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml

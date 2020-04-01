@@ -2,6 +2,8 @@
 - name: Get DO Droplet Info
   hosts: localhost
   connection: local
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   tasks:
     - name: Run get droplets info script
       script: ../bin/get_droplets_of_same_domain.py --token {{ do_oauth_token }}

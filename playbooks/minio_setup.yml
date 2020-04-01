@@ -1,5 +1,7 @@
 ---
 - hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   tasks:
     - name: MinIO Client is installed
       uri:

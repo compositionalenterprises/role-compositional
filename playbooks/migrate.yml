@@ -1,4 +1,6 @@
 - name: Migrate
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   hosts: localhost
   connection: local
   gather_facts: False
@@ -12,9 +14,15 @@
         delete_droplet: "{{ delete_droplet_prompt }}"
 
 - import_playbook: 'rotate_snapshots.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 - import_playbook: 'create_droplet.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 
 - hosts: localhost
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   connection: local
   gather_facts: False
   tasks:
@@ -32,6 +40,8 @@
           - 'new'
 
 - name: Establish Connection
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   gather_facts: False
   hosts: compositional
   tasks:
@@ -39,20 +49,30 @@
       wait_for_connection:
 
 - import_playbook: 'block_storage.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - import_playbook: 'mariadb_export.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   when: inventory_hostname in groups['old']
 - import_playbook: 'transfer_data.yml'
 
 - import_playbook: 'install_services.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   when: inventory_hostname in groups['new']
 
 - import_playbook: 'mariadb_export.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   when: inventory_hostname in groups['old']
 - import_playbook: 'transfer_data.yml'
 
 - name: Restore the most recently-copied-over database from dump files
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   hosts: new
   tasks:
     - name: Determine latest logical mysqldump SQL backup file
@@ -74,10 +94,16 @@
         "
 
 - import_playbook: 'transfer_ip.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 - import_playbook: 'delete_droplet.yml'
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   when: delete_droplet
 
 - name: Update the hosts file with the new droplet's address
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   hosts: localhost
   connection: local
   gather_facts: True

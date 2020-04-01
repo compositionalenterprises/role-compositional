@@ -1,4 +1,5 @@
 ---
+admin_email: "{{ environment_admin }}@{{ environment_domain }}"
 do_oauth_token: "{{ vault_do_oauth_token }}"
 do_droplet_size: 's-1vcpu-1gb'
 

@@ -1,4 +1,6 @@
 - name: DO VM Setup
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   hosts: localhost
   connection: local
   tasks:

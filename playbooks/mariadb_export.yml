@@ -1,5 +1,7 @@
 ---
 - hosts: compositional
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   tasks:
     - name: Remove previous mariabackup
       file:

@@ -2,6 +2,8 @@
   hosts: localhost
   connection: local
   gather_facts: False
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   pre_tasks:
     - name: Gather the values for all of the storage variables
       set_fact:
@@ -9,11 +11,15 @@
 
 - name: Deploy Droplet
   import_playbook: create_droplet.yml
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 
 - name: Inventory Management
   hosts: localhost
   connection: local
   gather_facts: False
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   tasks:
     - name: Add newly-created droplet to new compositional host
       add_host:
@@ -25,6 +31,8 @@
 - name: Establish Connection
   gather_facts: False
   hosts: compositional
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   tasks:
     - name: Add Droplet to DNS while it finishes spinning up
        # Yes, these lines should end with trailing whitespace
@@ -42,15 +50,21 @@
 
 - name: Block Storage
   import_playbook: block_storage.yml
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Infrastructure Services
   import_playbook: install_services.yml
+  vars_files:
+    - ../environment/group_vars/all/all.yml
 
 - name: Update the hosts file with the new droplet's address
   hosts: localhost
   connection: local
   gather_facts: True
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   tasks:
     - name: Register realpath of hosts.yml file
       local_action:

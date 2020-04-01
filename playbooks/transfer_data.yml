@@ -1,5 +1,7 @@
 ---
 - name: Copy application data from one server to another
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   hosts: all
   gather_facts: False
   tasks:

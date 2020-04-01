@@ -1,5 +1,7 @@
 ---
 - hosts: localhost
+  vars_files:
+    - ../environment/group_vars/all/all.yml
   connection: local
   tasks:
     - name: ssh_key_facts
