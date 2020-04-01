@@ -217,6 +217,9 @@ def parse_args():
     parser.add_argument('-b', '--binpath',
                         help='Path to the ansible bin directory',
                         required=False)
+    parser.add_argument('-e', '--email',
+                        help='Email address for the main point of contact',
+                        required=False)
 
     args = vars(parser.parse_args())
 
@@ -227,6 +230,8 @@ def parse_args():
         args['domain'] = input("Domain: ")
     if not args['services']:
         args['services'] = input("Services: ")
+    if not args['email']:
+        args['email'] = "{{ environment_admin }}@{{ environment_domain }}"
     args['services'] = format_services(args['services'])
 
     return args
@@ -242,7 +247,9 @@ def main():
     all_comp_yaml_init = { 'compositional_services': args['services'] }
     all_env_yaml_init = {
             'environment_domain': args['domain'],
-            'environment_admin': 'admin'
+            'environment_admin': 'admin',
+            'environment_email': args['email'],
+            'compositional_portal_admin_email': '{{ environment_email }}'
             }
 
     # Write the initial compositional all.yml file
