@@ -67,7 +67,7 @@
                 DB_PASS: "{{ compositional_portal_backend_password }}"
                 BASE_URL: "{{ environment_domain }}"
                 ORG_NAME: "{{ compositional_portal_org_name }}"
-                ADMIN_EMAIL: "{{ admin_email }}"
+                ADMIN_EMAIL: "{{ compositional_portal_admin_email }}"
                 ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
                 SERVICES: "{{ compositional_services | join(' ') }}"
                 RAILS_RELATIVE_URL_ROOT: '/portal'
