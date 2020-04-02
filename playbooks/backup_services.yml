@@ -1,7 +1,3 @@
 ---
 - import_playbook: ./minio_setup.yml
-  vars_files:
-    - ../environment/group_vars/all/all.yml
 - import_playbook: ./archive_backups.yml
-  vars_files:
-    - ../environment/group_vars/all/all.yml

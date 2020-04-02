@@ -11,8 +11,6 @@
 
 - name: Deploy Droplet
   import_playbook: create_droplet.yml
-  vars_files:
-    - ../environment/group_vars/all/all.yml
 
 - name: Inventory Management
   hosts: localhost
@@ -50,14 +48,10 @@
 
 - name: Block Storage
   import_playbook: block_storage.yml
-  vars_files:
-    - ../environment/group_vars/all/all.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Infrastructure Services
   import_playbook: install_services.yml
-  vars_files:
-    - ../environment/group_vars/all/all.yml
 
 - name: Update the hosts file with the new droplet's address
   hosts: localhost
