@@ -1,0 +1,85 @@
+---
+- name: (portal) Nginx conf is deployed
+  template:
+    src: "nginx_portal.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/portal.conf"
+  notify: 'Restart Frontend'
+
+- name: (portal) The MySQL database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
+  no_log: True
+
+- name: (portal) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_portal_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: True
+
+- name: (portal) Ensure portal_credentials directory exists
+  file:
+    path: "/srv/{{ compositional_portal_storage }}/portal_credentials"
+    state: directory
+
+- name: Create credentials files
+  # So, let's review POSIX standards, shall we?
+  #
+  #     3.206 Line
+  #     A sequence of zero or more non- <newline> characters plus a terminating
+  #     <newline> character.
+  #
+  # So, these _files_, as we graciously call what we are templating below,
+  # contain no lines. Now, wouldn't that mean that they are blank files? No! To
+  # the contrary according to ruby developers around the world. These files are
+  # to the standard of these blaggards who snub the very idea of
+  # interoperability. So, be aware! These files **MUST** not have a line that
+  # ends in a newline.
+  template:
+    src: 'portal_{{ item }}.j2'
+    dest: "/srv/{{ compositional_portal_storage }}/portal_credentials/{{ item }}"
+    mode: 0600
+    owner: root
+  loop:
+    - 'production.key'
+    - 'production.yml.enc'
+
+- name: (portal) The latest portal service is built and {{ compositional_portal_state }}
+  docker_service:
+    project_name: portal
+    definition:
+      version: '3.6'
+      services:
+          portal:
+              image: "compositionalenterprises/portal:{{ compositional_portal_version }}"
+              container_name: portal
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
+              networks:
+                  - frontend
+                  - backend
+              environment:
+                DB_HOST: 'database'
+                DB_NAME: 'portal'
+                DB_USER: 'portal'
+                DB_PASS: "{{ compositional_portal_backend_password }}"
+                BASE_URL: "{{ environment_domain }}"
+                ORG_NAME: "{{ compositional_portal_org_name }}"
+                ADMIN_EMAIL: "{{ compositional_portal_admin_email }}"
+                ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
+                SERVICES: "{{ compositional_services | join(' ') }}"
+                RAILS_RELATIVE_URL_ROOT: '/portal'
+                HOST: "{{ environment_domain }}"
+
+      networks:
+          frontend:
+              external: true
+          backend:
+              external: true
+    build: "{{ compositional_portal_build }}"
+    state: "{{ compositional_portal_state }}"
+    restarted: "{{ compositional_portal_restarted }}"
+  register: compositional_portal_output
+  no_log: True

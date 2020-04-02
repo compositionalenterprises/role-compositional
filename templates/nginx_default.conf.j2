@@ -52,9 +52,9 @@ server {
 
     root /usr/share/nginx/html;
     #
-    # Direct {{ environment_domain }}/ without any indicator to a listing of services
+    # Direct {{ environment_domain }}/ without any indicator to the portal webapp
     #
     location = / {
-        index index.html;
+      return 301 https://$host/{{ compositional_webroot_redirect }}/;
     }
 }
