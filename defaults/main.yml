@@ -17,7 +17,6 @@ compositional_services:
   - 'nextcloud'
   - 'rundeck'
   - 'wordpress'
-  - 'portal'
 
 #
 # Environment Vars
