@@ -225,6 +225,9 @@ def parse_args():
     parser.add_argument('-e', '--email',
                         help='Email address for the main point of contact',
                         required=False)
+    parser.add_argument('-z', '--dropletsize',
+                        help='The size of the droplet for this instance',
+                        required=False)
 
     args = vars(parser.parse_args())
 
@@ -235,6 +238,8 @@ def parse_args():
         args['domain'] = input("Domain: ")
     if not args['services']:
         args['services'] = input("Services: ")
+    if not args['dropletsize']:
+        args['dropletsize'] = 's-1vcpu-1gb'
     if not args['email']:
         args['email'] = "{{ environment_admin }}@{{ environment_domain }}"
     args['services'] = format_services(args['services'])
@@ -249,12 +254,15 @@ def main():
 
     # Set up the local repo
     local_repo = create_local_repo(args['domain'])
-    all_comp_yaml_init = { 'compositional_services': args['services'] }
+    all_comp_yaml_init = {
+            'compositional_services': args['services'],
+            'compositional_portal_admin_email': '{{ environment_email }}',
+            'do_droplet_size': args['dropletsize']
+            }
     all_env_yaml_init = {
             'environment_domain': args['domain'],
             'environment_admin': 'admin',
-            'environment_email': args['email'],
-            'compositional_portal_admin_email': '{{ environment_email }}'
+            'environment_email': args['email']
             }
 
     # Write the initial compositional all.yml file
