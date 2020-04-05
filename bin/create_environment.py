@@ -216,7 +216,7 @@ def create_local_repo(domain):
         else:
             # This is a new key, so append it to the file
             with open(known_hosts, 'a') as known_hosts_file:
-                known_hosts_file.write(gitlab_key.strip())
+                known_hosts_file.write("{}\n".format(gitlab_key.strip()))
 
     # Clone down the template 'environment' repo
     subprocess.run(['git', 'clone', "{}/environment.git".format(gitlab_prefix),
