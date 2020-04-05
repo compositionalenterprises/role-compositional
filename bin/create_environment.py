@@ -201,11 +201,15 @@ def create_local_repo(domain):
     for gitlab_key in gitlab_keys:
         key_found = False
         key_ident = ' '.join(gitlab_key.split(' ')[:2])
-        for line in fileinput.input(known_hosts):
-            if line.startswith(key_ident):
-                print(gitlab_key.strip())
-                key_found = True
-                continue
+        try:
+            for line in fileinput.input(known_hosts):
+                if line.startswith(key_ident):
+                    print(gitlab_key.strip())
+                    key_found = True
+                    continue
+        except FileNotFoundError:
+            # This file doesn't exist yet. It must be a fresh isntall
+            pass
         if key_found:
             # Go to the next key if we've found this one
             continue
