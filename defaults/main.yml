@@ -144,7 +144,7 @@ compositional_jekyll_extra_commands: |
 compositional_rundeck_build: yes
 compositional_rundeck_state: present
 compositional_rundeck_restarted: yes
-compositional_rundeck_version: '3.1.4'
+compositional_rundeck_version: '3.2.5'
 compositional_rundeck_storage: 'local'
 compositional_rundeck_backend_password: 'testpassword'
 compositional_rundeck_mysql_script: |
