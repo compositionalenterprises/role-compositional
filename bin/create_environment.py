@@ -253,9 +253,6 @@ def parse_args():
                         help='''The list of services that should be deployed to
                         this instance, in comma-separated form''',
                         required=False)
-    parser.add_argument('-b', '--binpath',
-                        help='Path to the ansible bin directory',
-                        required=False)
     parser.add_argument('-e', '--email',
                         help='Email address for the main point of contact',
                         required=False)
