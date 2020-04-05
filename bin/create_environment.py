@@ -200,7 +200,7 @@ def create_local_repo(domain):
     # Loop through the keys and perform a lineinfile
     for gitlab_key in gitlab_keys:
         key_found = False
-        key_ident = gitlab_key.split(' ')[:2].join(' ')
+        key_ident = ' '.join(gitlab_key.split(' ')[:2])
         for line in fileinput.input(known_hosts):
             if line.startswith(key_ident):
                 print(gitlab_key.strip())
