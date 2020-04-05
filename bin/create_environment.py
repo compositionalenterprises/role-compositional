@@ -7,6 +7,7 @@ import common
 import random
 import shutil
 import string
+import pathlib
 import argparse
 import subprocess
 import ansible_vault
@@ -181,9 +182,13 @@ def create_local_repo(domain):
     """
     # Set up shorthand strings to use below
     environment_domain = domain.replace('.', '-')
-    gitlab_prefix = 'git@gitlab.com:compositionalenterprises'
+    gitlab_domain = 'gitlab.com'
+    gitlab_prefix = "git@{}:compositionalenterprises".format(gitlab_domain)
     origin_url = "{}/environment.git".format(gitlab_prefix)
 
+    # Add the ssh key for the remote repo
+    known_hosts = "{}/.ssh/known_hosts".format(str(pathlib.Path.home()))
+    subprocess.run(['ssh-keyscan', gitlab_domain, ">>", known_hosts])
     # Clone down the template 'environment' repo
     subprocess.run(['git', 'clone', "{}/environment.git".format(gitlab_prefix),
         environment_domain], cwd='/tmp')
