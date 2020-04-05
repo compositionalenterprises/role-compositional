@@ -54,10 +54,6 @@
 - import_playbook: 'install_services.yml'
   when: inventory_hostname in groups['new']
 
-- import_playbook: 'mariadb_export.yml'
-  when: inventory_hostname in groups['old']
-- import_playbook: 'transfer_data.yml'
-
 - name: Restore the most recently-copied-over database from dump files
   vars_files:
     - ../environment/group_vars/all/all.yml
@@ -81,6 +77,8 @@
             < /var/lib/mysql/backups/logical/{{ latest_full_backup }}'
         "
 
+- import_playbook: 'install_services.yml'
+  when: inventory_hostname in groups['new']
 - import_playbook: 'transfer_ip.yml'
 - import_playbook: 'delete_droplet.yml'
   when: delete_droplet
