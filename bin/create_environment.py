@@ -190,7 +190,7 @@ def create_local_repo(domain):
     gitlab_key = subprocess.run(['ssh-keyscan', gitlab_domain],
             stdout=subprocess.PIPE, encoding='utf-8')
     known_hosts = "{}/.ssh/known_hosts".format(str(pathlib.Path.home()))
-    subprocess.run(['ssh-keygen', '-lf', gitlab_key.stdout.strip() ">>",
+    subprocess.run(['ssh-keygen', '-lf', gitlab_key.stdout.strip(), ">>",
             known_hosts])
     # Clone down the template 'environment' repo
     subprocess.run(['git', 'clone', "{}/environment.git".format(gitlab_prefix),
