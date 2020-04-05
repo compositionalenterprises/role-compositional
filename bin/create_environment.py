@@ -9,6 +9,7 @@ import shutil
 import string
 import pathlib
 import argparse
+import fileinput
 import subprocess
 import ansible_vault
 
@@ -186,12 +187,33 @@ def create_local_repo(domain):
     gitlab_prefix = "git@{}:compositionalenterprises".format(gitlab_domain)
     origin_url = "{}/environment.git".format(gitlab_prefix)
 
+    #
+    # Deal with brand new ssh keys for repos
+    #
     # Add the ssh key for the remote repo
-    gitlab_key = subprocess.run(['ssh-keyscan', gitlab_domain],
+    gitlab_keys = subprocess.run(['ssh-keyscan', gitlab_domain],
             stdout=subprocess.PIPE, encoding='utf-8')
+    # get a list of all of the keys without any empty strings
+    gitlab_keys = list(filter(None, gitlab_keys.stdout.split('\n')))
+    # Format the known_hosts absolute filepath
     known_hosts = "{}/.ssh/known_hosts".format(str(pathlib.Path.home()))
-    subprocess.run(['ssh-keygen', '-l', gitlab_key.stdout.strip(), ">>",
-            known_hosts])
+    # Loop through the keys and perform a lineinfile
+    for gitlab_key in gitlab_keys:
+        key_found = False
+        key_ident = gitlab_key.split(' ')[:2].join(' ')
+        for line in fileinput.input(known_hosts)
+            if line.startswith(key_ident)
+                print(gitlab_key.strip())
+                key_found = True
+                continue
+        if key_found:
+            # Go to the next key if we've found this one
+            continue
+        else:
+            # This is a new key, so append it to the file
+            with open(known_hosts, 'a') as known_hosts_file:
+                known_hosts_file.write(gitlab_key.strip())
+
     # Clone down the template 'environment' repo
     subprocess.run(['git', 'clone', "{}/environment.git".format(gitlab_prefix),
         environment_domain], cwd='/tmp')
