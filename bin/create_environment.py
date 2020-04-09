@@ -119,7 +119,7 @@ def create_pass(pass_len=16):
     return new_pass
 
 
-def create_vaulted_passwords(local_repo, service, vault_pass, binpath):
+def create_vaulted_passwords(local_repo, service, vault_pass):
     """
     Set up the passwords for the services that we need to vault
     """
@@ -148,11 +148,8 @@ def create_vaulted_passwords(local_repo, service, vault_pass, binpath):
             vault_string = vault.dump(vault_content).decode()
         else:
             # Create the vault file entirely from scratch
-            ansible_vault_command = 'ansible-vault'
-            if binpath:
-                ansible_vault_command = "{}/ansible-vault".format(binpath)
             create_vault_command = [
-                    ansible_vault_command,
+                    'ansible-vault',
                     'encrypt_string',
                     '--vault-password-file',
                     '/tmp/vault_pass_file',
@@ -313,11 +310,10 @@ def main():
 
     # Add passwords for all of the services that we need
     for service in args['services']:
-        create_vaulted_passwords(local_repo, service, vault_pass,
-                args['binpath'])
+        create_vaulted_passwords(local_repo, service, vault_pass)
 
     # Add the mysql root user too, because we need that always
-    create_vaulted_passwords(local_repo, 'mysql', vault_pass, args['binpath'])
+    create_vaulted_passwords(local_repo, 'mysql', vault_pass)
 
     put_repo_in_gitlab(local_repo, args['domain'])
 
