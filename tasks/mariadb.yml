@@ -2,6 +2,7 @@
 - name: (mariadb) The latest mariadb service is build and present
   docker_service:
     project_name: mariadb
+    timeout: 60
     definition:
       version: '3.6'
       services:
