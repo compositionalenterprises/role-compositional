@@ -21,6 +21,11 @@ SERVICES = {
             },
         'manager': {
             },
+        'bookstack': {
+            'passwords': {
+                'compositional_bookstack_backend_password': {}
+                }
+            },
         'bitwarden': {
             },
         'kanboard': {
