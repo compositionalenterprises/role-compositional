@@ -13,6 +13,7 @@
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
         delete_droplet: "{{ delete_droplet_prompt }}"
 
+- import_playbook: 'mariadb_export.yml'
 - import_playbook: 'rotate_snapshots.yml'
 - import_playbook: 'create_droplet.yml'
 
@@ -47,54 +48,7 @@
 - import_playbook: 'block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
-- name: Flush tables on mysql databases
-  vars_files:
-    - ../environment/group_vars/all/all.yml
-  hosts: old
-  tasks:
-    - name: Determine latest logical mysqldump SQL backup file
-      find:
-        paths: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/logical'
-        use_regex: yes
-        patterns: "^full-backup-(.*)$"
-      register: full_backups
-
-    - name: Set fact for most recent mysql backup file
-      set_fact:
-        latest_full_backup: "{{ full_backups['files'] | map(attribute='path') | map('regex_replace', '^.*\/', '') | list | sort | last }}"
-
-    - name: Load MariaDB Backup
-      shell: "
-        docker exec -it database bash -c '
-          mysql -uroot -p{{ compositional_database_root_password }} --force
-            < /var/lib/mysql/backups/logical/{{ latest_full_backup }}'
-        "
-
 - import_playbook: 'transfer_data.yml'
-
-- name: Restore the most recently-copied-over database from dump files
-  vars_files:
-    - ../environment/group_vars/all/all.yml
-  hosts: new
-  tasks:
-    - name: Determine latest logical mysqldump SQL backup file
-      find:
-        paths: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/logical'
-        use_regex: yes
-        patterns: "^full-backup-(.*)$"
-      register: full_backups
-
-    - name: Set fact for most recent mysql backup file
-      set_fact:
-        latest_full_backup: "{{ full_backups['files'] | map(attribute='path') | map('regex_replace', '^.*\/', '') | list | sort | last }}"
-
-    - name: Load MariaDB Backup
-      shell: "
-        docker exec -it database bash -c '
-          mysql -uroot -p{{ compositional_database_root_password }} --force
-            < /var/lib/mysql/backups/logical/{{ latest_full_backup }}'
-        "
-
 - import_playbook: 'install_services.yml'
   when: inventory_hostname in groups['new']
 
