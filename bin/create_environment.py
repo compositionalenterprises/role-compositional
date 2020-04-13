@@ -318,7 +318,7 @@ def main():
         create_vaulted_passwords(local_repo, service, vault_pass)
 
     # Add the mysql and portal passwords too, because we need those always
-    for default_service in ['mysql', 'portal']
+    for default_service in ['mysql', 'portal']:
         create_vaulted_passwords(local_repo, default_service, vault_pass)
 
     put_repo_in_gitlab(local_repo, args['domain'])
