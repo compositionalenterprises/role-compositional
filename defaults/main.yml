@@ -52,6 +52,7 @@ compositional_kanboard_version: 'v1.2.8'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_mysql_script: |
+  DROP USER 'kanboard'@'%';
   CREATE USER IF NOT EXISTS 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%';
@@ -66,6 +67,7 @@ compositional_nextcloud_version: '18'
 compositional_nextcloud_storage: 'local'
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
+  DROP USER 'nextcloud'@'%';
   CREATE USER IF NOT EXISTS 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
   CREATE DATABASE IF NOT EXISTS nextcloud;
   GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
@@ -84,6 +86,7 @@ compositional_wordpress_version: '5.2.2'
 compositional_wordpress_storage: 'local'
 compositional_wordpress_backend_password: 'testpassword'
 compositional_wordpress_mysql_script: |
+  DROP USER 'wordpress'@'%';
   CREATE USER IF NOT EXISTS 'wordpress'@'%' IDENTIFIED BY '{{ compositional_wordpress_backend_password }}';
   CREATE DATABASE IF NOT EXISTS wordpress;
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%';
@@ -109,6 +112,7 @@ compositional_firefly_storage: 'local'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_mysql_script: |
+  DROP USER 'firefly'@'%';
   CREATE USER IF NOT EXISTS 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
@@ -150,6 +154,7 @@ compositional_rundeck_version: '3.2.5'
 compositional_rundeck_storage: 'local'
 compositional_rundeck_backend_password: 'testpassword'
 compositional_rundeck_mysql_script: |
+  DROP USER 'rundeck'@'%';
   CREATE USER IF NOT EXISTS 'rundeck'@'%' IDENTIFIED BY '{{ compositional_rundeck_backend_password }}';
   CREATE DATABASE IF NOT EXISTS rundeck;
   GRANT ALL PRIVILEGES ON rundeck.* TO 'rundeck'@'%';
@@ -167,6 +172,7 @@ compositional_bookstack_version: '0.27.5'
 compositional_bookstack_storage: 'local'
 compositional_bookstack_backend_password: 'testpassword'
 compositional_bookstack_mysql_script: |
+  DROP USER 'bookstack'@'%';
   CREATE USER IF NOT EXISTS 'bookstack'@'%' IDENTIFIED BY '{{ compositional_bookstack_backend_password }}';
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
@@ -186,6 +192,7 @@ compositional_portal_admin_password: 'testpassword'
 compositional_portal_org_name: "{{ environment_domain.split('.')[0].upper() }}"
 compositional_portal_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
 compositional_portal_mysql_script: |
+  DROP USER 'portal'@'%';
   CREATE USER IF NOT EXISTS 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
