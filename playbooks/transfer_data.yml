@@ -47,7 +47,6 @@
           loop:
             - {'src': '/etc/letsencrypt/', 'dest': '/etc/letsencrypt'}
             - {'src': '--exclude local/database_mysql /srv/', 'dest': '/srv'}
-            - {'src': '/var/lib/docker/volumes/*_*', 'dest': '/var/lib/docker/volumes'}
             - {'src': '/srv/local/database_mysql/backups', 'dest': '/srv/local/database_mysql'}
 
         - name: Remove SSH keypair for root on old server
