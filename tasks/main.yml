@@ -14,7 +14,6 @@
   with_items:
     - "{{ compositional_frontend_service }}"
     - "{{ compositional_backend_service }}"
-    - 'portal'
 
 - include_tasks: "./{{ item }}.yml"
   with_items: "{{ compositional_services }}"
