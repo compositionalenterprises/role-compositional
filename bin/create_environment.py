@@ -240,7 +240,7 @@ def format_services(services):
         services[index] = service.strip()
 
     # Add portal to all of our instances
-    services.insert('portal')
+    services.append('portal')
 
     return services
 
