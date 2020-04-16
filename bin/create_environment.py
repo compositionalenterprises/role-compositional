@@ -301,7 +301,7 @@ def main():
     all_env_yaml_init = {
             'environment_domain': args['domain'],
             'environment_admin': args['envadmin'],
-            'environment_email': args['email']
+            'environment_email': args['email'],
             'do_droplet_size': args['dropletsize']
             }
 
