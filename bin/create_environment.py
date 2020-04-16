@@ -239,6 +239,9 @@ def format_services(services):
     for index, service in enumerate(services):
         services[index] = service.strip()
 
+    # Add portal to all of our instances
+    services.insert('portal')
+
     return services
 
 
@@ -260,6 +263,10 @@ def parse_args():
                         required=False)
     parser.add_argument('-z', '--dropletsize',
                         help='The size of the droplet for this instance',
+                        required=False)
+    parser.add_argument('-a', '--envadmin',
+                        help='The admins username for this instance',
+                        default='admin',
                         required=False)
 
     args = vars(parser.parse_args())
@@ -290,12 +297,12 @@ def main():
     all_comp_yaml_init = {
             'compositional_services': args['services'],
             'compositional_portal_admin_email': '{{ environment_email }}',
-            'do_droplet_size': args['dropletsize']
             }
     all_env_yaml_init = {
             'environment_domain': args['domain'],
-            'environment_admin': 'admin',
+            'environment_admin': args['envadmin'],
             'environment_email': args['email']
+            'do_droplet_size': args['dropletsize']
             }
 
     # Write the initial compositional all.yml file
