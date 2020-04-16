@@ -71,5 +71,4 @@
     - name: Wait for metrics agent to finish
       # It takes a while for the metrics agent to initiate, so we pause to let it do its thing
       pause:
-        minutes: 1
-
+        minutes: 2
