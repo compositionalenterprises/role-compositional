@@ -19,7 +19,7 @@ compositional_services:
 # Here we want to default to portal if it's being deployed.
 # Otherwise, just default to nill and have it redirect to the
 # default html welcome page
-compositional_webroot_redirect: {% if 'portal' in compositional_services %}portal{% endif %}
+compositional_webroot_redirect: "{% if 'portal' in compositional_services %}portal{% endif %}"
 
 #
 # Environment Vars
