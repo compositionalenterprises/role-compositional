@@ -67,3 +67,9 @@
       # a droplet is an int; one of them has got to budge...
       when: all_droplets | map('int') | list | intersect(floating_ips['floating_ips'] | map(attribute='droplet') | list | selectattr('id', 'defined') | map(attribute='id') | list) | length == 0
       register: new_floating_ip
+
+    - name: Wait for metrics agent to finish
+      # It takes a while for the metrics agent to initiate, so we pause to let it do its thing
+      pause:
+        minutes: 1
+
