@@ -22,6 +22,12 @@
     certbot_certs:
       - domains:
         - "{{ environment_domain }}"
+  pre_tasks:
+    - name: Update all packages on the system
+      apt:
+        name: '*'
+        state: latest
+        update_cache: True
   roles:
     - role: swapfile
       swapfile_size: '4G'
