@@ -1,0 +1,4 @@
+---
+- import_playbook: 'mariadb_export.yml'
+- import_playbook: 'create_snapshot.yml'
+- import_playbook: 'archive_backups.yml'
