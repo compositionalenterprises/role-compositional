@@ -46,7 +46,7 @@
     - 'production.yml.enc'
 
 - name: (portal) The latest portal service is built and {{ compositional_portal_state }}
-  docker_service:
+  docker_compose:
     project_name: portal
     definition:
       version: '3.6'

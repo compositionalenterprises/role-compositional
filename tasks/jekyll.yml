@@ -18,7 +18,7 @@
     mode: '0555'
 
 - name: (jekyll) The latest jekyll service is built and {{ compositional_jekyll_state }}
-  docker_service:
+  docker_compose:
     project_name: jekyll
     definition:
       version: '3.6'

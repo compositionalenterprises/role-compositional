@@ -19,7 +19,7 @@
   no_log: True
 
 - name: (rundeck) The latest rundeck service is built and {{ compositional_rundeck_state }}
-  docker_service:
+  docker_compose:
     project_name: rundeck
     definition:
       version: '3.6'

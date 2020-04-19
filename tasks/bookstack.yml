@@ -19,7 +19,7 @@
   no_log: True
 
 - name: (bookstack) The latest bookstack service is built and {{ compositional_bookstack_state }}
-  docker_service:
+  docker_compose:
     project_name: bookstack
     definition:
       version: '3.6'
