@@ -28,7 +28,7 @@
   no_log: True
 
 - name: (kanboard) The latest kanboard service is built and {{ compositional_kanboard_state }}
-  docker_service:
+  docker_compose:
     project_name: kanboard
     definition:
       version: '3.6'

@@ -6,7 +6,7 @@
   notify: 'Restart Frontend'
 
 - name: (manager) The latest manager service is built and {{ compositional_manager_state }}
-  docker_service:
+  docker_compose:
     project_name: manager
     definition:
       version: '3.6'

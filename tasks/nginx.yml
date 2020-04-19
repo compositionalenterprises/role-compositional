@@ -1,6 +1,6 @@
 ---
 - name: (nginx) The latest nginx service is built and present
-  docker_service:
+  docker_compose:
     project_name: nginx
     definition:
       version: '3.6'
