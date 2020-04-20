@@ -9,6 +9,8 @@
   file:
     path: "/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/"
     state: directory
+    owner: 1000
+    group: 1000
     recurse: True
 
 - name: (jekyll) The entrypoint.sh script is deployed
@@ -26,6 +28,7 @@
           jekyll:
               image: "jekyll/jekyll:{{ compositional_jekyll_version }}"
               container_name: 'jekyll'
+              user: 1000
               command: "/srv/jekyll/entrypoint.sh"
               restart: always
               volumes:
