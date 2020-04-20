@@ -24,7 +24,7 @@ git init
 git remote add origin "${JEKYLL_GIT_URL}"
 git fetch
 git reset --hard origin/master
-chmod -R jekyll:jekyll ./*
+chown -R jekyll:jekyll ./*
 
 # Test for the base URL existing and not being a blank string
 if [[ ! -z "${JEKYLL_BASE_URL}" ]]; then
