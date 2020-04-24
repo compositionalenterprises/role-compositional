@@ -31,7 +31,7 @@ def push_repo_to_gitlab(local_repo, domain):
     with open(path_to_vault_pass, 'r') as plays_vault_pass_file:
         plays_vault_pass = plays_vault_pass_file.read().strip()
     vault = ansible_vault.Vault(plays_vault_pass)
-    vault_content = vault.safe_load(open(vault_file_path).read())
+    vault_content = vault.load(open(vault_file_path).read())
     private_token = vault_content['vault_gitlab_oauth_token']
 
     # Commit those files
