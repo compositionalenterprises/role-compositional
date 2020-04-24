@@ -61,7 +61,7 @@ def create_apitoken():
     env_vars['RD_USER'] = 'admin'
     env_vars['RD_PASSWORD'] = admin_pass
     token_creation = subprocess.check_output(['rd', 'tokens', 'create', '-u',
-        'ourcomposebot', '-r', 'user,apitoken', '-d', '45d'], env=env_vars)
+        'ourcomposebot', '-r', 'user,apitoken', '-d', '30d'], env=env_vars)
     apitoken = token_creation.decode().split('\n')[1]
 
     return apitoken
