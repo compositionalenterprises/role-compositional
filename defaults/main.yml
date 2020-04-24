@@ -7,6 +7,7 @@
 compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_database_root_password: 'testpassword'
+compositional_webroot_redirect: 'portal'
 compositional_services:
   - 'bitwarden'
   - 'bookstack'
@@ -17,6 +18,7 @@ compositional_services:
   - 'nextcloud'
   - 'rundeck'
   - 'wordpress'
+  - 'portal'
 
 #
 # Environment Vars
@@ -181,3 +183,19 @@ compositional_commandcenter_admin_password: 'testpassword'
 compositional_commandcenter_mysql_script: |
   CREATE DATABASE IF NOT EXISTS commandcenter;
   GRANT ALL PRIVILEGES ON commandcenter.* TO 'commandcenter'@'%' IDENTIFIED BY '{{ compositional_commandcenter_backend_password }}';
+# Portal
+#
+compositional_portal_build: yes
+compositional_portal_state: present
+compositional_portal_restarted: yes
+compositional_portal_version: '1.0.8'
+compositional_portal_storage: 'local'
+compositional_portal_backend_password: 'testpassword'
+compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
+compositional_portal_production_yml_enc: 'mMb7knWzem8t5jXbs66LiTh+MuR4VhwttCJcshES87zG37kDxQ6tqKE5FiW3BW70orag1vVTxfL6kxnd665c/P0L9/ImWFKtbPNBbomsy/CVyFbQo4VkWC0SOi1FzKNFKkmLPdjcqFt0A37BYQjXdTNk+7x9IGyTI2tZg4h2p6qqGXB5NBJYIWoXEmCTnO9H05HxMoCqhTQCoCZeKeXKVIppweTsT80LIIVM6VJIomaSItp/XzMrmvaKek466hw9koR5z7dinzAtJnnsrBzbfF2+yAtryp8jpi+gvpll--qAM4pQghNMegIdn5--uKGo/l6lbwxIORk+raRVOw=='
+compositional_portal_admin_password: 'testpassword'
+compositional_portal_org_name: "{{ environment_domain.split('.')[0].upper() }}"
+compositional_portal_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
+compositional_portal_mysql_script: |
+  CREATE DATABASE IF NOT EXISTS portal;
+  GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
