@@ -350,7 +350,8 @@ def main():
     # Create new API token
     #
     apitoken = update_apitoken.create_apitoken()
-    update_apitoken.add_vaulted_apitoken(args, vars_dir, apitoken)
+    update_apitoken.add_vaulted_apitoken(args, "{}/{}".format(local_repo,
+        comp_path), apitoken)
     update_apitoken.push_repo_to_gitlab(local_repo, args['domain'])
 
     print("New API token created and vaulted")
