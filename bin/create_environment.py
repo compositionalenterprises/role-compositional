@@ -12,6 +12,7 @@ import argparse
 import fileinput
 import subprocess
 import ansible_vault
+import update_apitoken
 
 SERVICES = {
         'database': {
@@ -335,6 +336,9 @@ def main():
     print("Environment {} created!".format(args['domain']))
     if not args['vaultpass']:
         print("Vault Password: {}".format(vault_pass))
+
+    # Call the import_apitoken script
+    update_apitoken.main(args)
 
 
 if __name__ == '__main__':
