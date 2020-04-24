@@ -141,20 +141,6 @@ def parse_args():
     parser.add_argument('-v', '--vaultpass',
                         help='The vault pass to use to encrypt things',
                         required=False)
-    parser.add_argument('-s', '--services',
-                        help='''The list of services that should be deployed to
-                        this instance, in comma-separated form''',
-                        required=False)
-    parser.add_argument('-e', '--email',
-                        help='Email address for the main point of contact',
-                        required=False)
-    parser.add_argument('-z', '--dropletsize',
-                        help='The size of the droplet for this instance',
-                        required=False)
-    parser.add_argument('-a', '--envadmin',
-                        help='The admins username for this instance',
-                        default='admin',
-                        required=False)
 
     args = vars(parser.parse_args())
 
@@ -191,9 +177,7 @@ def main(args=parse_args()):
     add_vaulted_apitoken(args, vars_dir, apitoken)
     push_repo_to_gitlab(local_repo, args['domain'])
 
-    print("Environment {} created!".format(args['domain']))
-    if not args['vaultpass']:
-        print("Vault Password: {}".format(vault_pass))
+    print("New API token created and vaulted")
 
 
 if __name__ == '__main__':
