@@ -110,9 +110,6 @@ def put_repo_in_gitlab(local_repo, domain):
     subprocess.run(['git', 'push', '-u', 'origin', environment_domain],
             cwd="/tmp/{}".format(environment_domain))
 
-    # Remove the environment
-    shutil.rmtree("/tmp/{}".format(environment_domain))
-
 def create_pass(pass_len=16):
     """
     Since we're reusing the functionality, split out here the ability to
@@ -357,6 +354,9 @@ def main():
     update_apitoken.push_repo_to_gitlab(local_repo, args['domain'])
 
     print("New API token created and vaulted")
+
+    # Remove the environment
+    shutil.rmtree("/tmp/{}".format(args['domain'].replace('.', '-')))
 
 
 if __name__ == '__main__':
