@@ -73,7 +73,7 @@ def add_vaulted_apitoken(args, vars_dir, apitoken):
     """
     vault_file_path = "{}/vault.yml".format(vars_dir)
     # Open up the vault and add the new entry
-    vault = ansible_vault.Vault(vault_pass)
+    vault = ansible_vault.Vault(args['vault_pass'])
     vault_content = vault.load(open(vault_file_path).read())
     vault_content['vault_ourcompose_rundeck_apitoken'] = apitoken
     vault_string = vault.dump(vault_content).decode()
@@ -150,7 +150,7 @@ def parse_args():
     if not args['domain']:
         args['domain'] = input("Domain: ")
     if not args['vaultpass']:
-        args['vaultpass'] = getpass.getpass("Vault Password: ")
+        args['vault_pass'] = getpass.getpass("Vault Password: ")
 
     return args
 
