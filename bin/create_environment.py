@@ -336,6 +336,7 @@ def main():
     print("Environment {} created!".format(args['domain']))
     if not args['vaultpass']:
         print("Vault Password: {}".format(vault_pass))
+        args['vaultpass'] = vault_pass
 
     # Call the import_apitoken script
     update_apitoken.main(args)
