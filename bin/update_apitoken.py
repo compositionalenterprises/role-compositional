@@ -31,7 +31,7 @@ def push_repo_to_gitlab(local_repo, domain):
     with open(path_to_vault_pass, 'r') as plays_vault_pass_file:
         plays_vault_pass = plays_vault_pass_file.read().strip()
     vault = ansible_vault.Vault(plays_vault_pass)
-    vault_content = vault.load(open(vault_file_path).read())
+    vault_content = vault.safe_load(open(vault_file_path).read())
     private_token = vault_content['vault_gitlab_oauth_token']
 
     # Commit those files
@@ -155,8 +155,9 @@ def parse_args():
     return args
 
 
-def main(args=parse_args()):
+def main():
     """Updates the file"""
+    args = parse_args()
     # Set up the local repo
     local_repo = create_local_repo(args['domain'])
 
@@ -165,7 +166,7 @@ def main(args=parse_args()):
     #
     vars_dir = "{}/group_vars/compositional".format(local_repo)
     with open("{}/all.yml".format(vars_dir), 'r') as all_comp:
-        comp_vars = yaml.load(all_comp.read())
+        comp_vars = yaml.safe_load(all_comp.read())
     comp_vars['ourcompose_rundeck_apitoken'] = '{{ vault_ourcompose_rundeck_apitoken }}'
     with open("{}/all.yml".format(vars_dir), 'w') as all_comp:
         comp_vars = all_comp.write(yaml.dump(comp_vars))

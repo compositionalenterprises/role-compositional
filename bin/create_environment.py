@@ -338,8 +338,25 @@ def main():
         print("Vault Password: {}".format(vault_pass))
         args['vaultpass'] = vault_pass
 
-    # Call the import_apitoken script
-    update_apitoken.main(args)
+    #
+    # Update the API Token
+    #
+    # Write the variable redirect to the all.yml file
+    #
+    with open("{}/{}/all.yml".format(local_repo, comp_path), 'r') as all_comp:
+        comp_vars = yaml.safe_load(all_comp.read())
+    comp_vars['ourcompose_rundeck_apitoken'] = '{{ vault_ourcompose_rundeck_apitoken }}'
+    with open("{}/{}/all.yml".format(local_repo, comp_path), 'w') as all_comp:
+        comp_vars = all_comp.write(yaml.dump(comp_vars))
+
+    #
+    # Create new API token
+    #
+    apitoken = update_apitoken.create_apitoken()
+    update_apitoken.add_vaulted_apitoken(args, vars_dir, apitoken)
+    update_apitoken.push_repo_to_gitlab(local_repo, args['domain'])
+
+    print("New API token created and vaulted")
 
 
 if __name__ == '__main__':
