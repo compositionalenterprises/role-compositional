@@ -83,3 +83,10 @@
     restarted: "{{ compositional_portal_restarted }}"
   register: compositional_portal_output
   no_log: True
+
+- name: (portal) The portal cron job to update the database with daily data
+  cron:
+    name: "Portal Full Backup"
+    hour: "4"
+    day: "*/2"
+    job: "/usr/bin/docker exec portal /app/bin/backup.sh"
