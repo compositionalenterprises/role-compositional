@@ -54,7 +54,7 @@
         # and searching for our environment_domain (formatted with dashes
         # instead of periods) in its hostname. Then we are converting those
         # results into a list of those IDs.
-        all_droplets: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | map('regex_replace', '^(.*) ', '') | list }}"
+        all_droplets: "{{ my_droplets['stdout_lines'] | select('match', environment_domain | replace('.', '-') + '.*') | list | map('regex_replace', '^(.*) ', '') | list }}"
 
     - name: Create a new floating IP for this domain if there is not one already
       digital_ocean_floating_ip:
