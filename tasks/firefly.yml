@@ -56,10 +56,5 @@
   register: compositional_firefly_output
   no_log: True
 
-- name: (firefly) Determine existance of symlink
-  shell: docker exec -i firefly bash -c "ls -l /var/www/firefly-iii/public/firefly"
-  register: compositional_firefly_symlink
-
 - name: (firefly) Symlink blog directory
-  shell: docker exec -i firefly bash -c "ln -sT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
-  register: compositional_firefly_symlink['stdout'].startswith('l')
+  shell: docker exec -i firefly bash -c "ln -sfT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
