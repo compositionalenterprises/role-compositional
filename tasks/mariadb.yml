@@ -1,5 +1,5 @@
 ---
-- name: (mariadb) The latest mariadb service is build and present
+- name: (mariadb) The latest mariadb service is built and present
   docker_compose:
     project_name: mariadb
     timeout: 60
