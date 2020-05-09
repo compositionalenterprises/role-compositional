@@ -77,7 +77,7 @@
   no_log: True
 
 - name: (kanboard) Symlink kanboard directory
-  shell: docker exec -i kanboard bash -c "ln -sfT /var/www/app/ /var/www/app/kanboard"
+  shell: docker exec -i kanboard bash -c "ln -snfT /var/www/app/ /var/www/app/kanboard"
 
 - name: (kanboard) nginx.conf is deployed
   copy:

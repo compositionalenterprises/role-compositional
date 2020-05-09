@@ -57,7 +57,7 @@
   no_log: True
 
 - name: (wordpress) Symlink blog directory
-  shell: docker exec -i wordpress bash -c "ln -sfT /var/www/html/ /var/www/html/blog"
+  shell: docker exec -i wordpress bash -c "ln -snfT /var/www/html/ /var/www/html/blog"
 
 - name: (wordpress) Ensure large file uploads are permitted in htaccess
   shell: docker exec -i wordpress bash -c "grep -qxF '{{ item }}' /var/www/html/.htaccess || echo '{{ item }}' >> /var/www/html/.htaccess"

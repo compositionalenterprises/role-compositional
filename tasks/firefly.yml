@@ -57,4 +57,4 @@
   no_log: True
 
 - name: (firefly) Symlink blog directory
-  shell: docker exec -i firefly bash -c "ln -sfT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
+  shell: docker exec -i firefly bash -c "ln -snfT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
