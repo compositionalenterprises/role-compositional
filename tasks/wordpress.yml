@@ -56,9 +56,13 @@
   register: compositional_wordpress_output
   no_log: True
 
+- name: (wordpress) Determine existance of symlink
+  shell: docker exec -i wordpress bash -c "ls -l /var/www/html/blog"
+  register: compositional_wordpress_symlink
+
 - name: (wordpress) Symlink blog directory
   shell: docker exec -i wordpress bash -c "ln -sT /var/www/html/ /var/www/html/blog"
-  when: compositional_wordpress_output.changed
+  when: compositional_wordpress_symlink['stdout'].startswith('l')
 
 - name: (wordpress) Ensure large file uploads are permitted in htaccess
   shell: docker exec -i wordpress bash -c "grep -qxF '{{ item }}' /var/www/html/.htaccess || echo '{{ item }}' >> /var/www/html/.htaccess"
