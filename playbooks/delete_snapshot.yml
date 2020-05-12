@@ -25,7 +25,7 @@
       set_fact:
         oldest_snapshot: "{{
             droplet_snapshots['json']['snapshots']
-            | selectattr('name', 'search', environment_domain | replace('.', '-'))
+            | selectattr('name', 'match', environment_domain | replace('.', '-'))
             | list
             | sort(attribute='name')
             | first

@@ -20,7 +20,7 @@
         # results into a list, and sorting them so that the timestamps make
         # them organize from oldest to newest. Then, we get the first (aka
         # oldest) result.
-        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | first }}"
+        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('match', environment_domain | replace('.', '-')) | list | sort | first }}"
 
     - name: Register block storage volume
       digital_ocean_volume_facts:

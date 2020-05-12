@@ -25,8 +25,8 @@
         # results into a list, and sorting them so that the timestamps make
         # them organize from oldest to newest. Then, we get the first (aka
         # oldest) and last (aka newest) result.
-        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | first }}"
-        newest_droplet: "{{ my_droplets['stdout_lines'] | select('search', environment_domain | replace('.', '-')) | list | sort | last }}"
+        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('match', environment_domain | replace('.', '-')) | list | sort | first }}"
+        newest_droplet: "{{ my_droplets['stdout_lines'] | select('match', environment_domain | replace('.', '-')) | list | sort | last }}"
 
     - name:
       digital_ocean_floating_ip:
