@@ -45,6 +45,7 @@
                 RUNDECK_DATABASE_USERNAME: 'rundeck'
                 RUNDECK_DATABASE_PASSWORD: "{{ compositional_rundeck_backend_password }}"
                 RUNDECK_DATABASE_URL: 'jdbc:mysql://database/rundeck?autoReconnect=true&useSSL=false'
+                RUNDECK_API_TOKENS_DURATION_MAX: "{{ compositional_rundeck_api_tokens_duration_max }}"
 
       networks:
           frontend:
