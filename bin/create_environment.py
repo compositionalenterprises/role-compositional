@@ -308,11 +308,13 @@ def main():
     # Write the initial compositional all.yml file
     comp_path = 'group_vars/compositional'
     with open("{}/{}/all.yml".format(local_repo, comp_path), 'w') as all_comp:
-        all_comp.write(yaml.dump(all_comp_yaml_init))
+        all_comp.write(yaml.safe_dump(all_comp_yaml_init, default_style=None,
+                default_flow_style=False, width=float('inf')))
 
     # Write the initial environment all.yml file
     with open("{}/group_vars/all/all.yml".format(local_repo), 'w') as all_env:
-        all_env.write(yaml.dump(all_env_yaml_init))
+        all_env.write(yaml.safe_dump(all_env_yaml_init, default_style=None,
+                default_flow_style=False, width=float('inf')))
 
     # Create the master environment vault pass
     if not args['vaultpass']:
@@ -344,8 +346,8 @@ def main():
         comp_vars = yaml.safe_load(all_comp.read())
     comp_vars['ourcompose_rundeck_apitoken'] = '{{ vault_ourcompose_rundeck_apitoken }}'
     with open("{}/{}/all.yml".format(local_repo, comp_path), 'w') as all_comp:
-        comp_vars = all_comp.write(yaml.dump(comp_vars))
-
+        comp_vars = all_comp.write(yaml.safe_dump(comp_vars, default_style=None,
+                default_flow_style=False, width=float('inf')))
     #
     # Create new API token
     #

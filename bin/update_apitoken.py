@@ -58,7 +58,7 @@ def create_apitoken():
     env_vars['RD_USER'] = 'admin'
     env_vars['RD_PASSWORD'] = admin_pass
     token_creation = subprocess.check_output(['rd', 'tokens', 'create', '-u',
-        'ourcomposebot', '-r', 'readrun', '-d', '30d'], env=env_vars)
+        'ourcomposebot', '-r', 'readrun', '-d', '45d'], env=env_vars)
     apitoken = token_creation.decode().split('\n')[1]
 
     return apitoken
@@ -166,7 +166,8 @@ def main():
         comp_vars = yaml.safe_load(all_comp.read())
     comp_vars['ourcompose_rundeck_apitoken'] = '{{ vault_ourcompose_rundeck_apitoken }}'
     with open("{}/all.yml".format(vars_dir), 'w') as all_comp:
-        comp_vars = all_comp.write(yaml.dump(comp_vars))
+        all_comp.write(yaml.safe_dump(comp_vars, default_style=None,
+                default_flow_style=False, width=float('inf')))
 
     #
     # Create new API token
