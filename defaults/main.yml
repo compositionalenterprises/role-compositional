@@ -196,7 +196,7 @@ compositional_commandcenter_mysql_script: |
 compositional_portal_build: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
-compositional_portal_version: '1.2.1'
+compositional_portal_version: '1.2.2'
 compositional_portal_storage: 'local'
 compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
