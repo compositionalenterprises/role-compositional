@@ -153,6 +153,7 @@ compositional_rundeck_restarted: yes
 compositional_rundeck_version: '3.2.5'
 compositional_rundeck_storage: 'local'
 compositional_rundeck_backend_password: 'testpassword'
+compositional_rundeck_api_tokens_duration_max: '0'
 compositional_rundeck_mysql_script: |
   CREATE USER IF NOT EXISTS 'rundeck'@'%' IDENTIFIED BY '{{ compositional_rundeck_backend_password }}';
   CREATE DATABASE IF NOT EXISTS rundeck;
