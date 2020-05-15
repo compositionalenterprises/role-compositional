@@ -5,6 +5,17 @@
     dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/rundeck.conf"
   notify: 'Restart Frontend'
 
+- name: (rundeck) Persistant storage directories are provisioned
+  file:
+    path: "{{ item }}"
+    owner: 1000
+    group: 1000
+    state: directory
+  loop:
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_data"
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_config"
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs"
+
 - name: (rundeck) The MySQL database service is up and initialized
   # We're running a while loop to check to ensure that the mysql database has
   # initialized:
@@ -45,6 +56,7 @@
                 RUNDECK_DATABASE_USERNAME: 'rundeck'
                 RUNDECK_DATABASE_PASSWORD: "{{ compositional_rundeck_backend_password }}"
                 RUNDECK_DATABASE_URL: 'jdbc:mysql://database/rundeck?autoReconnect=true&useSSL=false'
+                RUNDECK_API_TOKENS_DURATION_MAX: "{{ compositional_rundeck_api_tokens_duration_max }}"
 
       networks:
           frontend:
