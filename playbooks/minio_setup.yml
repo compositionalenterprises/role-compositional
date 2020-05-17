@@ -11,5 +11,5 @@
         mode: '0755'
 
     - name: MinIO Client is registered with our domain
-      command: mc config host add backups {{ minio_server }} {{ minio_access_key }} {{ minio_secret_key }}
+      command: /usr/local/bin/mc config host add backups {{ minio_server }} {{ minio_access_key }} {{ minio_secret_key }}
       no_log: True
