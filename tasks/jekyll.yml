@@ -40,6 +40,7 @@
                 JEKYLL_BASE_URL: "/jekyll/"
                 JEKYLL_PORT: "{{ compositional_jekyll_port }}"
                 JEKYLL_EXTRA_COMMANDS: "{{ compositional_jekyll_extra_commands }}"
+                JEKYLL_ENV: 'production'
 
       networks:
           frontend:
