@@ -35,12 +35,12 @@ if [[ ! -z "${JEKYLL_BASE_URL}" ]]; then
         if [[ ${JEKYLL_BASE_URL: -1} != '/' ]]; then
                 JEKYLL_BASE_URL="${JEKYLL_BASE_URL}/"
         fi
-        sed -i "s#baseurl:.*#baseurl:        '$JEKYLL_BASE_URL'#" _config.yml
+        sed -i "s#baseurl:.*#baseurl: '$JEKYLL_BASE_URL'#" _config.yml
 fi
 
 # Same with the domain name
 if [[ ! -z "${JEKYLL_DOMAIN}" ]]; then
-        sed -i "s#^url:.*#url:            '$JEKYLL_DOMAIN'#" _config.yml
+        sed -i "s#^url:.*#url: 'https://$JEKYLL_DOMAIN'#" _config.yml
 fi
 
 /bin/bash -c "${JEKYLL_EXTRA_COMMANDS}"
