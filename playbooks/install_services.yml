@@ -35,4 +35,4 @@
     - role: certbot
     - role: compositional
       tags: ['comp']
-      ansible_python_interpreter: "/usr/bin/env python-docker"
+      ansible_python_interpreter: "/usr/bin/env python3-docker"
