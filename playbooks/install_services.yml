@@ -28,6 +28,22 @@
         name: '*'
         state: latest
         update_cache: True
+
+    #
+    # TODO: LEGACY
+    #
+    - name: Determine presence of legacy python-docker
+      stat:
+        path: '/usr/local/bin/python-docker'
+      register: install_services_python_docker
+
+    - name: Link the python version for legacy clients
+      file:
+        src: '/usr/local/bin/python-docker'
+        path: '/usr/local/bin/python3-docker'
+        state: link
+      when: install_services_python_docker['exists'] is defined
+
   roles:
     - role: swapfile
       swapfile_size: '4G'
