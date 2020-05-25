@@ -5,10 +5,9 @@
   vars_files:
     - ../environment/group_vars/all/all.yml
   pre_tasks:
-    - name: Gather the values for all of the storage variables and set the portal Initial Install flag
+    - name: Gather the values for all of the storage variables
       set_fact:
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
-        compositional_portal_initial_install: '1'
 
 - name: Deploy Droplet
   import_playbook: create_droplet.yml
@@ -46,6 +45,10 @@
 
     - name: Establish an ssh connection
       wait_for_connection:
+
+    - name: Set the Portal INITIAL_INSTALL flag
+      set_fact:
+        compositional_portal_initial_install: '1'
 
 - name: Block Storage
   import_playbook: block_storage.yml
