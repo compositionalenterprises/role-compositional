@@ -205,6 +205,7 @@ compositional_portal_production_yml_enc: 'mMb7knWzem8t5jXbs66LiTh+MuR4VhwttCJcsh
 compositional_portal_admin_password: 'testpassword'
 compositional_portal_org_name: "{{ environment_domain.split('.')[0].upper() }}"
 compositional_portal_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
+compositional_portal_initial_install: "0"
 compositional_portal_mysql_script: |
   CREATE USER IF NOT EXISTS 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
   CREATE DATABASE IF NOT EXISTS portal;
