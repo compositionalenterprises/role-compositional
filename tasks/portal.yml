@@ -72,6 +72,9 @@
                 SERVICES: "{{ compositional_services | join(' ') }}"
                 RAILS_RELATIVE_URL_ROOT: '/portal'
                 HOST: "{{ environment_domain }}"
+                RUNDECK_API_TOKEN: "{{ ourcompose_rundeck_apitoken }}"
+                ENVIRONMENT_VAULT_PASSWORD: "{{ lookup('file', '../environment/.vault_pass') }}"
+                INITIAL_INSTALL: "{{ compositional_portal_initial_install }}"
 
       networks:
           frontend:
