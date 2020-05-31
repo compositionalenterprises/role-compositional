@@ -90,6 +90,7 @@
 - name: (portal) The portal cron job to update the database with daily data
   cron:
     name: "Portal Full Backup"
+    minute: "20"
     hour: "4"
     day: "*/2"
     job: "/usr/bin/docker exec portal /app/bin/backup.sh"
