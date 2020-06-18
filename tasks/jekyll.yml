@@ -38,6 +38,7 @@
 
               environment:
                 JEKYLL_GIT_URL: "{{ compositional_jekyll_git_url }}"
+                JEKYLL_GIT_BRANCH: "{{ compositional_jekyll_git_branch }}"
                 JEKYLL_DOMAIN: "{{ environment_domain }}"
                 JEKYLL_BASE_URL: "/jekyll/"
                 JEKYLL_PORT: "{{ compositional_jekyll_port }}"

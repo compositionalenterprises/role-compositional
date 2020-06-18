@@ -23,7 +23,7 @@ find . -not -name 'entrypoint.sh'\
 git init
 git remote add origin "${JEKYLL_GIT_URL}"
 git fetch
-git reset --hard origin/master
+git reset --hard origin/${JEKYLL_GIT_BRANCH}
 chown -R jekyll:jekyll ./*
 
 # Test for the base URL existing and not being a blank string
