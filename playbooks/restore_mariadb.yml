@@ -1,0 +1,23 @@
+- name: Restore the database from sql dump files
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  hosts: new
+  tasks:
+    - name: Determine latest logical mysqldump SQL backup file
+      find:
+        paths: '/srv/{{ compositional_mariadb_storage | default("local") }}/database_mysql/backups/logical'
+        use_regex: yes
+        patterns: "^full-backup-(.*)$"
+      register: full_backups
+
+    - name: Set fact for most recent mysql backup file
+      set_fact:
+        latest_full_backup: "{{ full_backups['files'] | map(attribute='path') | map('regex_replace', '^.*\/', '') | list | sort | last }}"
+
+    - name: Load MariaDB Backup
+      shell: "
+        docker exec -it database bash -c '
+          mysql -uroot -p{{ compositional_database_root_password }} --force
+            < /var/lib/mysql/backups/logical/{{ latest_full_backup }}'
+        "
+

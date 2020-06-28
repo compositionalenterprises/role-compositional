@@ -1,0 +1,21 @@
+---
+- import_playbook: 'minio_setup.yml'
+
+- name: Restore Backups
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Get all of the bucket names
+      # This will fail here if there are no backup archives, which is what we want.
+      shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep {{ environment_domain | replace('.', '-') }}"
+      register: domain_archives
+
+    # TODO: Make us able to restore from either Son, Father, or Grandfather
+    - name: Choose which backup to restore from
+      set_fact:
+        domain_archive_name: "{{ domain_archives['stdout_lines'] | sort | last }}"
+
+    - name: Restore filesystem from latest backup
+      shell: "/usr/local/bin/mc cat backups/ocbackups/{{ domain_archive_name }} | tar -C /srv -xvz -f -"
+
