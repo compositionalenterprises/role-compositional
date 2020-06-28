@@ -39,7 +39,9 @@
         ip: "{{ item['ip'] }}"
         state: absent
         oauth_token: "{{ do_oauth_token }}"
-      when: item['droplet']['id'] == oldest_droplet.split()[-1] | int
+      when:
+        - item['droplet']['id'] is defined
+        - item['droplet']['id'] == oldest_droplet.split()[-1] | int
       loop: "{{ floating_ips['floating_ips'] }}"
 
     - name: Delete block storage if attached
