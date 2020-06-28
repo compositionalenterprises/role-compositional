@@ -54,7 +54,10 @@ def change_dns(args):
         except IndexError:
             eprint("Record not found!!!")
             results = {}
-            results['result'] = "Record not found!!!"
+            results['status'] = "Failure"
+            results['statusDescription'] = "Record not found!!!"
+            results['data'] = {}
+            results['data']['id'] = 0
             return json.dumps(results)
     else:
         params['record-type'] = 'A'
