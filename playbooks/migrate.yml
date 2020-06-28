@@ -13,7 +13,7 @@
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
         delete_droplet: "{{ delete_droplet_prompt }}"
 
-- import_playbook: 'mariadb_export.yml'
+- import_playbook: 'backup_mariadb.yml'
 - import_playbook: 'rotate_snapshots.yml'
 - import_playbook: 'create_droplet.yml'
 

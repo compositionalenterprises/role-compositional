@@ -1,4 +1,4 @@
 ---
-- import_playbook: 'mariadb_export.yml'
+- import_playbook: 'backup_mariadb.yml'
 - import_playbook: 'rotate_snapshots.yml'
-- import_playbook: 'archive_backups.yml'
+- import_playbook: 'backup_files.yml'
