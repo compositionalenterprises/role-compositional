@@ -60,9 +60,10 @@
       register: hosts_realpath
 
     - name: Replace the old server's IP with the new server's IP in the hosts.yml file
-      local_action:
-        module: shell
-        cmd: sed -ir '/([0-9]{1,3}[\.]){3}[0-9]{1,3}/d' "{{ hosts_realpath['stdout'].strip() }}"
+      lineinfile:
+        path: "{{ hosts_realpath['stdout'].strip() }}"
+        regexp: '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
+        state: absent
 
     - name: Add the hosts.yml file with the IP address absent
       local_action:
