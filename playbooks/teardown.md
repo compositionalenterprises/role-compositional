@@ -13,9 +13,17 @@
       set_fact:
         teardown_delete_backups: "{{ teardown_delete_backups_prompt }}"
 
-- import_playbook: 'delete_snapshot.yml'
-- import_playbook: 'delete_backups.yml'
-  when: teardown_remove_backups
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+
+
+- name: Delete the snapshot for this droplet
+  import_playbook: 'delete_snapshot.yml'
+
+- name: Delete the filesystem backups for this droplet
+  import_playbook: 'delete_backups.yml'
+  when: teardown_delete_backups
 
 - name: Remove from DNS
   hosts: all
@@ -33,7 +41,14 @@
         --type 'delete'
       delegate_to: localhost
 
-- import_playbook: 'delete_droplet.yml'
+- name: Remove the floating IP
+  import_playbook: 'delete_ip.yml'
+
+- name: Unmount and delete the block storage
+  import_playbook: 'delete_block_storage.yml'
+
+- name: Delete the droplet itself
+  import_playbook: 'delete_droplet.yml'
 
 - name: Remove the droplet's IP address from the hosts file
   hosts: localhost

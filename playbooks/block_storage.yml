@@ -59,6 +59,8 @@
             region: 'nyc3'
             droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"
 
+      when: "'remote' in storage_vars_list.split(',')"
+
 - name: Mount new volume onto droplet
   gather_facts: False
   hosts: new
