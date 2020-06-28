@@ -1,5 +1,5 @@
 ---
-- name: Deploy new block storage volume
+- name: Delete the oldest snapshot for {{ environment_domain }}
   hosts: localhost
   connection: local
   vars_files:
