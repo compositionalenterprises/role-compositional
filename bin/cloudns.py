@@ -49,7 +49,13 @@ def change_dns(args):
             eprint("Found more than one matching DNS entry. Check your records.")
             sys.exit(2)
         # This is us getting the only key that was returned in the dictionary
-        params['record-id'] = list(record_id.keys())[0]
+        try:
+            params['record-id'] = list(record_id.keys())[0]
+        except IndexError:
+            eprint("Record not found!!!")
+            results = {}
+            results['result'] = "Record not found!!!"
+            return json.dumps(results)
     else:
         params['record-type'] = 'A'
 
