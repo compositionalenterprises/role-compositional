@@ -11,11 +11,8 @@
   pre_tasks:
     - name: Gather the values for all of the storage variables
       set_fact:
-        teardown_delete_backups: "{{ teardown_delete_backups_prompt }}"
-
-    - name: Gather the values for all of the storage variables
-      set_fact:
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+        teardown_delete_backups: "{{ teardown_delete_backups_prompt }}"
 
 
 - name: Delete the snapshot for this droplet
@@ -23,7 +20,7 @@
 
 - name: Delete the filesystem backups for this droplet
   import_playbook: 'delete_backups.yml'
-  when: teardown_delete_backups
+  when: hostvars['localhost']['teardown_delete_backups'] | bool
 
 - name: Remove from DNS
   hosts: all

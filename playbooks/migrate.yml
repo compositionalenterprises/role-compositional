@@ -65,7 +65,7 @@
 - import_playbook: 'transfer_ip.yml'
 
 - import_playbook: 'delete_droplet.yml'
-  when: delete_droplet
+  when: delete_droplet | bool
 
 - name: Update the hosts file with the new droplet's address
   vars_files:
