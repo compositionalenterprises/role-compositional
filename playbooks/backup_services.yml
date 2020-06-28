@@ -1,3 +1,0 @@
----
-- import_playbook: ./minio_setup.yml
-- import_playbook: ./archive_backups.yml
