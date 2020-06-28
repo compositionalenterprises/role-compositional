@@ -52,7 +52,7 @@
 
 - name: Mount new volume onto droplet
   gather_facts: False
-  hosts: new
+  hosts: all
   vars_files:
     - ../environment/group_vars/all/all.yml
   pre_tasks:

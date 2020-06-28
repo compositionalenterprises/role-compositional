@@ -1,7 +1,8 @@
+---
 - name: Restore the database from sql dump files
   vars_files:
     - ../environment/group_vars/all/all.yml
-  hosts: new
+  hosts: all
   tasks:
     - name: Determine latest logical mysqldump SQL backup file
       find:
