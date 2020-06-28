@@ -81,7 +81,7 @@
       wait_for_connection:
 
 - name: Implement block storage if necessary
-  import_playbook: 'block_storage.yml'
+  import_playbook: 'create_block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Install services before data restoration

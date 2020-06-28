@@ -37,6 +37,7 @@
     - name: Register the droplet ID
       set_fact:
         droplet_id: "{{ hostvars['localhost']['my_droplet']['data']['droplet']['id'] }}"
+      when: hostvars['localhost']['my_droplet'] is defined
 
   tasks:
     - name: Add block volume if we have remote filesystems
@@ -48,7 +49,7 @@
             volume_name: "{{ do_object_name }}"
             api_token: "{{ do_oauth_token }}"
             region: 'nyc3'
-            block_size: 10
+            block_size: "{{ do_block_storage_size }}"
 
         - name: Attach new block volume to new droplet
           digital_ocean_block_storage:
@@ -57,7 +58,7 @@
             api_token: "{{ do_oauth_token }}"
             volume_name: "{{ do_object_name }}"
             region: 'nyc3'
-            droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"
+            droplet_id: "{{ droplet_id }}"
 
       when: "'remote' in storage_vars_list.split(',')"
 

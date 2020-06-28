@@ -51,7 +51,7 @@
         compositional_portal_initial_install: '1'
 
 - name: Block Storage
-  import_playbook: block_storage.yml
+  import_playbook: create_block_storage.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Infrastructure Services

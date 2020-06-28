@@ -46,7 +46,7 @@
     - name: Establish an ssh connection
       wait_for_connection:
 
-- import_playbook: 'block_storage.yml'
+- import_playbook: 'create_block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - import_playbook: 'transfer_data.yml'
