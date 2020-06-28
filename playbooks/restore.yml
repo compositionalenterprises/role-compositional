@@ -19,8 +19,8 @@
       register: droplet_snapshots
 
     - debug:
-      var: droplet_snapshots
-      verbosity: 2
+        var: droplet_snapshots
+        verbosity: 2
 
     - name: Get the values for the newest snapshot
       set_fact:
