@@ -88,7 +88,7 @@
   import_playbook: 'install_services.yml'
 
 - name: Restore the filesystem-level backups
-  import_playbook: 'restore_backups.yml'
+  import_playbook: 'restore_files.yml'
 
 - name: Restore the database backups
   import_playbook: 'restore_mariadb.yml'
