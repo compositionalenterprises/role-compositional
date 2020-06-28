@@ -1,0 +1,72 @@
+---
+- name: Set var to not delete backups by default
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    teardown_delete_backups_prompt: False
+
+  pre_tasks:
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        teardown_delete_backups: "{{ teardown_delete_backups_prompt }}"
+
+- import_playbook: 'delete_snapshot.yml'
+- import_playbook: 'delete_backups.yml'
+  when: teardown_remove_backups
+
+- name: Remove from DNS
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Remove DNS entry
+       # Yes, these lines should end with trailing whitespace
+      command: >
+        ../bin/cloudns.py 
+        --apiuser "{{ cloudns_api_user }}" 
+        --apipass "{{ cloudns_api_pass }}" 
+        --address "{{ hostvars['localhost']['new_floating_ip']['data']['floating_ip']['ip'] }}" 
+        --fqdn "{{ environment_domain }}" 
+        --type 'delete'
+      delegate_to: localhost
+
+- import_playbook: 'delete_droplet.yml'
+
+- name: Remove the droplet's IP address from the hosts file
+  hosts: localhost
+  connection: local
+  gather_facts: True
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Register realpath of hosts.yml file
+      local_action:
+        module: shell
+        cmd: realpath ../environment/hosts.yml
+      register: hosts_realpath
+
+    - name: Replace the old server's IP with the new server's IP in the hosts.yml file
+      local_action:
+        module: shell
+        cmd: sed -r '/([0-9]{1,3}[\.]){3}[0-9]{1,3}/d' "{{ hosts_realpath['stdout'].strip() }}"
+
+    - name: Add the hosts.yml file with the IP address absent
+      local_action:
+        module: shell
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git add hosts.yml
+        chdir: ../environment/
+
+    - name: Commit the hosts.yml file with the IP address absent
+      local_action:
+        module: shell
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Remove droplet IP for teardown on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
+        chdir: ../environment/
+
+    - name: Push that latest commit
+      local_action:
+        module: shell
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
+        chdir: ../environment/
