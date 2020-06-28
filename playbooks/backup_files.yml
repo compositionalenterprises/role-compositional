@@ -12,10 +12,6 @@
         state: latest
         update_cache: True
 
-    - name: Set environment and date-formatted name for things
-      set_fact:
-        do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
-
     - name: Get all of the bucket names
       shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep {{ environment_domain | replace('.', '-') }}"
       register: archive_backups_domain_archives

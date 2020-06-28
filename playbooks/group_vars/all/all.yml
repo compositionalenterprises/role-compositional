@@ -5,6 +5,7 @@ do_oauth_token: "{{ vault_do_oauth_token }}"
 do_droplet_size: 's-1vcpu-1gb'
 do_droplet_image: 'ubuntu-18-04-x64'
 do_block_storage_size: 10
+do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
 
 cloudns_api_user: 'ourcomposebot'
 cloudns_api_pass: "{{ vault_cloudns_api_pass }}"

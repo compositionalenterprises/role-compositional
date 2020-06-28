@@ -5,9 +5,6 @@
   vars_files:
     - ../environment/group_vars/all/all.yml
 
-  vars:
-    do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
-
   tasks:
     - name: Return a list of droplet snapshots
       uri:

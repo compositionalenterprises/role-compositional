@@ -10,18 +10,6 @@
       set_fact:
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
 
-    - name: Prompt for DO Object Name
-      block:
-        - pause:
-            prompt: "Enter the DO Object Name"
-            echo: no
-          register: do_object_name_prompt
-
-        - set_fact:
-            do_object_name: do_object_name_prompt['user_input']
-
-      when: not hostvars['localhost']['do_object_name']
-
     - name: Prompt for the droplet ID
       block:
         - pause:

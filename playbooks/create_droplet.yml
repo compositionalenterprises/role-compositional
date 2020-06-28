@@ -16,10 +16,6 @@
         oauth_token: "{{ do_oauth_token }}"
       register: ssh_key_facts
 
-    - name: Set environment and date-formatted name for things
-      set_fact:
-        do_object_name: "{{ environment_domain | replace('.', '-') }}--{{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
-
   tasks:
     - name: create a new droplet
       digital_ocean_droplet:

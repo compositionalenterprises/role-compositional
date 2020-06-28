@@ -14,7 +14,6 @@
         storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
         teardown_delete_backups: "{{ teardown_delete_backups_prompt }}"
 
-
 - name: Delete the snapshot for this droplet
   import_playbook: 'delete_snapshot.yml'
 
