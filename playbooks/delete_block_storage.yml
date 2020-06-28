@@ -18,8 +18,8 @@
       register: do_volumes
 
     - debug:
-      var: do_volumes
-      verbosity: 2
+        var: do_volumes
+        verbosity: 2
 
     - name: Set the value for the block storage devices to remove
       set_fact:
