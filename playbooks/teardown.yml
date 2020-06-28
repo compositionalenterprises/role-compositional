@@ -27,28 +27,15 @@
   vars_files:
     - ../environment/group_vars/all/all.yml
   tasks:
-    - name: Find the droplet ID for this domain
-      uri:
-        url: 'http://169.254.169.254/metadata/v1/id'
-      register: droplet_id
-
-    - name: Get floating IP for this droplet
-      digital_ocean_floating_ip_facts:
-        oauth_token: "{{ do_oauth_token }}"
-      register: do_floating_ips
-
     - name: Remove DNS entry
-       # Yes, these lines should end with trailing whitespace
+      # Yes, these lines should end with trailing whitespace
       command: >
         ../bin/cloudns.py 
         --apiuser "{{ cloudns_api_user }}" 
         --apipass "{{ cloudns_api_pass }}" 
-        --address "{{ hostvars['localhost']['new_floating_ip']['data']['floating_ip']['ip'] }}" 
         --fqdn "{{ environment_domain }}" 
         --type 'delete'
       delegate_to: localhost
-      when: item['droplet']['id'] == droplet_id
-      loop: "{{ do_floating_ips }}"
 
 - name: Remove the floating IP
   import_playbook: 'delete_ip.yml'
