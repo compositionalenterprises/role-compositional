@@ -30,11 +30,13 @@
             | list
             | sort(attribute='name')
             | last
+            | default('False')
           }}"
 
     - name: Set the image to create a droplet from
       set_fact:
         do_droplet_image: "{{ droplet_snapshot['id'] }}"
+      when: droplet_snapshot | bool
 
     - name: Check for DNS entry
       command: dig +short "{{ environment_domain }}"
