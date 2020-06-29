@@ -63,6 +63,7 @@
         path: "{{ hosts_realpath['stdout'].strip() }}"
         regexp: '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
         state: absent
+      register: remove_host
 
     - name: Add the hosts.yml file with the IP address absent
       local_action:
@@ -81,3 +82,4 @@
         module: shell
         cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
         chdir: ../environment/
+      when: remove_host.changed
