@@ -34,5 +34,5 @@
         state: absent
         oauth_token: "{{ do_oauth_token }}"
       # Because of course it's a fucking int
-      when: item['droplet']['id'] == oldest_droplet.split()[-1] | int
+      when: item['droplet']['id'] | default(0) == oldest_droplet.split()[-1] | int
       loop: "{{ floating_ips['floating_ips'] }}"
