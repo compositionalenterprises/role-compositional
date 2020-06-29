@@ -23,5 +23,5 @@
         domain_archive_name: "{{ domain_archives['stdout_lines'] | sort | last }}"
 
     - name: Restore filesystem from latest backup
-      shell: "/usr/local/bin/mc cat backups/ocbackups/{{ domain_archive_name }} | tar -C /srv -xvz -f -"
+      shell: "/usr/local/bin/mc cat backups/ocbackups/{{ domain_archive_name }} | tar -C / -xvz -f -"
 
