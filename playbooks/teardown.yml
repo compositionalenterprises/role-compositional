@@ -65,21 +65,24 @@
         state: absent
       register: remove_host
 
-    - name: Add the hosts.yml file with the IP address absent
-      local_action:
-        module: shell
-        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git add hosts.yml
-        chdir: ../environment/
+    - name: Change git upstream
+      block:
+        - name: Add the hosts.yml file with the IP address absent
+          local_action:
+            module: shell
+            cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git add hosts.yml
+            chdir: ../environment/
 
-    - name: Commit the hosts.yml file with the IP address absent
-      local_action:
-        module: shell
-        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Remove droplet IP for teardown on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
-        chdir: ../environment/
+        - name: Commit the hosts.yml file with the IP address absent
+          local_action:
+            module: shell
+            cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Remove droplet IP for teardown on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
+            chdir: ../environment/
 
-    - name: Push that latest commit
-      local_action:
-        module: shell
-        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
-        chdir: ../environment/
+        - name: Push that latest commit
+          local_action:
+            module: shell
+            cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
+            chdir: ../environment/
+
       when: remove_host.changed
