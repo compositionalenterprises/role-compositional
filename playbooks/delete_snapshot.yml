@@ -29,6 +29,9 @@
             | default('False')
           }}"
 
+    - debug:
+        var: oldest_snapshot | bool
+
     - name: Delete the snapshot
       uri:
         url: "https://api.digitalocean.com/v2/snapshots/{{ oldest_snapshot['id'] }}"
@@ -37,4 +40,4 @@
         headers:
           Authorization: "Bearer {{ do_oauth_token }}"
         status_code: 204
-      when: oldest_snapshot
+      when: oldest_snapshot | bool
