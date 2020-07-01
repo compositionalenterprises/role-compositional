@@ -37,5 +37,5 @@
         headers:
           Authorization: "Bearer {{ do_oauth_token }}"
         status_code: 204
-      when: oldest_snapshot | bool
+      when: oldest_snapshot != 'False'
 
