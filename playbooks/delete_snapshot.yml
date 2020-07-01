@@ -26,11 +26,8 @@
             | list
             | sort(attribute='name')
             | first
-            | default('False')
+            | default({})
           }}"
-
-    - debug:
-        var: oldest_snapshot | bool
 
     - name: Delete the snapshot
       uri:
@@ -40,4 +37,4 @@
         headers:
           Authorization: "Bearer {{ do_oauth_token }}"
         status_code: 204
-      when: oldest_snapshot | bool
+      when: oldest_snapshot | length > 0
