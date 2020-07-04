@@ -59,4 +59,3 @@
   shell: docker exec -u 0 -i rundeck bash -c "{{ compositional_rundeck_additional_setup }}"
   args:
     executable: '/bin/bash'
-  no_log: True
