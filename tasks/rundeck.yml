@@ -15,6 +15,7 @@
     - "/srv/{{ compositional_rundeck_storage }}/rundeck_data"
     - "/srv/{{ compositional_rundeck_storage }}/rundeck_config"
     - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs"
+    - "/srv/{{ compositional_rundeck_storage }}/rundeck_etc"
 
 - name: (rundeck) The MySQL database service is up and initialized
   # We're running a while loop to check to ensure that the mysql database has
@@ -43,6 +44,7 @@
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_data:/home/rundeck/server/data"
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_config:/home/rundeck/server/config"
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs:/home/rundeck/var/logs"
+                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs:/home/rundeck/etc"
 
               networks:
                   - frontend
