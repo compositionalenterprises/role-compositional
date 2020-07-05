@@ -19,13 +19,11 @@
   # initialized:
   #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
   shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED!!!\""'
-  no_log: True
 
 - name: (kanboard) Set up the MySQL database
   shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_kanboard_mysql_script }}"
   args:
     executable: '/bin/bash'
-  no_log: True
 
 - name: (kanboard) The latest kanboard service is built and {{ compositional_kanboard_state }}
   docker_compose:
@@ -74,7 +72,6 @@
     state: "{{ compositional_kanboard_state }}"
     restarted: "{{ compositional_kanboard_restarted }}"
   register: compositional_kanboard_output
-  no_log: True
 
 - name: (kanboard) Symlink kanboard directory
   shell: docker exec -i kanboard bash -c "ln -snfT /var/www/app/ /var/www/app/kanboard"
