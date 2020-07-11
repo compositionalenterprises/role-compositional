@@ -10,6 +10,12 @@
     - 'local'
     - 'remote'
 
+- name: Set up PATH environment in the crontab
+  cron:
+    name: PATH
+    env: yes
+    job: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'
+
 - include_tasks: "./{{ item }}.yml"
   with_items:
     - "{{ compositional_frontend_service }}"
