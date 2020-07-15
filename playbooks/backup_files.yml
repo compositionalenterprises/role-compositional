@@ -13,7 +13,7 @@
         update_cache: True
 
     - name: Get all of the bucket names
-      shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep {{ environment_domain | replace('.', '-') }}"
+      shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep -e '^{{ environment_domain | replace('.', '-') }}'"
       register: archive_backups_domain_archives
       # We aren't going to have this fail since the very first time there will be no results to grep,
       # which would otherwise lead to a non-zero return code.
