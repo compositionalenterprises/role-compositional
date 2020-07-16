@@ -44,7 +44,7 @@
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_data:/home/rundeck/server/data"
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_config:/home/rundeck/server/config"
                   - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs:/home/rundeck/var/logs"
-                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs:/home/rundeck/etc"
+                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_etc:/home/rundeck/etc"
 
               networks:
                   - frontend
