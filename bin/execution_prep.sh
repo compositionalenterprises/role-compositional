@@ -93,7 +93,7 @@ if [[ -z "${branch}" ]]; then
         branch='master'
 fi
 if [[ -z "${playbranch}" ]]; then
-        branch='master'
+        playbranch='master'
 fi
 
 # Clone into the unique job exec id for this run
