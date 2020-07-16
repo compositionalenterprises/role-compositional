@@ -16,7 +16,7 @@ Options:
         -e | --envvaultpass
                 REQUIRED
                 The environment's vault password
-        -p | --playsvaultpass
+        -p | --playvaultpass
                 REQUIRED
                 The play's vault password
         -b | --branch
@@ -53,6 +53,10 @@ while [[ "${1}" != "" ]]; do
                                 shift
                                 branch="${1}"
                                 ;;
+                        -y | --playbranch )
+                                shift
+                                playbranch="${1}"
+                                ;;
                         -h | --help )
                                 usage
                                 exit
@@ -88,9 +92,12 @@ fi
 if [[ -z "${branch}" ]]; then
         branch='master'
 fi
+if [[ -z "${playbranch}" ]]; then
+        branch='master'
+fi
 
 # Clone into the unique job exec id for this run
-git clone https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
+git clone --branch ${playbranch} --single-branch https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
 cd "${jobuuid}"
 
 sed -i "s/version: master/version: ${branch}/" 'requirements.yml'
