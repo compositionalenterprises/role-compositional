@@ -4,6 +4,7 @@
 import os
 import yaml
 import common
+import common.SERVICES as SERVICES
 import random
 import shutil
 import string
@@ -13,69 +14,6 @@ import fileinput
 import subprocess
 import ansible_vault
 import update_apitoken
-
-SERVICES = {
-        'database': {
-            'passwords': {
-                'compositional_database_root_password': {}
-                }
-            },
-        'manager': {
-            },
-        'jekyll': {
-            },
-        'bookstack': {
-            'passwords': {
-                'compositional_bookstack_backend_password': {}
-                }
-            },
-        'bitwarden': {
-            },
-        'kanboard': {
-            'passwords': {
-                'compositional_kanboard_backend_password': {}
-                }
-            },
-        'nextcloud': {
-            'passwords': {
-                'compositional_nextcloud_backend_password': {}
-                }
-            },
-        'wordpress': {
-            'passwords': {
-                'compositional_wordpress_backend_password': {}
-                }
-            },
-        'firefly': {
-            'passwords': {
-                'compositional_firefly_app_key': {
-                    'length': 32
-                    },
-                'compositional_firefly_backend_password': {}
-                }
-            },
-        'rundeck': {
-            'passwords': {
-                'compositional_rundeck_backend_password': {}
-                }
-            },
-        'mysql': {
-            'passwords': {
-                'compositional_database_root_password': {}
-                }
-            },
-        'portal': {
-            'passwords': {
-                'compositional_portal_admin_password': {}
-                }
-            },
-        'commandcenter': {
-            'passwords': {
-                'compositional_commandcenter_backend_password': {},
-                'compositional_commandcenter_admin_password': {}
-                }
-            },
-        }
 
 
 def put_repo_in_gitlab(local_repo, domain):
