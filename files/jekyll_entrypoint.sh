@@ -32,9 +32,6 @@ if [[ ! -z "${JEKYLL_BASE_URL}" ]]; then
         if [[ ${JEKYLL_BASE_URL:0:1} != '/' ]]; then
                 JEKYLL_BASE_URL="/${JEKYLL_BASE_URL}"
         fi
-        if [[ ${JEKYLL_BASE_URL: -1} != '/' ]]; then
-                JEKYLL_BASE_URL="${JEKYLL_BASE_URL}/"
-        fi
         sed -i "s#baseurl:.*#baseurl: '$JEKYLL_BASE_URL'#" _config.yml
 fi
 
