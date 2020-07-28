@@ -9,6 +9,7 @@
               image: 'nginx:{{ compositional_nginx_version }}'
               container_name: proxy
               restart: always
+              privileged: true
               ports:
                   - "80:80"
                   - "443:443"
