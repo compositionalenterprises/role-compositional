@@ -1,5 +1,5 @@
 {% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}
-location {{ compositional_jekyll_bind_mountpoints[bind_mountpoint]['location'] }} {}
+location {{ bind_mountpoint['location'] }} {}
 {% endfor %}
 
 location /jekyll/ {
