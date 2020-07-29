@@ -54,4 +54,5 @@
   register: compositional_jekyll_output
 
 - name: (jekyll) Register jekyll bind-mountpoints for proxy
-  set_fact: "{{ compositional_proxy_bind_mountpoints + compositional_jekyll_bind_mountpoints }}"
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + compositional_jekyll_bind_mountpoints }}"
