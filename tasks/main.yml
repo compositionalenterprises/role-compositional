@@ -24,7 +24,7 @@
 - include_tasks: "./{{ item }}.yml"
   with_items: "{{ compositional_services }}"
 
-- name: Restart all containers now
+- name: Trigger any container restarts here
   meta: flush_handlers
 
 - include_tasks: "./bind_mountpoints.yml"
