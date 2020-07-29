@@ -16,7 +16,7 @@
     var: host_filesystem_mountpoints_numbers
 
 - name: Get the proxy container's PID
-  command: docker inspect --format {{.State.Pid}} proxy
+  command: docker inspect --format {% raw %}{{.State.Pid}}{% endraw %} proxy
   register: proxy_container_pid
 
 - name: Make device nodes in the proxy container
