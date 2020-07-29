@@ -8,7 +8,7 @@
     var: host_filesystem_mountpoints
 
 - name: Get filesystem mountpoints device numbers
-  command: cat /proc/self/mountinfo | grep '{{ item }} ' | awk '{print $3}'
+  shell: cat /proc/self/mountinfo | grep '{{ item }} ' | awk '{print $3}'
   loop: "{{ host_filesystem_mountpoints['results'] | map(attribute='stdout') | list | unique }}"
   register: host_filesystem_mountpoints_numbers
 
