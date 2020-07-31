@@ -23,3 +23,9 @@
 
 - include_tasks: "./{{ item }}.yml"
   with_items: "{{ compositional_services }}"
+
+- name: Trigger any container restarts here
+  meta: flush_handlers
+
+- include_tasks: "./bind_mountpoints.yml"
+  when: compositional_proxy_bind_mountpoints | length > 0

@@ -1,0 +1,47 @@
+---
+- name: (bind_mountpoints) Restart the proxy container so we're working with a clean setup
+  command: docker restart proxy
+
+- name: (bind_mountpoints) Get mountpoint of bind_mountpoint on host filesystem
+  shell: df {{ item['directory'] }} | sed -e 1d | awk '{ print $1 }'
+  loop: "{{ compositional_proxy_bind_mountpoints }}"
+  register: host_filesystem_mountpoints
+
+- debug:
+    var: host_filesystem_mountpoints
+
+- name: (bind_mountpoints) Get filesystem mountpoints device numbers
+  shell: cat /proc/self/mountinfo | grep '{{ item }} ' | awk '{print $3}'
+  loop: "{{ host_filesystem_mountpoints['results'] | map(attribute='stdout') | list | unique }}"
+  register: host_filesystem_mountpoints_numbers
+
+- debug:
+    var: host_filesystem_mountpoints_numbers
+
+- name: (bind_mountpoints) Get the proxy container's PID
+  command: docker inspect --format {% raw %}{{.State.Pid}}{% endraw %} proxy
+  register: proxy_container_pid
+
+- name: (bind_mountpoints) Make device nodes in the proxy container
+  command: "nsenter --target {{ proxy_container_pid['stdout'] }} --mount --uts --ipc --net --pid -- mknod --mode 0600 {{ item['item'] }} b {{ item['stdout'].split(':')[0] }} {{ item['stdout'].split(':')[1] }}"
+  loop: "{{ host_filesystem_mountpoints_numbers['results'] }}"
+
+- name: (bind_mountpoints) Make temporary mountpoints for the host filesystems
+  command: nsenter --target {{ proxy_container_pid['stdout'] }} --mount --uts --ipc --net --pid -- mkdir -p /tmp/{{ item['item'].split('/')[-1] }}
+  loop: "{{ host_filesystem_mountpoints_numbers['results'] }}"
+
+- name: (bind_mountpoints) Mount the host filesystems on the temporary mountpoints
+  command: nsenter --target {{ proxy_container_pid['stdout'] }} --mount --uts --ipc --net --pid -- mount {{ item['item'] }} /tmp/{{ item['item'].split('/')[-1] }}
+  loop: "{{ host_filesystem_mountpoints_numbers['results'] }}"
+
+- name: (bind_mountpoints) Make mountpoints in local proxy html directory
+  command: nsenter --target {{ proxy_container_pid['stdout'] }} --mount --uts --ipc --net --pid -- mkdir -p {{ compositional_proxy_html_dir }}{{ item['item']['location'] }}
+  loop: "{{ host_filesystem_mountpoints['results'] }}"
+
+- name: (bind_mountpoints) Bind-mount the subdirectories onto the mountpoints in the local proxy html directory
+  command: nsenter --target {{ proxy_container_pid['stdout'] }} --mount --uts --ipc --net --pid -- mount --bind /tmp/{{ item['stdout'].split('/')[-1] }}{{ item['item']['directory'] }} {{ compositional_proxy_html_dir }}{{ item['item']['location'] }}
+  loop: "{{ host_filesystem_mountpoints['results'] }}"
+
+- name: (bind_mountpoints) Unmount the host filesystems on the temporary mountpoints
+  command: nsenter --target {{ proxy_container_pid['stdout'] }} --mount --uts --ipc --net --pid -- umount /tmp/{{ item['item'].split('/')[-1] }}
+  loop: "{{ host_filesystem_mountpoints_numbers['results'] }}"
