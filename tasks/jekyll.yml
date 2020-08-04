@@ -38,6 +38,7 @@
 
               environment:
                 JEKYLL_GIT_URL: "{{ compositional_jekyll_git_url }}"
+                JEKYLL_GIT_BRANCH: "{{ compositional_jekyll_git_branch }}"
                 JEKYLL_DOMAIN: "{{ environment_domain }}"
                 JEKYLL_BASE_URL: "/jekyll/"
                 JEKYLL_PORT: "{{ compositional_jekyll_port }}"
@@ -51,3 +52,7 @@
     state: "{{ compositional_jekyll_state }}"
     restarted: "{{ compositional_jekyll_restarted }}"
   register: compositional_jekyll_output
+
+- name: (jekyll) Register jekyll bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + compositional_jekyll_bind_mountpoints }}"

@@ -23,7 +23,7 @@ find . -not -name 'entrypoint.sh'\
 git init
 git remote add origin "${JEKYLL_GIT_URL}"
 git fetch
-git reset --hard origin/master
+git reset --hard origin/${JEKYLL_GIT_BRANCH}
 chown -R jekyll:jekyll ./*
 
 # Test for the base URL existing and not being a blank string
@@ -31,9 +31,6 @@ if [[ ! -z "${JEKYLL_BASE_URL}" ]]; then
         # Add leading and trailing slashes as necessary
         if [[ ${JEKYLL_BASE_URL:0:1} != '/' ]]; then
                 JEKYLL_BASE_URL="/${JEKYLL_BASE_URL}"
-        fi
-        if [[ ${JEKYLL_BASE_URL: -1} != '/' ]]; then
-                JEKYLL_BASE_URL="${JEKYLL_BASE_URL}/"
         fi
         sed -i "s#baseurl:.*#baseurl: '$JEKYLL_BASE_URL'#" _config.yml
 fi
@@ -46,4 +43,4 @@ fi
 /bin/bash -c "${JEKYLL_EXTRA_COMMANDS}"
 
 mkdir -p _site
-jekyll serve --no-watch -H 0.0.0.0 -P $jekyll_port
+jekyll serve --verbose --no-watch -H 0.0.0.0 -P $jekyll_port
