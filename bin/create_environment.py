@@ -4,7 +4,7 @@
 import os
 import yaml
 import common
-import common.SERVICES as SERVICES
+import common
 import random
 import shutil
 import string
@@ -67,18 +67,18 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
     Set up the passwords for the services that we need to vault
     """
     vars_dir = "{}/group_vars/compositional".format(local_repo)
-    if not 'passwords' in SERVICES[service]:
+    if not 'passwords' in common.SERVICES[service]:
         return
 
-    for password_var in SERVICES[service]['passwords'].keys():
+    for password_var in common.SERVICES[service]['passwords'].keys():
         # Write the reference to the password in the vars file
         with open("{}/all.yml".format(vars_dir), 'a') as vars_file:
             vars_file.write('\n{0}: "{{{{ vault_{0} }}}}"'.format(password_var))
 
         # Set the password length
         pass_len = 16
-        if 'length' in SERVICES[service]['passwords'][password_var]:
-            pass_len = SERVICES[service]['passwords'][password_var]['length']
+        if 'length' in common.SERVICES[service]['passwords'][password_var]:
+            pass_len = common.SERVICES[service]['passwords'][password_var]['length']
 
         new_pass = create_pass(pass_len=pass_len)
 
