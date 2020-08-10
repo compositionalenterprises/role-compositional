@@ -12,7 +12,7 @@
       version: '3.6'
       services:
           manager:
-              image: "smacz/manager:{{ compositional_manager_version }}"
+              image: "compositionalenterprises/manager:{{ compositional_manager_version }}"
               container_name: manager
               restart: always
               volumes:
