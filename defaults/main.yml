@@ -21,6 +21,8 @@ compositional_services:
 # Otherwise, just default to nill and have it redirect to the
 # default html welcome page
 compositional_webroot_redirect: "{% if 'portal' in compositional_services %}portal{% else %}index.html{% endif %}"
+# Here we default to always setting up the services. Without this in place, we only install the frontend and the backend.
+compositional_setup_services: True
 
 #
 # Environment Vars
