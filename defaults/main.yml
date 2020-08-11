@@ -131,7 +131,7 @@ compositional_firefly_mysql_script: |
 compositional_manager_build: yes
 compositional_manager_state: present
 compositional_manager_restarted: no
-compositional_manager_version: '20.8.35'
+compositional_manager_version: '20.8.41'
 compositional_manager_storage: 'local'
 compositional_manager_port: '8080'
 compositional_manager_data_path: '/data'
