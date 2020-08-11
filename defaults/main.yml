@@ -148,8 +148,7 @@ compositional_jekyll_storage: 'local'
 compositional_jekyll_port: '8080'
 compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.git'
 compositional_jekyll_git_branch: 'master'
-compositional_jekyll_bind_mountpoints:
-  - {location: '/jekyll/assets/', directory: "/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/assets"}
+compositional_jekyll_bind_mountpoints: []
 
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
