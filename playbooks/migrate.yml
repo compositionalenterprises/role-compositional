@@ -52,7 +52,7 @@
 - import_playbook: 'transfer_data.yml'
 
 - name: Install services before data restoration
-  import_playbook: 'install_services.yml'
+  import_playbook: 'install_skeleton.yml'
   when: inventory_hostname in groups['new']
 
 - name: Restore the database backups

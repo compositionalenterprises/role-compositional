@@ -1,0 +1,51 @@
+---
+- name: Roles in Common
+  hosts: all
+  become: yes
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  vars:
+    docker__pip_packages:
+      - "docker"
+      - "python-apt"
+    certbot_auto_renew_options: "--quiet --no-self-upgrade --pre-hook='docker stop proxy' --post-hook='docker start proxy'"
+    certbot_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
+    certbot_create_if_missing: True
+    certbot_install_from_source: True
+    certbot_create_standalone_stop_services:
+      - 'docker'
+    certbot_certs:
+      - domains:
+        - "{{ environment_domain }}"
+  pre_tasks:
+    - name: Update all packages on the system
+      apt:
+        name: '*'
+        state: latest
+        update_cache: True
+
+    #
+    # TODO: LEGACY
+    #
+    - name: Determine presence of legacy python-docker
+      stat:
+        path: '/usr/local/bin/python-docker'
+      register: install_services_python_docker
+
+    - name: Link the python version for legacy clients
+      file:
+        src: '/usr/local/bin/python-docker'
+        path: '/usr/local/bin/python3-docker'
+        state: link
+      when: install_services_python_docker['exists'] is defined
+
+  roles:
+    - role: swapfile
+      swapfile_size: '4G'
+    - role: docker
+    - role: certbot
+    - role: compositional
+      tags: ['comp']
+      ansible_python_interpreter: "/usr/bin/env python3-docker"
+      # Here we're only installing the proxy and the database
+      compositional_setup_services: False
