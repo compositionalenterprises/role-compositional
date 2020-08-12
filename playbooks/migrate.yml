@@ -59,8 +59,13 @@
   import_playbook: 'restore_mariadb.yml'
 
 - name: Install services after data restoration
-  import_playbook: 'install_services.yml'
-  when: inventory_hostname in groups['new']
+  hosts: new
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+
+  roles:
+    - role: compositional
+      ansible_python_interpreter: "/usr/bin/env python3-docker"
 
 - import_playbook: 'transfer_ip.yml'
 
