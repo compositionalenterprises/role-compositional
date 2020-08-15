@@ -64,6 +64,8 @@ compositional_kanboard_restarted: yes
 compositional_kanboard_version: 'v1.2.15'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_backend_password: 'testpassword'
+compositional_kanboard_bind_mountpoints:
+  - {location: '/kanboard/assets/', directory: '/var/www/app/assets'}
 compositional_kanboard_mysql_script: |
   CREATE USER IF NOT EXISTS 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -109,6 +111,12 @@ compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
 compositional_bitwarden_version: '1.15.1'
 compositional_bitwarden_storage: 'local'
+compositional_bitwarden_bind_mountpoints:
+  - {location: '/bitwarden/app/', directory: '/web-vault/app'}
+  - {location: '/bitwarden/scripts/', directory: '/web-vault/scripts'}
+  - {location: '/bitwarden/images/', directory: '/web-vault/images'}
+  - {location: '/bitwarden/locales/', directory: '/web-vault/locales'}
+  - {location: '/bitwarden/fonts/', directory: '/web-vault/fonts'}
 
 #
 # Firefly
@@ -150,8 +158,10 @@ compositional_jekyll_storage: 'local'
 compositional_jekyll_port: '8080'
 compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.git'
 compositional_jekyll_git_branch: 'master'
-compositional_jekyll_bind_mountpoints: []
-
+compositional_jekyll_bind_mountpoints:
+  - {location: '/jekyll/font-awesome/fonts/', dirctory: '/srv/{{ compositional_jekyll_jekyll_storage }}/jekyll_jekyll/font-awesome/fonts'}
+  - {location: '/jekyll/img/', dirctory: '/srv/{{ compositional_jekyll_jekyll_storage }}/jekyll_jekyll/img'}
+  - {location: '/jekyll/js/', dirctory: '/srv/{{ compositional_jekyll_jekyll_storage }}/jekyll_jekyll/js'}
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"

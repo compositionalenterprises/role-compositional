@@ -29,3 +29,23 @@
     state: "{{ compositional_bitwarden_state }}"
     restarted: "{{ compositional_bitwarden_restarted }}"
   register: compositional_bitwarden_output
+
+#
+# Bind Mountpoints
+#
+
+- name: (bitwarden) Find merged filesystem directory
+  command: docker inspect --format {% raw %}{{.GraphDriver.Data.MergedDir}}{% endraw %} bitwarden
+  register: compositional_bitwarden_merged_dir
+
+- name: (bitwarden) Register bitwarden non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{item['location']: compositional_bitwarden_merged_dir['stdout'] + item['directory']}] }}"
+  when: not item['directory'].startswith('/srv')
+  loop: compositional_bitwarden_bind_mountpoints
+
+- name: (bitwarden) Register bitwarden volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: compositional_bitwarden_bind_mountpoints
