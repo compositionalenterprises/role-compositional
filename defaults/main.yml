@@ -159,9 +159,9 @@ compositional_jekyll_port: '8080'
 compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.git'
 compositional_jekyll_git_branch: 'master'
 compositional_jekyll_bind_mountpoints:
-  - {location: '/jekyll/font-awesome/fonts/', dirctory: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/font-awesome/fonts'}
-  - {location: '/jekyll/img/', dirctory: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/img'}
-  - {location: '/jekyll/js/', dirctory: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/js'}
+  - {location: '/jekyll/font-awesome/fonts/', directory: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/font-awesome/fonts'}
+  - {location: '/jekyll/img/', directory: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/img'}
+  - {location: '/jekyll/js/', directory: '/srv/{{ compositional_jekyll_storage }}/jekyll_jekyll/js'}
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
