@@ -63,7 +63,7 @@
 
 - name: (jekyll) Register jekyll non-volume bind-mountpoints for proxy
   set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{item['location']: compositional_jekyll_merged_dir['stdout'] + item['directory']}] }}"
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['location'], 'directory': compositional_jekyll_merged_dir['stdout'] + item['directory']}] }}"
   when: not item['directory'].startswith('/srv')
   loop: "{{ compositional_jekyll_bind_mountpoints }}"
 
