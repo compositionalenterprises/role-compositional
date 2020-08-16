@@ -58,7 +58,7 @@
 #
 
 - name: (jekyll) Find source filesystem directory
-  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} jekyll | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} jekyll | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
     executable: /bin/bash
   loop: "{{ compositional_jekyll_bind_mountpoints }}"

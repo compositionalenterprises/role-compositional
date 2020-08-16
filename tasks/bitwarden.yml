@@ -35,7 +35,7 @@
 #
 
 - name: (bitwarden) Find source filesystem directory
-  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} bitwarden | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} bitwarden | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
     executable: /bin/bash
   loop: "{{ compositional_bitwarden_bind_mountpoints }}"
