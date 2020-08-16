@@ -54,3 +54,31 @@
     restarted: "{{ compositional_bookstack_restarted }}"
   register: compositional_bookstack_output
   no_log: True
+
+#
+# Bind Mountpoints
+#
+
+- name: (bookstack) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} bookstack | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  args:
+    executable: /bin/bash
+  when: not item['directory'].startswith('/srv')
+  loop: "{{ compositional_bookstack_bind_mountpoints }}"
+  register: compositional_bookstack_src_dirs
+
+- debug:
+    var: compositional_bookstack_src_dirs
+
+- name: (bookstack) Register bookstack non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_bookstack_src_dirs['results'] }}"
+
+
+- name: (bookstack) Register bookstack volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_bookstack_bind_mountpoints }}"
