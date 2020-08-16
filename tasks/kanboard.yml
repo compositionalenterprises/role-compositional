@@ -108,5 +108,5 @@
 - name: (kanboard) Register kanboard volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
-  when: item['item']['directory'].startswith('/srv')
+  when: item['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
