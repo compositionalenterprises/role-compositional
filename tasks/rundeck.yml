@@ -93,7 +93,7 @@
     owner: 1000
     group: root
     mode: '0755'
-  when: item['stat']['exists'] is not defined
+  when: not item['stat']['exists']
   loop: "{{ compositional_rundeck_property_files['results'] }}"
 
 #
