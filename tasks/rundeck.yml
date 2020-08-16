@@ -82,13 +82,11 @@
   shell: docker exec -u 0 -i rundeck bash -c "apt update && apt install unzip"
   args:
     executable: '/bin/bash'
-  no_log: True
 
 - name: (rundeck) Unzip assets directory from the rundeck WAR file
   shell: docker exec -i rundeck bash -c "unzip -o rundeck.war 'assets/*'"
   args:
     executable: '/bin/bash'
-  no_log: True
 
 - name: (rundeck) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} rundeck | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
