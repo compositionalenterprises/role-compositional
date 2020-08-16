@@ -80,7 +80,7 @@
 #
 - name: (rundeck) Register presence of property files
   stat:
-    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_config:/home/rundeck/server/config/{{ item }}.properties"
+    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/{{ item }}.properties"
   loop:
     - 'ssl'
     - 'realm'
@@ -89,7 +89,7 @@
 - name: (rundeck) Copy initial property files to server
   copy:
     src: "../files/rundeck_{{ item['item'] }}.properties"
-    dest: "/srv/{{ compositional_rundeck_storage }}/rundeck_config:/home/rundeck/server/config/{{ item['item'] }}.properties"
+    dest: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/{{ item['item'] }}.properties"
     owner: 1000
     group: root
     mode: '0755'
