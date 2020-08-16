@@ -89,22 +89,21 @@
 # Bind Mountpoints
 #
 
-- name: Handle stuff for the bind-mountpoints whose source is not stored in `/srv`
-  block:
-    - name: (kanboard) Find source filesystem directory
-      shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
-      loop: "{{ compositional_kanboard_bind_mountpoints }}"
-      register: compositional_kanboard_src_dirs
-
-    - debug:
-        var: compositional_kanboard_src_dirs
-
-    - name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
-      set_fact:
-        compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
-      loop: "{{ compositional_kanboard_src_dirs['results'] }}"
-
+- name: (kanboard) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+  loop: "{{ compositional_kanboard_bind_mountpoints }}"
   when: not item['item']['directory'].startswith('/srv')
+  register: compositional_kanboard_src_dirs
+
+- debug:
+    var: compositional_kanboard_src_dirs
+
+- name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_kanboard_src_dirs['results'] }}"
+
 
 - name: (kanboard) Register kanboard volume bind-mountpoints for proxy
   set_fact:
