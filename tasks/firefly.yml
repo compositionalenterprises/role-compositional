@@ -63,26 +63,26 @@
 # Bind Mountpoints
 #
 
-- name: (kanboard) Find source filesystem directory
-  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+- name: (firefly) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} firefly | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
     executable: /bin/bash
   when: not item['directory'].startswith('/srv')
-  loop: "{{ compositional_kanboard_bind_mountpoints }}"
-  register: compositional_kanboard_src_dirs
+  loop: "{{ compositional_firefly_bind_mountpoints }}"
+  register: compositional_firefly_src_dirs
 
 - debug:
-    var: compositional_kanboard_src_dirs
+    var: compositional_firefly_src_dirs
 
-- name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
+- name: (firefly) Register firefly non-volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
   when: not item['item']['directory'].startswith('/srv')
-  loop: "{{ compositional_kanboard_src_dirs['results'] }}"
+  loop: "{{ compositional_firefly_src_dirs['results'] }}"
 
 
-- name: (kanboard) Register kanboard volume bind-mountpoints for proxy
+- name: (firefly) Register firefly volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
-  loop: "{{ compositional_kanboard_bind_mountpoints }}"
+  loop: "{{ compositional_firefly_bind_mountpoints }}"
