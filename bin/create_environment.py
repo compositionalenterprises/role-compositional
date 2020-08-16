@@ -221,6 +221,7 @@ def parse_args():
     if not args['email']:
         args['email'] = "{{ environment_admin }}@{{ environment_domain }}"
     args['services'] = format_services(args['services'])
+    args['domain'] = args['domain'].lower()
 
     return args
 
