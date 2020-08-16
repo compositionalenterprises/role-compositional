@@ -85,7 +85,7 @@
   no_log: True
 
 - name: (rundeck) Unzip assets directory from the rundeck WAR file
-  shell: docker exec -i rundeck bash -c "unzip rundeck.war assets/*"
+  shell: docker exec -i rundeck bash -c "unzip -o rundeck.war assets/*"
   args:
     executable: '/bin/bash'
   no_log: True
