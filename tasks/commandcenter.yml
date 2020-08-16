@@ -88,3 +88,31 @@
     hour: "4"
     day: "*"
     job: "/usr/bin/docker exec commandcenter /app/bin/seeds/daily.sh"
+
+#
+# Bind Mountpoints
+#
+
+- name: (commandcenter) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} commandcenter | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+  args:
+    executable: /bin/bash
+  when: not item['directory'].startswith('/srv')
+  loop: "{{ compositional_commandcenter_bind_mountpoints }}"
+  register: compositional_commandcenter_src_dirs
+
+- debug:
+    var: compositional_commandcenter_src_dirs
+
+- name: (commandcenter) Register commandcenter non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_commandcenter_src_dirs['results'] }}"
+
+
+- name: (commandcenter) Register commandcenter volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_commandcenter_bind_mountpoints }}"
