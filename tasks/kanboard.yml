@@ -91,6 +91,8 @@
 
 - name: (kanboard) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+  args:
+    shell: /bin/bash
   when: not item['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
   register: compositional_kanboard_src_dirs
