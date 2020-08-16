@@ -94,7 +94,7 @@
     group: root
     mode: '0755'
   when: item['stat']['exists'] is not defined
-  loop: compositional_rundeck_property_files['results']
+  loop: "{{ compositional_rundeck_property_files['results'] }}"
 
 #
 # Bind Mountpoints
