@@ -89,7 +89,8 @@
     executable: '/bin/bash'
 
 - name: (rundeck) Find source filesystem directory
-  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} rundeck | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  # We're ussing UpperDir here since the **directory** we need is actually generated after the container is running, and is not part of the image
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.UpperDir}}{% endraw %} rundeck | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
     executable: /bin/bash
   when: not item['directory'].startswith('/srv')
