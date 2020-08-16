@@ -129,6 +129,8 @@ compositional_firefly_version: 'release-5.2.8'
 compositional_firefly_storage: 'local'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'
+compositional_firefly_bind_mountpoints:
+  - {location: '/firefly/v1/', directory: '/var/www/firefly-iii/public/v1'}
 compositional_firefly_mysql_script: |
   CREATE USER IF NOT EXISTS 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
   CREATE DATABASE IF NOT EXISTS firefly;
