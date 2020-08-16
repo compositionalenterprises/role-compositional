@@ -89,18 +89,25 @@
 # Bind Mountpoints
 #
 
-- name: (kanboard) Find merged filesystem directory
-  command: docker inspect --format {% raw %}{{.GraphDriver.Data.MergedDir}}{% endraw %} kanboard
-  register: compositional_kanboard_merged_dir
+- name: Handle stuff for the bind-mountpoints whose source is not stored in `/srv`
+  block:
+    - name: (kanboard) Find source filesystem directory
+      shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+      loop: "{{ compositional_kanboard_bind_mountpoints }}"
+      register: compositional_kanboard_src_dirs
 
-- name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
-  set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['location'], 'directory': compositional_kanboard_merged_dir['stdout'] + item['directory']}] }}"
-  when: not item['directory'].startswith('/srv')
-  loop: "{{ compositional_kanboard_bind_mountpoints }}"
+    - debug:
+        var: compositional_kanboard_src_dirs
+
+    - name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
+      set_fact:
+        compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+      loop: "{{ compositional_kanboard_src_dirs['results'] }}"
+
+  when: not item['item']['directory'].startswith('/srv')
 
 - name: (kanboard) Register kanboard volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
-  when: item['directory'].startswith('/srv')
+  when: item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"

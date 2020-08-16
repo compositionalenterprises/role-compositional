@@ -57,18 +57,25 @@
 # Bind Mountpoints
 #
 
-- name: (jekyll) Find merged filesystem directory
-  command: docker inspect --format {% raw %}{{.GraphDriver.Data.MergedDir}}{% endraw %} jekyll
-  register: compositional_jekyll_merged_dir
+- name: Handle stuff for the bind-mountpoints whose source is not stored in `/srv`
+  block:
+    - name: (jekyll) Find source filesystem directory
+      shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} jekyll | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done
+      loop: "{{ compositional_jekyll_bind_mountpoints }}"
+      register: compositional_jekyll_src_dirs
 
-- name: (jekyll) Register jekyll non-volume bind-mountpoints for proxy
-  set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['location'], 'directory': compositional_jekyll_merged_dir['stdout'] + item['directory']}] }}"
-  when: not item['directory'].startswith('/srv')
-  loop: "{{ compositional_jekyll_bind_mountpoints }}"
+    - debug:
+        var: compositional_jekyll_src_dirs
+
+    - name: (jekyll) Register jekyll non-volume bind-mountpoints for proxy
+      set_fact:
+        compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+      loop: "{{ compositional_jekyll_src_dirs['results'] }}"
+
+  when: not item['item']['directory'].startswith('/srv')
 
 - name: (jekyll) Register jekyll volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
-  when: item['directory'].startswith('/srv')
+  when: item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_jekyll_bind_mountpoints }}"
