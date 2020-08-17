@@ -42,8 +42,8 @@
                 WORDPRESS_DB_NAME: "wordpress"
                 WORDPRESS_CONFIG_EXTRA: |
                   /* Fix Subdirectory config */
-                  define('WP_SITEURL', 'https://{{ environment_domain }}/blog');
-                  define('WP_HOME', 'https://{{ environment_domain }}/blog');
+                  define('WP_SITEURL', 'https://{{ environment_domain }}/wordpress');
+                  define('WP_HOME', 'https://{{ environment_domain }}/wordpress');
                   define('WP_MEMORY_LIMIT', '2048M');
       networks:
           frontend:
@@ -56,8 +56,8 @@
   register: compositional_wordpress_output
   no_log: True
 
-- name: (wordpress) Symlink blog directory
-  shell: docker exec -i wordpress bash -c "ln -snfT /var/www/html/ /var/www/html/blog"
+- name: (wordpress) Symlink wordpress directory as a sub-directory
+  shell: docker exec -i wordpress bash -c "ln -snfT /var/www/html/ /var/www/html/wordpress"
 
 - name: (wordpress) Ensure large file uploads are permitted in htaccess
   shell: docker exec -i wordpress bash -c "grep -qxF '{{ item }}' /var/www/html/.htaccess || echo '{{ item }}' >> /var/www/html/.htaccess"
