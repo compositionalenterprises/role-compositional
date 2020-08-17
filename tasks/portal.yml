@@ -94,3 +94,31 @@
     hour: "{{ compositional_portal_cron_hour }}"
     day: "{{ compositional_portal_cron_day }}"
     job: "/usr/bin/docker exec portal /app/bin/backup.sh"
+
+#
+# Bind Mountpoints
+#
+
+- name: (portal) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} portal | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  args:
+    executable: /bin/bash
+  when: not item['directory'].startswith('/srv')
+  loop: "{{ compositional_portal_bind_mountpoints }}"
+  register: compositional_portal_src_dirs
+
+- debug:
+    var: compositional_portal_src_dirs
+
+- name: (portal) Register portal non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_portal_src_dirs['results'] }}"
+
+
+- name: (portal) Register portal volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_portal_bind_mountpoints }}"

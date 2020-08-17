@@ -32,4 +32,4 @@
     - include_tasks: "./bind_mountpoints.yml"
       when: compositional_proxy_bind_mountpoints | length > 0
 
-  when: compositional_setup_services
+  when: compositional_setup_services | bool
