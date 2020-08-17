@@ -40,11 +40,11 @@
               image: "rundeck/rundeck:{{ compositional_rundeck_version }}"
               container_name: rundeck
               restart: always
-              volumes:
-                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_data:/home/rundeck/server/data"
-                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_config:/home/rundeck/server/config"
-                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs:/home/rundeck/var/logs"
-                  - "/srv/{{ compositional_rundeck_storage }}/rundeck_etc:/home/rundeck/etc"
+                #volumes:
+                #    - "/srv/{{ compositional_rundeck_storage }}/rundeck_data:/home/rundeck/server/data"
+                #    - "/srv/{{ compositional_rundeck_storage }}/rundeck_config:/home/rundeck/server/config"
+                #    - "/srv/{{ compositional_rundeck_storage }}/rundeck_logs:/home/rundeck/var/logs"
+                #    - "/srv/{{ compositional_rundeck_storage }}/rundeck_etc:/home/rundeck/etc"
 
               networks:
                   - frontend
@@ -78,23 +78,23 @@
 #
 # Workaround for https://github.com/rundeck/rundeck/issues/5344
 #
-- name: (rundeck) Register presence of property files
-  stat:
-    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/{{ item }}.properties"
-  loop:
-    - 'ssl'
-    - 'realm'
-  register: compositional_rundeck_property_files
-
-- name: (rundeck) Copy initial property files to server
-  copy:
-    src: "../files/rundeck_{{ item['item'] }}.properties"
-    dest: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/{{ item['item'] }}.properties"
-    owner: 1000
-    group: root
-    mode: '0755'
-  when: not item['stat']['exists']
-  loop: "{{ compositional_rundeck_property_files['results'] }}"
+#- name: (rundeck) Register presence of property files
+#  stat:
+#    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/{{ item }}.properties"
+#  loop:
+#    - 'ssl'
+#    - 'realm'
+#  register: compositional_rundeck_property_files
+#
+#- name: (rundeck) Copy initial property files to server
+#  copy:
+#    src: "../files/rundeck_{{ item['item'] }}.properties"
+#    dest: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/{{ item['item'] }}.properties"
+#    owner: 1000
+#    group: root
+#    mode: '0755'
+#  when: not item['stat']['exists']
+#  loop: "{{ compositional_rundeck_property_files['results'] }}"
 
 #
 # Bind Mountpoints
