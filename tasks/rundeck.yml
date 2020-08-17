@@ -74,3 +74,69 @@
   args:
     executable: '/bin/bash'
   no_log: True
+
+#
+# Workaround for https://github.com/rundeck/rundeck/issues/5344
+#
+- name: (rundeck) Register presence of property files
+  stat:
+    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_{{ item.split('/')[0] }}/{{ item.split('/')[1] }}"
+  loop:
+    - 'config/ssl.properties'
+    - 'config/realm.properties'
+    - 'etc/admin.aclpolicy'
+    - 'etc/apitoken.aclpolicy'
+    - 'etc/cli-log4j.properties'
+    - 'etc/preferences.properties'
+    - 'etc/profile'
+    - 'etc/profile.bat'
+    - 'etc/project.properties'
+  register: compositional_rundeck_property_files
+
+- name: (rundeck) Copy initial property files to server
+  copy:
+    src: "../files/rundeck_{{ item['item'].split('/')[1] }}"
+    dest: "/srv/{{ compositional_rundeck_storage }}/rundeck_{{ item['item'].split('/')[0] }}/{{ item['item'].split('/')[1] }}"
+    owner: 1000
+    group: root
+    mode: '0775'
+  when: not item['stat']['exists']
+  loop: "{{ compositional_rundeck_property_files['results'] }}"
+
+#
+# Bind Mountpoints
+#
+- name: (rundeck) Install unzip in rundeck container
+  shell: docker exec -u 0 -i rundeck bash -c "apt update && apt install unzip"
+  args:
+    executable: '/bin/bash'
+
+- name: (rundeck) Unzip assets directory from the rundeck WAR file
+  shell: docker exec -i rundeck bash -c "unzip -o rundeck.war 'assets/*'"
+  args:
+    executable: '/bin/bash'
+
+- name: (rundeck) Find source filesystem directory
+  # We're ussing UpperDir here since the **directory** we need is actually generated after the container is running, and is not part of the image
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.UpperDir}}{% endraw %} rundeck | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  args:
+    executable: /bin/bash
+  when: not item['directory'].startswith('/srv')
+  loop: "{{ compositional_rundeck_bind_mountpoints }}"
+  register: compositional_rundeck_src_dirs
+
+- debug:
+    var: compositional_rundeck_src_dirs
+
+- name: (rundeck) Register rundeck non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_rundeck_src_dirs['results'] }}"
+
+
+- name: (rundeck) Register rundeck volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_rundeck_bind_mountpoints }}"
