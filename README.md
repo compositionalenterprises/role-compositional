@@ -116,14 +116,15 @@ Jekyll has a couple of others to use:
 
 CommandCenter and Portal allow us to store their `production_key` and `production.yml.enc` file contents in the following variables:
 
-- `compositional_commandcenter_production_key`
-- `compositional_commandcenter_production_yml_enc`
-- `compositional_portal_production_key`
-- `compositional_portal_production_yml_enc`
+- `compositional_commandcenter_production_key`: Can be found at `config/credentials` folder of commandcenter application, sample keys are passed by default
+- `compositional_commandcenter_production_yml_enc`: Can be found at `config/credentials` folder of commandcenter application, sample keys are passed by default
+- `compositional_portal_production_key`: Can be found at `config/credentials` folder of portal application, sample keys are passed by default
+- `compositional_portal_production_yml_enc`: Can be found at `config/credentials` folder of portal application, sample keys are passed by default
 
 This should probably be vaulted, but as they are by default, you will be able to get an instance spun up and working by default.
 
-TODO: How to create these for real?
+See the [CommandCenter Repo - Passing Production Keys](https://gitlab.com/compositionalenterprises/commandcenter/-/blob/master/docs/INSTALL.md#pass-production-keys-to-the-container-in-volumes-when-running-in-production) for more information on updating rails credentials files. Please also note with the default keys setup we run, the keys can be updated from a commandline interface within the container using `EDITOR=vim RAILS_ENV=production rails credentials:edit -e production`
+
 
 # New Services
 
