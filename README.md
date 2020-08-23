@@ -140,7 +140,6 @@ This should probably be vaulted, but as they are by default, you will be able to
 
 See the [CommandCenter Repo - Passing Production Keys](https://gitlab.com/compositionalenterprises/commandcenter/-/blob/master/docs/INSTALL.md#pass-production-keys-to-the-container-in-volumes-when-running-in-production) for more information on updating rails credentials files. Please also note with the default keys setup we run, the keys can be updated from a commandline interface within the container using `EDITOR=vim RAILS_ENV=production rails credentials:edit -e production`
 
-
 # New Services
 
 Whenever new services are added, we should make sure they are doing the same things that the other ones are. It's typically easiest to start off finding the service that's most similar to the new one. The files for the NGINX configuration file and the task file can be copied, renamed, and edited. Then the variables section can be copied to a new section and renamed, and the service added to the list of services in the `defaults/main.yml` file.
