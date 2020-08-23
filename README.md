@@ -97,7 +97,13 @@ All services that have a database backend (which is most of them) have a variabl
 
 ### Bind Mountpoints
 
-TODO: These mountpoints will be able to be set up on any service to be able to bind-mount static assets into the frontend proxy in order to avoid contacting backend servers and speed up the transmission of the assets. They come in the form of `compositional_jekyll_bind_mountpoints`.
+These mountpoints will be able to be set up on any service to be able to bind-mount static assets into the frontend proxy in order to avoid contacting backend servers and speed up the transmission of the assets. They come in the form of `compositional_< service >_bind_mountpoints`.
+
+This variable is in the following format:
+
+
+
+
 
 ### Jekyll
 
