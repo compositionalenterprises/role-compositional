@@ -101,9 +101,18 @@ These mountpoints will be able to be set up on any service to be able to bind-mo
 
 This variable is in the following format:
 
+```yaml
+compositional_firefly_bind_mountpoints:
+  - {location: '/firefly/v1/css/', directory: '/var/www/firefly-iii/public/v1/css'}
+  - {location: '/firefly/v1/fonts/', directory: '/var/www/firefly-iii/public/v1/fonts'}
+  - {location: '/firefly/v1/images/', directory: '/var/www/firefly-iii/public/v1/images'}
+  - {location: '/firefly/v1/js/', directory: '/var/www/firefly-iii/public/v1/js'}
+  - {location: '/firefly/v1/lib/', directory: '/var/www/firefly-iii/public/v1/lib'}
+```
 
+So this is a list of dictionaries. The dictionaries have the keys `location`, and `directory`. The `location` is the subdomain path that should be intercepted and redirected to the local bindmount. The `directory` key is the location within the image where the assets are location. Alternatively, if the path in the `directory` key starts with `/srv`, the role will look at the host's `/srv` directory for that location, rather than inside the image.
 
-
+#### NOTE: This is hard-coded right now. If it becomes an issue, we can make the `/srv` location a variable, but for now all `directory` keys that point to `/srv` are expected to be on the host.
 
 ### Jekyll
 
