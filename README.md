@@ -1,6 +1,6 @@
 # Compositional Role
 
-![OurCompose Productivity Suite](https://gitlab.com/compositionalenterprises/jekyll-ourcomposecast/-/blob/master/assets/logos/banner_logo.jpg)
+![OurCompose Productivity Suite](https://gitlab.com/compositionalenterprises/jekyll-ourcomposecast/-/raw/master/assets/logos/banner_logo.jpg)
 
 This role sets up a VM to host what amounts to a cloud-in-a-box; a combination of various cloud services all hosted in subdirectories of a given domain. 
 
