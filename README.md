@@ -152,8 +152,8 @@ New services should include the following setup steps:
 - Database initialization check
 - Database setup script
 - `docker_compose` setup
+- Bind Mountpoints
 - Script Execution (Coming Soon)
-- Bind Mountpoints (Coming Soon)
 - Default Login Account (Coming Later)
 - Unified Account Management (Coming Much Later)
 
@@ -215,4 +215,4 @@ MIT
 # Author Information
 
 Andrew Cziryak
-https://andrewcz.com
+- https://ourcompose.com
