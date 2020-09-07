@@ -93,4 +93,5 @@ server {
     # Redirect traffic to specified redirect location
     #
     return 301 {{ domain_redirect['redirect'] }};
-  }
+}
+{% endfor %}
