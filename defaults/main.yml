@@ -23,18 +23,6 @@ compositional_services:
 compositional_webroot_redirect: "{% if 'portal' in compositional_services %}portal{% else %}index.html{% endif %}"
 # Here we default to always setting up the services. Without this in place, we only install the frontend and the backend.
 compositional_setup_services: True
-# If we have any redirects to create, we can add them in the environment.
-# This would be for when we are pointing another DNS entry to the same server,
-# and want to have it redirect to a specific subdirectory, like:
-#   - mynextcloudinstance.com -> my.ourcompose.com/nextcloud
-#
-# For nginx, we capture the request, and issue a 301 to redirect to the appropriate location.
-#
-# this should be a list in the format of:
-# compositional_domain_redirects:
-#   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll'}
-#   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter'}
-compositional_domain_redirects: []
 
 #
 # Environment Vars
