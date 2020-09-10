@@ -1,6 +1,6 @@
 server {
     listen       80;
-    server_name  _;
+    server_name  "{{ environment_domain }}";
     #
     # Redirect _all_ HTTP traffic to HTTPS
     #
@@ -61,6 +61,16 @@ server {
 
 {% for domain_redirect in compositional_domain_redirects %}
 server {
+    listen       80;
+    server_name  "{{ domain_redirect['domain'] }}";
+{% if compositional_nginx_domain_redirects_certs[domain_redirect['domain']] %}
+    #
+    # Redirect _all_ HTTP traffic to HTTPS
+    #
+    return 301 https://$host$request_uri;
+}
+
+server {
     listen       443 ssl;
     server_name  "{{ domain_redirect['domain'] }}";
 
@@ -88,7 +98,7 @@ server {
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
-
+{% endif %}
     #
     # Redirect traffic to specified redirect location
     #

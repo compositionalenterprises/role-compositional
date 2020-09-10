@@ -30,10 +30,15 @@ compositional_setup_services: True
 #
 # For nginx, we capture the request, and issue a 301 to redirect to the appropriate location.
 #
+# In order to check if we should attemtp to generate a cert for these, as well as put them into
+# the nginx default conf, we have to determine where the certs are, so we append the path to where
+# the cert file should be under the root of the compositional nginx_cert_volume value. This can be any
+# type of file, we're just testing if it's present or not.
+#
 # this should be a list in the format of:
 # compositional_domain_redirects:
-#   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll'}
-#   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter'}
+#   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll', cert: 'live/ourcomposecast.com/fullchain.pem'}
+#   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter', cert: 'live/ourcomposesignup.com/fullchain.pem'}
 compositional_domain_redirects: []
 
 #
