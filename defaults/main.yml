@@ -40,7 +40,7 @@ compositional_setup_services: True
 #   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll', cert: 'live/ourcomposecast.com/fullchain.pem'}
 #   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter', cert: 'live/ourcomposesignup.com/fullchain.pem'}
 compositional_domain_redirects: []
-
+compositional_nginx_domain_redirects_certs: {}
 #
 # Environment Vars
 #
