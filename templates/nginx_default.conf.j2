@@ -1,6 +1,6 @@
 server {
     listen       80;
-    server_name  _;
+    server_name  "{{ environment_domain }}";
     #
     # Redirect _all_ HTTP traffic to HTTPS
     #
@@ -58,3 +58,50 @@ server {
         return 301 https://$host/{{ compositional_webroot_redirect }}{% if '.' not in compositional_webroot_redirect %}/{% endif %};
     }
 }
+
+{% for domain_redirect in compositional_domain_redirects %}
+server {
+    listen       80;
+    server_name  "{{ domain_redirect['domain'] }}";
+{% if compositional_nginx_domain_redirects_certs[domain_redirect['domain']] %}
+    #
+    # Redirect _all_ HTTP traffic to HTTPS
+    #
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen       443 ssl;
+    server_name  "{{ domain_redirect['domain'] }}";
+
+    # IDK what this does
+    underscores_in_headers on;
+
+    #
+    # Set SSL/TLS options
+    #
+    ssl_certificate {{ compositional_nginx_cert_fullchain }};
+    ssl_certificate_key {{ compositional_nginx_cert_privkey }};
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    # Only use safe chiphers
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA';
+
+    #
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504 /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+{% endif %}
+    #
+    # Redirect traffic to specified redirect location
+    #
+    return 301 {{ domain_redirect['redirect'] }};
+}
+{% endfor %}
