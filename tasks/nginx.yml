@@ -26,6 +26,16 @@
     restarted: "{{ compositional_nginx_restarted }}"
   register: frontend_output
 
+- name: (nginx) Check for domain redirects' certs
+  stat:
+    path: "{{ compositional_nginx_cert_volume }}/{{ item['cert'] }}"
+  loop: "{{ compositional_domain_redirects }}"
+  register: compositional_domain_redirects_certs_stat
+
+- name: (nginx) Add certs key-value to domain redirects certs dict
+  set_fact: "{{ compositional_nginx_domain_redirects_certs | default({}) | combine({item['item']['domain']: item['stat']['exists']}) }}"
+  loop: "{{ compositional_domain_redirects_certs_stat['results'] }}"
+
 - name: (nginx) Nginx default.conf is deployed
   template:
     src: nginx_default.conf.j2
