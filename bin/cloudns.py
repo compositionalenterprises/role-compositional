@@ -37,10 +37,13 @@ def change_dns(args):
     if change_type == 'modify':
         change_type = 'mod'
     url = "https://api.cloudns.net/dns/{}-record.json".format(change_type)
+    # We save this here so that we can use it later to find the domain [-2:]
+    # and to get the host [:-2]
+    domain_name_list = args['fqdn'].split('.')
     params = {
             'sub-auth-user': args['apiuser'],
             'auth-password': args['apipass'],
-            'domain-name': '.'.join(args['fqdn'].split('.')[1:]),
+            'domain-name': '.'.join(domain_name_list[-2:]),
             }
 
     if change_type != 'add':
@@ -63,7 +66,7 @@ def change_dns(args):
         params['record-type'] = 'A'
 
     if change_type != 'delete':
-        params['host'] = args['fqdn'].split('.')[0]
+        params['host'] = '.'.join(domain_name_list[:-2])
         params['record'] = args['address']
         params['ttl'] = '900'
 

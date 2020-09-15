@@ -20,8 +20,7 @@
     certbot_create_standalone_stop_services:
       - 'docker'
     certbot_certs:
-      - domains:
-        - "{{ environment_domain }}"
+      - domains: "{{ [environment_domain] + compositional_domain_redirects | default({}) | map(attribute='domain') | list }}"
   pre_tasks:
     - name: Update all packages on the system
       apt:
