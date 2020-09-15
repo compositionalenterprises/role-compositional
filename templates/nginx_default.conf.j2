@@ -80,8 +80,8 @@ server {
     #
     # Set SSL/TLS options
     #
-    ssl_certificate {{ compositional_nginx_cert_fullchain }};
-    ssl_certificate_key {{ compositional_nginx_cert_privkey }};
+    ssl_certificate {{ domain_redirect['cert'] }};
+    ssl_certificate_key {{ domain_redirect['key'] }};
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_protocols TLSv1.2 TLSv1.3;

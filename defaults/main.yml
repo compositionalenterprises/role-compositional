@@ -37,10 +37,10 @@ compositional_setup_services: True
 #
 # this should be a list in the format of:
 # compositional_domain_redirects:
-#   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll', cert: 'live/ourcomposecast.com/fullchain.pem'}
-#   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter', cert: 'live/ourcomposesignup.com/fullchain.pem'}
+#   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll', cert: 'live/ourcomposecast.com/fullchain.pem', key: 'live/ourcomposecast.com/privkey.pem'}
+#   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter', cert: 'live/ourcomposesignup.com/fullchain.pem', key: 'live/ourcomposesignup.com/privkey.pem'}
 compositional_domain_redirects: []
-compositional_nginx_domain_redirects_certs: {}
+
 #
 # Environment Vars
 #
