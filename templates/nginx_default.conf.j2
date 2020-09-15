@@ -17,8 +17,8 @@ server {
     #
     # Set SSL/TLS options
     #
-    ssl_certificate {{ compositional_nginx_cert_fullchain }};
-    ssl_certificate_key {{ compositional_nginx_cert_privkey }};
+    ssl_certificate {{ compositional_nginx_cert_volume.split(':')[1] }}/{{ compositional_nginx_cert_fullchain }};
+    ssl_certificate_key {{ compositional_nginx_cert_volume.split(':')[1] }}/{{ compositional_nginx_cert_privkey }};
     ssl_stapling on;
     ssl_stapling_verify on;
     ssl_protocols TLSv1.2 TLSv1.3;
