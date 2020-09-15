@@ -28,7 +28,7 @@
 
 - name: (nginx) Check for domain redirects' certs
   stat:
-    path: "{{ compositional_nginx_cert_volume }}/{{ item['cert'] }}"
+    path: "{{ compositional_nginx_cert_volume.split(':')[0] }}/{{ item['cert'] }}"
   loop: "{{ compositional_domain_redirects }}"
   register: compositional_domain_redirects_certs_stat
 
