@@ -114,6 +114,21 @@ So this is a list of dictionaries. The dictionaries have the keys `location`, an
 
 #### NOTE: This is hard-coded right now. If it becomes an issue, we can make the `/srv` location a variable, but for now all `directory` keys that point to `/srv` are expected to be on the host.
 
+### Domain Redirects
+
+Any site that has its DNS pointing to an instance can have an alternate DNS entry redirected. This comes in the form of:
+
+```yaml
+compositional_domain_redirects:
+  - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll', cert: 'live/ourcomposecast.com/fullchain.pem'}
+  - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter', cert: 'live/ourcomposesignup.com/fullchain.pem'}
+compositional_domain_redirects: []
+```
+
+If there is no cert, the `HTTPS` requests will _NOT_ be able to be accepted.
+
+#### NOTE: If there is any abuse of this functionality in the future, this could be restricted to redirects pointing to only locations within the `{{ environment_domain }}`.
+
 ### Jekyll
 
 Jekyll has a couple of others to use:
