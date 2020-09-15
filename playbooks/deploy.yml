@@ -39,8 +39,9 @@
         --apiuser "{{ cloudns_api_user }}" 
         --apipass "{{ cloudns_api_pass }}" 
         --address "{{ hostvars['localhost']['new_floating_ip']['data']['floating_ip']['ip'] }}" 
-        --fqdn "{{ environment_domain }}" 
+        --fqdn "{{ item }}" 
         --type 'add'
+      loop: "{{ [environment_domain] + compositional_domain_redirects | default({}) | map(attribute='domain') | list }}"
       delegate_to: localhost
 
     - name: Establish an ssh connection
