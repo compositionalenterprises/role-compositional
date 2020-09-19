@@ -226,7 +226,7 @@ compositional_jekyll_extra_commands: |
 # minus the period.
 compositional_jekyll_healthcheck: |
   wget --quiet --no-verbose --tries=1 --spider "{{ environment_domain }}/jekyll" \
-  {%- if compositional_jekyll_bind_mountpoints | length > 0 -%}
+  {% if compositional_jekyll_bind_mountpoints | length > 0 %} \
     && set -o pipefail \
     && path=$$(wget --quiet {{ environment_domain }}/jekyll -O - |\
             grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
@@ -235,7 +235,7 @@ compositional_jekyll_healthcheck: |
             sed 's/^{{ environment_domain.split(".")[-1] }}//' |\
             head -n 1) \
     && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/$${path} \
-  {%- endif -%}
+  {% endif %} \
   || exit 1
 
 #
