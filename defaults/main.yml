@@ -132,6 +132,10 @@ compositional_wordpress_mysql_script: |
   CREATE USER IF NOT EXISTS 'wordpress'@'%' IDENTIFIED BY '{{ compositional_wordpress_backend_password }}';
   CREATE DATABASE IF NOT EXISTS wordpress;
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%';
+compositional_wordpress_healthcheck_disable: False
+compositional_wordpress_healthcheck: |
+  curl -sSL --fail {{ environment_domain }}/wordpress \
+  || exit 1
 
 #
 # Bitwarden
