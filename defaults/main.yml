@@ -182,6 +182,11 @@ compositional_firefly_mysql_script: |
   CREATE USER IF NOT EXISTS 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
+compositional_firefly_healthcheck_disable: False
+compositional_firefly_healthcheck: |
+  curl -sSL --fail {{ environment_domain }}/firefly \
+  && curl -sSL --fail {{ environment_domain }}/$(curl -sSL --fail {{ environment_domain }}/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
+  || exit 1
 
 #
 # Manager
