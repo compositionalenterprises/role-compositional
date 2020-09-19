@@ -61,7 +61,6 @@
                 RUNDECK_API_TOKENS_DURATION_MAX: "{{ compositional_rundeck_api_tokens_duration_max }}"
 
               healthcheck:
-                disable: "{{ compositional_rundeck_healthcheck_disable }}"
                 test: "{{ compositional_rundeck_healthcheck }}"
                 interval: 5s
                 timeout: 30s
