@@ -21,6 +21,9 @@
               networks:
                   - frontend
 
+              healthcheck:
+                disable: False
+
       networks:
           frontend:
               external: true
