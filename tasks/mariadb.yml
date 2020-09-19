@@ -17,6 +17,12 @@
                   - backend
               environment:
                   MYSQL_ROOT_PASSWORD: "{{ compositional_database_root_password }}"
+              healthcheck:
+                disable: "{{ compositional_mariadb_healthcheck_disable }}"
+                test: "{{ compositional_mariadb_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
       networks:
           backend:
               name: backend
