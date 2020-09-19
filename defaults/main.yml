@@ -65,6 +65,10 @@ compositional_nginx_storage: 'local'
 compositional_nginx_cert_volume: '/etc/letsencrypt:/etc/letsencrypt'
 compositional_nginx_cert_fullchain: "/etc/letsencrypt/live/{{ environment_domain }}/fullchain.pem"
 compositional_nginx_cert_privkey: "/etc/letsencrypt/live/{{ environment_domain }}/privkey.pem"
+compositional_nginx_healthcheck_disable: False
+# This could probably be better
+compositional_nginx_healthcheck: |
+  service nginx status || exit 1
 
 #
 # MariaDB Backend

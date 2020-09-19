@@ -18,6 +18,12 @@
                   - "{{ compositional_nginx_cert_volume }}"
               networks:
                   - frontend
+              healthcheck:
+                disable: "{{ compositional_nginx_healthcheck_disable }}"
+                test: "{{ compositional_nginx_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
       networks:
           frontend:
               name: frontend
