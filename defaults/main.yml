@@ -294,6 +294,11 @@ compositional_commandcenter_bind_mountpoints:
 compositional_commandcenter_mysql_script: |
   CREATE DATABASE IF NOT EXISTS commandcenter;
   GRANT ALL PRIVILEGES ON commandcenter.* TO 'commandcenter'@'%' IDENTIFIED BY '{{ compositional_commandcenter_backend_password }}';
+compositional_commandcenter_healthcheck_disable: False
+compositional_commandcenter_healthcheck: |
+  wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/commandcenter \
+  && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}$(wget --quiet --no-verbose --tries=1 {{ environment_domain }}/commandcenter -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  || exit 1
 
 #
 # Portal
@@ -319,4 +324,8 @@ compositional_portal_mysql_script: |
   CREATE USER IF NOT EXISTS 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
-
+compositional_portal_healthcheck_disable: False
+compositional_portal_healthcheck: |
+  wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/portal \
+  && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}$(wget --quiet --no-verbose --tries=1 {{ environment_domain }}/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  || exit 1

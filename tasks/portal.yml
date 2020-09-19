@@ -75,6 +75,12 @@
                 RUNDECK_API_TOKEN: "{{ ourcompose_rundeck_apitoken }}"
                 ENVIRONMENT_VAULT_PASSWORD: "{{ lookup('file', '../environment/.vault_pass') }}"
                 INITIAL_INSTALL: "{{ compositional_portal_initial_install }}"
+              healthcheck:
+                disable: "{{ compositional_portal_healthcheck_disable }}"
+                test: "{{ compositional_portal_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
 
       networks:
           frontend:
