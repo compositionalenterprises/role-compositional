@@ -19,7 +19,6 @@
               networks:
                   - frontend
               healthcheck:
-                disable: False
                 test: "{{ compositional_nginx_healthcheck }}"
                 interval: 5s
                 timeout: 30s

@@ -43,7 +43,6 @@
                 APP_URL: "https://{{ environment_domain }}/bookstack"
 
               healthcheck:
-                disable: "{{ compositional_bookstack_healthcheck_disable }}"
                 test: "{{ compositional_bookstack_healthcheck }}"
                 interval: 5s
                 timeout: 30s

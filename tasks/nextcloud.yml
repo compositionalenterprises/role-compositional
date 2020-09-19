@@ -45,7 +45,6 @@
                   NEXTCLOUD_ADMIN_PASSWORD: "{{ compositional_nextcloud_admin_password }}"
                   NEXTCLOUD_TRUSTED_DOMAINS: "{{ environment_domain }} nextcloud"
               healthcheck:
-                disable: "{{ compositional_nextcloud_healthcheck_disable }}"
                 test: "{{ compositional_nextcloud_healthcheck }}"
                 interval: 5s
                 timeout: 30s

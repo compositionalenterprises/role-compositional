@@ -65,7 +65,6 @@ compositional_nginx_storage: 'local'
 compositional_nginx_cert_volume: '/etc/letsencrypt:/etc/letsencrypt'
 compositional_nginx_cert_fullchain: "/etc/letsencrypt/live/{{ environment_domain }}/fullchain.pem"
 compositional_nginx_cert_privkey: "/etc/letsencrypt/live/{{ environment_domain }}/privkey.pem"
-compositional_nginx_healthcheck_disable: False
 # This could probably be better
 compositional_nginx_healthcheck: |
   service nginx status || exit 1
@@ -78,7 +77,6 @@ compositional_mariadb_state: 'present'
 compositional_mariadb_restarted: yes
 compositional_mariadb_version: '10.4'
 compositional_mariadb_storage: 'local'
-compositional_mariadb_healthcheck_disable: False
 compositional_mariadb_healthcheck: |
   set -o pipefail \
   && mysql -uroot -p{{ compositional_database_root_password }} -e "SHOW DATABASES;" 2>&1 | grep -e "ERROR 2002\|ERROR 1045" \
@@ -99,7 +97,6 @@ compositional_kanboard_mysql_script: |
   CREATE USER IF NOT EXISTS 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%';
-compositional_kanboard_healthcheck_disable: False
 compositional_kanboard_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/kanboard \
   && curl -sSL --fail {{ environment_domain }}//kanboard/assets/img/favicon.png \
@@ -123,7 +120,6 @@ compositional_nextcloud_mysql_script: |
 compositional_nextcloud_admin_user: 'admin'
 compositional_nextcloud_admin_password: 'admin'
 compositional_nextcloud_legacy_dbtableprefix: False
-compositional_nextcloud_healthcheck_disable: False
 compositional_nextcloud_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/nextcloud/status.php \
   || exit 1
@@ -141,7 +137,6 @@ compositional_wordpress_mysql_script: |
   CREATE USER IF NOT EXISTS 'wordpress'@'%' IDENTIFIED BY '{{ compositional_wordpress_backend_password }}';
   CREATE DATABASE IF NOT EXISTS wordpress;
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%';
-compositional_wordpress_healthcheck_disable: False
 compositional_wordpress_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/wordpress \
   || exit 1
@@ -182,7 +177,6 @@ compositional_firefly_mysql_script: |
   CREATE USER IF NOT EXISTS 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
-compositional_firefly_healthcheck_disable: False
 compositional_firefly_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/firefly \
   && curl -sSL --fail {{ environment_domain }}/$(curl -sSL --fail {{ environment_domain }}/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
@@ -219,7 +213,6 @@ compositional_jekyll_bind_mountpoints:
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
-compositional_jekyll_healthcheck_disable: False
 # With this healthcheck we are doing two things. The first thing is to check the root jekyll page.
 # The second thing is a bit more involved. We are getting that page again, and checking for the first path
 # to an image. Once we get the path to that image, we try to get that image to make sure that the reverse
@@ -264,7 +257,6 @@ compositional_rundeck_mysql_script: |
 compositional_rundeck_additional_setup: |
   echo "Hello, World!"
   echo "Command number 2"
-compositional_rundeck_healthcheck_disable: False
 compositional_rundeck_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/rundeck \
   && curl -sSL --fail {{ environment_domain }}$(curl -sSL --fail {{ environment_domain }}/rundeck | grep -o '/rundeck/assets/bootstrap.min.*css') \
@@ -286,7 +278,6 @@ compositional_bookstack_mysql_script: |
   CREATE USER IF NOT EXISTS 'bookstack'@'%' IDENTIFIED BY '{{ compositional_bookstack_backend_password }}';
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
-compositional_bookstack_healthcheck_disable: False
 compositional_bookstack_healthcheck: |
   curl -sSL --fail "{{ environment_domain }}/bookstack" && \
   curl -sSL --fail -o - "{{ environment_domain }}/bookstack/logo.png" &>/dev/null || \
@@ -308,7 +299,6 @@ compositional_commandcenter_bind_mountpoints:
 compositional_commandcenter_mysql_script: |
   CREATE DATABASE IF NOT EXISTS commandcenter;
   GRANT ALL PRIVILEGES ON commandcenter.* TO 'commandcenter'@'%' IDENTIFIED BY '{{ compositional_commandcenter_backend_password }}';
-compositional_commandcenter_healthcheck_disable: False
 compositional_commandcenter_healthcheck: |
   wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/commandcenter \
   && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}$(wget --quiet --no-verbose --tries=1 {{ environment_domain }}/commandcenter -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
@@ -338,7 +328,6 @@ compositional_portal_mysql_script: |
   CREATE USER IF NOT EXISTS 'portal'@'%' IDENTIFIED BY '{{ compositional_portal_backend_password }}';
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
-compositional_portal_healthcheck_disable: False
 compositional_portal_healthcheck: |
   wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/portal \
   && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}$(wget --quiet --no-verbose --tries=1 {{ environment_domain }}/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \

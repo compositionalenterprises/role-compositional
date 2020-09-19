@@ -70,7 +70,6 @@
                 ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
                 HOST: "https://{{ environment_domain }}"
               healthcheck:
-                disable: "{{ compositional_commandcenter_healthcheck_disable }}"
                 test: "{{ compositional_commandcenter_healthcheck }}"
                 interval: 5s
                 timeout: 30s

@@ -64,7 +64,6 @@
               environment:
                 DATABASE_URL: "{{ compositional_backend_type }}://kanboard:{{ compositional_kanboard_backend_password }}@database:{{ compositional_backend_port }}/kanboard"
               healthcheck:
-                disable: "{{ compositional_kanboard_healthcheck_disable }}"
                 test: "{{ compositional_kanboard_healthcheck }}"
                 interval: 5s
                 timeout: 30s

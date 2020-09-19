@@ -46,7 +46,6 @@
             MYSQL_PASSWORD: "{{ compositional_firefly_backend_password }}"
             TRUSTED_PROXIES: "**"
           healthcheck:
-            disable: "{{ compositional_firefly_healthcheck_disable }}"
             test: "{{ compositional_firefly_healthcheck }}"
             interval: 5s
             timeout: 30s
