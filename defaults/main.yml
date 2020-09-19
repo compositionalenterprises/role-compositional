@@ -90,6 +90,12 @@ compositional_kanboard_mysql_script: |
   CREATE USER IF NOT EXISTS 'kanboard'@'%' IDENTIFIED BY '{{ compositional_kanboard_backend_password }}';
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%';
+compositional_kanboard_healthcheck_disable: False
+compositional_kanboard_healthcheck: |
+  curl -sSL --fail {{ environment_domain }}/kanboard \
+  && curl -sSL --fail {{ environment_domain }}//kanboard/assets/img/favicon.png \
+  || exit 1
+
 
 #
 # Nextcloud
@@ -255,8 +261,8 @@ compositional_bookstack_mysql_script: |
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
 compositional_bookstack_healthcheck_disable: False
 compositional_bookstack_healthcheck: |
-  curl -sSL "{{ environment_domain }}/bookstack" && \
-  curl -sSL -o - "{{ environment_domain }}/bookstack/logo.png" &>/dev/null || \
+  curl -sSL --fail "{{ environment_domain }}/bookstack" && \
+  curl -sSL --fail -o - "{{ environment_domain }}/bookstack/logo.png" &>/dev/null || \
   exit 1
 
 #
