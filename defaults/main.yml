@@ -114,6 +114,10 @@ compositional_nextcloud_mysql_script: |
 compositional_nextcloud_admin_user: 'admin'
 compositional_nextcloud_admin_password: 'admin'
 compositional_nextcloud_legacy_dbtableprefix: False
+compositional_nextcloud_healthcheck_disable: False
+compositional_nextcloud_healthcheck: |
+  curl -sSL --fail {{ environment_domain }}/nextcloud/status.php \
+  || exit 1
 
 #
 # Wordpress
@@ -242,6 +246,11 @@ compositional_rundeck_mysql_script: |
 compositional_rundeck_additional_setup: |
   echo "Hello, World!"
   echo "Command number 2"
+compositional_rundeck_healthcheck_disable: False
+compositional_rundeck_healthcheck: |
+  curl -sSL --fail {{ environment_domain }}/rundeck \
+  && curl -sSL --fail {{ environment_domain }}$(curl -sSL --fail {{ environment_domain }}/rundeck | grep -o '/rundeck/assets/bootstrap.min.*css') \
+  || exit 1
 
 #
 # BookStack
