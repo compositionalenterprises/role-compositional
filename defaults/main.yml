@@ -228,6 +228,10 @@ compositional_bookstack_mysql_script: |
   CREATE USER IF NOT EXISTS 'bookstack'@'%' IDENTIFIED BY '{{ compositional_bookstack_backend_password }}';
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
+compositional_bookstack_healthcheck_disable: False
+compositional_bookstack_healthcheck: |
+  curl -sSL "{{ environment_domain }}/bookstack" &&
+  curl -sSL -o - "{{ environment_domain }}/bookstack/logo.png"
 
 #
 # CommandCenter
