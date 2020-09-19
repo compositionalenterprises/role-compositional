@@ -191,6 +191,31 @@ compositional_jekyll_bind_mountpoints:
 compositional_jekyll_extra_commands: |
   echo "Hello, World!"
   echo "Command number 2"
+compositional_jekyll_healthcheck_disable: False
+# With this healthcheck we are doing two things. The first thing is to check the root jekyll page.
+# The second thing is a bit more involved. We are getting that page again, and checking for the first path
+# to an image. Once we get the path to that image, we try to get that image to make sure that the reverse
+# proxy is doing it's job buffering the assets correctly. However, we only do this in the case that the
+# reverse proxy is, in fact, buffering anything. We do this by checking to make sure that there are
+# some bind mountpoints that are being used, and then checking a file that falls into one of them.
+# We lastly do some trickery to make sure that image is within any of the bind_mountpoints.
+# We're also doing a substitution of the last part of the environment_domain (e.g. ".com") and
+# removing that, since there is the possibility of that part of the url getting caught if the full
+# path to the resource is given in the link. We exclude periods though, so it's only the last part
+# minus the period.
+compositional_jekyll_healthcheck: |
+  wget --quiet --no-verbose --tries=1 --spider "{{ environment_domain }}/jekyll" \
+  {%- if compositional_jekyll_bind_mountpoints | len > 0 -%}
+    set -o pipefail && \
+    path=$(wget --quiet {{ environment_domain }}/jekyll -O - |\
+            grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
+            grep -v '^image/*' |\
+            grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}{% '\|' if not loop.last %}{% endif %}" |\
+            sed 's/^{{ environment_domain.split(".")[-1] }}//' |\
+            head -n 1) && \
+    && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/${path} \
+  {%- endif -%}
+  || exit 1
 
 #
 # Rundeck
@@ -230,8 +255,9 @@ compositional_bookstack_mysql_script: |
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
 compositional_bookstack_healthcheck_disable: False
 compositional_bookstack_healthcheck: |
-  curl -sSL "{{ environment_domain }}/bookstack" &&
-  curl -sSL -o - "{{ environment_domain }}/bookstack/logo.png"
+  curl -sSL "{{ environment_domain }}/bookstack" && \
+  curl -sSL -o - "{{ environment_domain }}/bookstack/logo.png" &>/dev/null || \
+  exit 1
 
 #
 # CommandCenter

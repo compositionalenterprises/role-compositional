@@ -45,6 +45,13 @@
                 JEKYLL_EXTRA_COMMANDS: "{{ compositional_jekyll_extra_commands }}"
                 JEKYLL_ENV: 'production'
 
+              healthcheck:
+                disable: "{{ compositional_jekyll_healthcheck_disable }}"
+                test: "{{ compositional_jekyll_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
+
       networks:
           frontend:
               external: true
