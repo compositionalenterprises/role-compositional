@@ -13,7 +13,6 @@ compositional_services:
   - 'commandcenter'
   - 'firefly'
   - 'kanboard'
-  - 'manager'
   - 'nextcloud'
   - 'rundeck'
   - 'wordpress'
@@ -159,18 +158,6 @@ compositional_firefly_mysql_script: |
   CREATE USER IF NOT EXISTS 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
-
-#
-# Manager
-#
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
-compositional_manager_build: yes
-compositional_manager_state: present
-compositional_manager_restarted: no
-compositional_manager_version: '20.8.41'
-compositional_manager_storage: 'local'
-compositional_manager_port: '8080'
-compositional_manager_data_path: '/data'
 
 #
 # Jekyll

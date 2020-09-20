@@ -61,7 +61,6 @@ compositional_services:
   - 'commandcenter'
   - 'firefly'
   - 'kanboard'
-  - 'manager'
   - 'nextcloud'
   - 'rundeck'
   - 'wordpress'
