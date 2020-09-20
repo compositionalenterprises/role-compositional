@@ -30,12 +30,6 @@ SERVICES = {
                 'compositional_database_root_password': {}
                 }
             },
-        'manager': {
-            'registry': {
-                'source': 'dockerhub',
-                'path': 'compositionalenterprises/manager'
-                },
-            },
         'jekyll': {
             'registry': {
                 'source': 'dockerhub',
