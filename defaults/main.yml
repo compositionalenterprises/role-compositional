@@ -231,7 +231,7 @@ compositional_jekyll_healthcheck: |
     && path=$$(wget --quiet {{ environment_domain }}/jekyll -O - |\
             grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
             grep -v '^image/*' |\
-            grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['locatoin'].split('/')[1:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
+            grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['location'].split('/')[1:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
             sed 's/^{{ environment_domain.split(".")[-1] }}//' |\
             head -n 1) \
     && prefix='/jekyll' \
