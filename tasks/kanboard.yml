@@ -63,6 +63,11 @@
                   - backend
               environment:
                 DATABASE_URL: "{{ compositional_backend_type }}://kanboard:{{ compositional_kanboard_backend_password }}@database:{{ compositional_backend_port }}/kanboard"
+              healthcheck:
+                test: "{{ compositional_kanboard_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
       networks:
           frontend:
               external: true

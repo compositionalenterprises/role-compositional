@@ -42,6 +42,12 @@
                 DISABLE_EXTERNAL_SERVICES: 'true'
                 APP_URL: "https://{{ environment_domain }}/bookstack"
 
+              healthcheck:
+                test: "{{ compositional_bookstack_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
+
       networks:
           frontend:
               external: true
