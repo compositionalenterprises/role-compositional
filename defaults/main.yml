@@ -79,7 +79,7 @@ compositional_mariadb_version: '10.4'
 compositional_mariadb_storage: 'local'
 compositional_mariadb_healthcheck: |
   set -o pipefail \
-  && mysql -uroot -p{{ compositional_database_root_password }} -e "SHOW DATABASES;" 2>&1 | grep -e "ERROR 2002\|ERROR 1045" \
+  && ps -ef | grep -v grep | grep mysqld \
   || exit 1
 
 #
