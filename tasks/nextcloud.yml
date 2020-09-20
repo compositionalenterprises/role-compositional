@@ -98,15 +98,3 @@
     regexp: '.*max-version="14.0"'
     line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
   notify: 'Restart Nextcloud'
-
-- name: (nextcloud) Get nextcloud status
-  command: curl -sSL {{ environment_domain }}/nextcloud/status.php
-  register: compositional_nextcloud_status_result
-
-- name: (nextcloud) Create needsDbUpgrade status
-  set_fact:
-    compositional_nextcloud_status: "{{ compositional_nextcloud_status_result['stdout'] | from_json }}"
-
-- name: (nextcloud) Upgrade Nextcloud DB
-  shell: 'docker exec -u 33 -i nextcloud bash -c "./occ upgrade --no-interaction"'
-  when: compositional_nextcloud_status['needsDbUpgrade']
