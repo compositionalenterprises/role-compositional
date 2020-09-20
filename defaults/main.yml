@@ -179,7 +179,7 @@ compositional_firefly_mysql_script: |
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
 compositional_firefly_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/firefly \
-  && curl -sSL --fail {{ environment_domain }}/$$(curl -sSL --fail {{ environment_domain }}/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
+  && curl -sSL --fail {{ environment_domain }}/firefly/$$(curl -sSL --fail {{ environment_domain }}/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
   || exit 1
 
 #
