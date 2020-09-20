@@ -233,7 +233,12 @@ compositional_jekyll_healthcheck: |
             grep -v '^image/*' |\
             grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['locatoin'].split('/')[1:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
             sed 's/^{{ environment_domain.split(".")[-1] }}//' |\
+            sed 's/^{{ environment_domain.split(".")[-1] }}//' |\
             head -n 1) \
+    && prefix='/jekyll' \
+    && path=$$(echo ${path} | sed 's#/jekyll##') \
+    && prefix='/jekyll/' \
+    && path=$$prefix$$path \
     && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/$${path} \
   {% endif %} \
   || exit 1
