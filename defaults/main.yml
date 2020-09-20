@@ -78,7 +78,7 @@ compositional_mariadb_restarted: yes
 compositional_mariadb_version: '10.4'
 compositional_mariadb_storage: 'local'
 compositional_mariadb_healthcheck: |
-  mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" \
+  mysql -uroot -p{{ compositional_database_root_password }} -e 'SHOW DATABASES;' \
   || exit 1
 
 #
