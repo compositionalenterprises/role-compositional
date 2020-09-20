@@ -45,6 +45,11 @@
                   define('WP_SITEURL', 'https://{{ environment_domain }}/wordpress');
                   define('WP_HOME', 'https://{{ environment_domain }}/wordpress');
                   define('WP_MEMORY_LIMIT', '2048M');
+              healthcheck:
+                test: "{{ compositional_wordpress_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
       networks:
           frontend:
               external: true

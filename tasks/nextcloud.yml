@@ -44,6 +44,11 @@
                   NEXTCLOUD_ADMIN_USER: "{{ compositional_nextcloud_admin_user }}"
                   NEXTCLOUD_ADMIN_PASSWORD: "{{ compositional_nextcloud_admin_password }}"
                   NEXTCLOUD_TRUSTED_DOMAINS: "{{ environment_domain }} nextcloud"
+              healthcheck:
+                test: "{{ compositional_nextcloud_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
       networks:
           frontend:
               external: true

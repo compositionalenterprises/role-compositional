@@ -45,6 +45,11 @@
             DB_CONNECTION: 'mysql'
             MYSQL_PASSWORD: "{{ compositional_firefly_backend_password }}"
             TRUSTED_PROXIES: "**"
+          healthcheck:
+            test: "{{ compositional_firefly_healthcheck }}"
+            interval: 5s
+            timeout: 30s
+            retries: 3
       networks:
         frontend:
           external: true
