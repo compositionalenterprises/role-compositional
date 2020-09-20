@@ -1,0 +1,4 @@
+User-agent: *
+{% for service in compositional_services if service not in ['database', 'nginx', 'jekyll', 'wordpress'] %}
+Disallow: /{{ service }}
+{% endfor %}
