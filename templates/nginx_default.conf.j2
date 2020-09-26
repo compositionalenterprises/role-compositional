@@ -6,10 +6,9 @@ server {
     # Hardening
     #
     server_tokens off;
-    more_set_headers "Server: Unknown;"
     add_header Referrer-Policy "no-referrer";
     add_header X-FRAME-Options "SAMEORIGIN" always;
-    add_header X-XSS-Protection "1; mode=block" always
+    add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';" always;
     add_header Strict-Transport-Security "max-age=63072000" always;
@@ -31,10 +30,9 @@ server {
     # Hardening
     #
     server_tokens off;
-    more_set_headers "Server: Unknown;"
     add_header Referrer-Policy "no-referrer";
     add_header X-FRAME-Options "SAMEORIGIN" always;
-    add_header X-XSS-Protection "1; mode=block" always
+    add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';" always;
     add_header Strict-Transport-Security "max-age=63072000" always;
@@ -51,8 +49,8 @@ server {
     ssl_session_cache shared:SSL:10m;
     # Only use safe chiphers
     ssl_prefer_server_ciphers on;
-    ssl_ciphers 'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384'
-    ssl_ecdh_curve X25519:secp384r1
+    ssl_ciphers 'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384';
+    ssl_ecdh_curve X25519:secp384r1;
 
     #
     # Allow large uploads
@@ -93,10 +91,9 @@ server {
     # Hardening
     #
     server_tokens off;
-    more_set_headers "Server: Unknown;"
     add_header Referrer-Policy "no-referrer";
     add_header X-FRAME-Options "SAMEORIGIN" always;
-    add_header X-XSS-Protection "1; mode=block" always
+    add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';" always;
     add_header Strict-Transport-Security "max-age=63072000" always;
@@ -138,7 +135,8 @@ server {
     ssl_session_cache shared:SSL:10m;
     # Only use safe chiphers
     ssl_prefer_server_ciphers on;
-    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA';
+    ssl_ciphers 'ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384';
+    ssl_ecdh_curve X25519:secp384r1;
 
     #
     # redirect server error pages to the static page /50x.html
