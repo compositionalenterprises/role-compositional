@@ -88,6 +88,7 @@ compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
 compositional_kanboard_version: 'v1.2.15'
 compositional_kanboard_storage: 'local'
+compositional_kanboard_admin_password: 'testpassword'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_bind_mountpoints:
   - {location: '/kanboard/assets/', directory: '/var/www/app/assets'}
@@ -161,10 +162,11 @@ compositional_bitwarden_bind_mountpoints:
 compositional_firefly_build: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: yes
-compositional_firefly_version: 'release-5.2.8'
 compositional_firefly_storage: 'local'
-compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
+compositional_firefly_version: 'release-5.2.8'
+compositional_firefly_admin_password: 'testpassword'
 compositional_firefly_backend_password: 'testpassword'
+compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_bind_mountpoints:
   - {location: '/firefly/v1/css/', directory: '/var/www/firefly-iii/public/v1/css'}
   - {location: '/firefly/v1/fonts/', directory: '/var/www/firefly-iii/public/v1/fonts'}
@@ -261,6 +263,7 @@ compositional_bookstack_restarted: yes
 compositional_bookstack_version: '0.28.3'
 compositional_bookstack_storage: 'local'
 compositional_bookstack_backend_password: 'testpassword'
+compositional_bookstack_admin_password: 'testpassword'
 compositional_bookstack_bind_mountpoints:
   - {location: '/bookstack/dist/', directory: '/var/www/bookstack/public/dist'}
   - {location: '/bookstack/uploads/', directory: '/var/www/bookstack/public/uploads'}

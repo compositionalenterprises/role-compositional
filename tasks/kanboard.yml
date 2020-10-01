@@ -117,3 +117,25 @@
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
+
+#
+# Admin Password
+#
+# See https://github.com/kanboard/kanboard/issues/853 for explanation
+- name: (kanboard) Generate the password hash
+  shell: "
+    docker exec -i bookstack bash -c \"
+      echo '
+        echo password_hash(\\\"admin\\\", \\\"{{ compositional_kanboard_admin_password }}\\\");'
+      | php -a\"
+    "
+  register: compositional_kanboard_admin_password_hash
+
+- name: (kanboard) The existing password is replaced in the database
+  shell: "
+    docker exec -i database bash -c \"
+      mysql -uroot -p{{ compositional_database_root_password }} -e
+        'UPDATE users SET password=\'{{ compositional_kanboard_admin_password_hash['stdout_lines'][-1] }}\' WHERE username=\'admin\';'
+      \"
+    "
+  no_log: True

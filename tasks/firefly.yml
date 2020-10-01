@@ -59,7 +59,9 @@
     state: "{{ compositional_firefly_state }}"
     restarted: "{{ compositional_firefly_restarted }}"
   register: compositional_firefly_output
+  notify: 'Restart Frontend'
   no_log: True
+
 
 - name: (firefly) Symlink firefly directory as a subdirectory
   shell: docker exec -i firefly bash -c "ln -snfT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
@@ -91,3 +93,20 @@
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_firefly_bind_mountpoints }}"
+
+- name: (firefly) Flush handlers to restart nginx if needed
+  meta: flush_handlers
+
+- name: (firefly) Firefly-III is healthy
+  shell: "{{ compositional_firefly_healthcheck }}"
+  register: compositional_firefly_health
+  until: compositional_firefly_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+- name: (firefly) The user list is gathered
+  uri:
+    body_format: json
+  until: compositional_firefly_health['rc'] == 0
+  retries: 24
+  delay: 5

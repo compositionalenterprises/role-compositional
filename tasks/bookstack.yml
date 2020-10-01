@@ -64,7 +64,6 @@
 #
 # Bind Mountpoints
 #
-
 - name: (bookstack) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} bookstack | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
@@ -73,18 +72,36 @@
   loop: "{{ compositional_bookstack_bind_mountpoints }}"
   register: compositional_bookstack_src_dirs
 
-- debug:
-    var: compositional_bookstack_src_dirs
-
 - name: (bookstack) Register bookstack non-volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_bookstack_src_dirs['results'] }}"
 
-
 - name: (bookstack) Register bookstack volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_bookstack_bind_mountpoints }}"
+
+#
+# Admin Password
+#
+- name: (bookstack) Install Tinker
+  shell: "
+    docker exec -i bookstack bash -c '
+      COMPOSER_MEMORY_LIMIT=-1 /var/www/bookstack/vendor/composer/composer/bin/composer require laravel/tinker'
+    "
+
+- name: (bookstack) Set the admin user's password
+  # While it's crap that we have to use double escapes, it's the only way that bash doesn't throw
+  # an error when passing the parenthesis.
+  shell: "
+    docker exec -i bookstack bash -c \"
+      echo -e '
+        \$user = Bookstack\Auth\User::where(\\\"email\\\", \\\"admin@admin.com\\\")->first();
+        user->password = Hash::make(\\\"{{ compositional_bookstack_admin_pass }}\\\");
+        $user->save();'
+      | php artisan tinker\"
+    "
+
