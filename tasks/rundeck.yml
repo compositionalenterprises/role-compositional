@@ -146,3 +146,12 @@
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_rundeck_bind_mountpoints }}"
+
+#
+# Admin Password
+#
+- name: (rundeck) Set admin password in realm.properties
+  lineinfile:
+    line: 'admin:{{ compositional_rundeck_admin_password }},user,admin'
+    path: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/realm.properties'"
+    regexp: '^admin:'
