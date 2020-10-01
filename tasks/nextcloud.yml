@@ -104,11 +104,14 @@
     line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
   notify: 'Restart Nextcloud'
 
+- name: Restart frontend proxy
+  meta: flush_handlers
+
 - name: (nextcloud) Get nextcloud status
   command: curl -sSL {{ environment_domain }}/nextcloud/status.php
   register: compositional_nextcloud_status_result
 
-- name: (nextcloud) Create needsDbUpgrade status
+- name: (nextcloud) Create nextcloud status variable
   set_fact:
     compositional_nextcloud_status: "{{ compositional_nextcloud_status_result['stdout'] | from_json }}"
 
