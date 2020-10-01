@@ -117,7 +117,7 @@ compositional_nextcloud_mysql_script: |
   GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%' IDENTIFIED BY '{{ compositional_nextcloud_backend_password }}';
   FLUSH privileges;
 compositional_nextcloud_admin_user: 'admin'
-compositional_nextcloud_admin_password: 'admin'
+compositional_nextcloud_admin_password: 'testpassword'
 compositional_nextcloud_legacy_dbtableprefix: False
 compositional_nextcloud_healthcheck: |
   curl -sSL --fail {{ environment_domain }}/nextcloud/status.php \
