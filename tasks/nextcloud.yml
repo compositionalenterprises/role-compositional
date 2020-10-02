@@ -110,6 +110,9 @@
 - name: (nextcloud) Get nextcloud status
   command: curl -sSL {{ environment_domain }}/nextcloud/status.php
   register: compositional_nextcloud_status_result
+  until: compositional_nextcloud_status_result['stdout'].startswith('{')
+  retries: 24
+  delay: 5
 
 - name: (nextcloud) Create nextcloud status variable
   set_fact:
