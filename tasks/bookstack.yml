@@ -97,7 +97,7 @@
   # While it's crap that we have to use double escapes, it's the only way that bash doesn't throw
   # an error when passing the parenthesis.
   shell: "
-    docker exec -i bookstack bash -c \"
+    docker exec -u 0 -i bookstack bash -c \"
       echo -e '
         \\$user = Bookstack\\Auth\\User::where(\\\"email\\\", \\\"admin@admin.com\\\")->first();
         user->password = Hash::make(\\\"{{ compositional_bookstack_admin_password }}\\\");
