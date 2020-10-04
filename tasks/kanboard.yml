@@ -138,4 +138,3 @@
         'UPDATE users SET password=\\'{{ compositional_kanboard_admin_password_hash['stdout_lines'][-1] }}\\' WHERE username=\\'admin\\';'
       \"
     "
-  no_log: True
