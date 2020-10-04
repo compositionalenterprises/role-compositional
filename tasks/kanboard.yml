@@ -126,7 +126,7 @@
   shell: "
     docker exec -i bookstack bash -c \"
       echo '
-        echo password_hash(\\\"admin\\\", \\\"{{ compositional_kanboard_admin_password }}\\\");'
+        echo password_hash(\\\"{{ compositional_kanboard_admin_password }}\\\", PASSWORD_DEFAULT);'
       | php -a\"
     "
   register: compositional_kanboard_admin_password_hash
