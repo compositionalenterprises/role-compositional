@@ -50,8 +50,11 @@
 
 - name: (nginx) Nginx index.html is deployed
   template:
-    src: nginx_index.html.j2
-    dest: "/srv/{{ compositional_nginx_storage }}/nginx_html/index.html"
+    src: nginx_{{ item }}.j2
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_html/{{ item }}"
+  loop:
+    - 'index.html'
+    - 'robots.txt'
   notify: 'Restart Frontend'
 
 - name: (nginx) Services directory is created
