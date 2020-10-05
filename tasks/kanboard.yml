@@ -135,6 +135,6 @@
   shell: "
     docker exec -i database bash -c \"
       mysql -uroot -p{{ compositional_database_root_password }} -e
-        'UPDATE users SET password=\\'{{ compositional_kanboard_admin_password_hash['stdout_lines'][-1] }}\\' WHERE username=\\'admin\\';'
+        \\\\"UPDATE users SET password='{{ compositional_kanboard_admin_password_hash['stdout_lines'][-1] }}' WHERE username='admin';\\\\"
       \"
     "
