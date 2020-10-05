@@ -100,7 +100,7 @@
     docker exec -u 0 -i bookstack bash -c \"
       echo -e '
         \\$user = Bookstack\\Auth\\User::where(\\\"email\\\", \\\"admin@admin.com\\\")->first();
-        user->password = Hash::make(\\\"{{ compositional_bookstack_admin_password }}\\\");
+        \\$user->password = Hash::make(\\\"{{ compositional_bookstack_admin_password }}\\\");
         \\$user->save();'
       | php artisan tinker\"
     "
