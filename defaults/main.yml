@@ -164,7 +164,7 @@ compositional_firefly_state: present
 compositional_firefly_restarted: yes
 compositional_firefly_storage: 'local'
 compositional_firefly_version: 'release-5.2.8'
-compositional_firefly_admin_password: 'testpassword'
+compositional_firefly_admin_password: 'testpassword1234'
 compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_bind_mountpoints:

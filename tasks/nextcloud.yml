@@ -104,8 +104,11 @@
     line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
   notify: 'Restart Nextcloud'
 
+#
+# Install/Upgrade Nextcloud as necessary
+#
 - name: Restart frontend proxy
-  meta: flush_handlers
+  include_tasks: ./bind_mountpoints.yml
 
 - name: (nextcloud) Get nextcloud status
   command: curl -sSL {{ environment_domain }}/nextcloud/status.php
@@ -117,6 +120,10 @@
 - name: (nextcloud) Create nextcloud status variable
   set_fact:
     compositional_nextcloud_status: "{{ compositional_nextcloud_status_result['stdout'] | from_json }}"
+
+- name: (nextcloud) Upgrade Nextcloud DB
+  shell: 'docker exec -u 33 -i nextcloud bash -c "./occ upgrade --no-interaction"'
+  when: compositional_nextcloud_status['needsDbUpgrade']
 
 - name: (nextcloud) Upgrade Nextcloud DB
   shell: 'docker exec -u 33 -i nextcloud bash -c "./occ upgrade --no-interaction"'
