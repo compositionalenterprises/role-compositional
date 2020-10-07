@@ -131,6 +131,8 @@ compositional_wordpress_state: present
 compositional_wordpress_restarted: yes
 compositional_wordpress_version: '5.4'
 compositional_wordpress_storage: 'local'
+compositional_wordpress_title: 'Wordpress Blog'
+compositional_wordpress_admin_password: 'testpassword'
 compositional_wordpress_backend_password: 'testpassword'
 compositional_wordpress_mysql_script: |
   CREATE USER IF NOT EXISTS 'wordpress'@'%' IDENTIFIED BY '{{ compositional_wordpress_backend_password }}';

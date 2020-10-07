@@ -103,14 +103,14 @@
   retries: 24
   delay: 5
 
-- name: Get the url
+- name: (firefly) Get the url
   uri:
     url: https://{{ environment_domain }}/firefly/register
     method: GET
     return_content: True
   register: compositional_firefly_login
 
-- name: Post to the URL
+- name: (firefly) Post to the URL
   uri:
     url: https://{{ environment_domain }}/firefly/register
     method: POST

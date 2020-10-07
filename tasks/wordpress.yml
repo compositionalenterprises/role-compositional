@@ -83,4 +83,17 @@
 #
 # Finish install if necessary
 #
-
+- name: (wordpress) Ensure uploads have a location to upload to
+  shell: "
+    docker exec -i wordpress bash -c \"
+      curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar;
+      php wp-cli.phar core is-installed ||
+      php wp-cli.phar core install
+        --url='{{ environment_domain }}'
+        --title='{{ compositional_wordpress_title }}'
+        --admin_user='admin'
+        --admin_password='{{ compositional_wordpress_admin_password }}'
+        --admin_email='admin@admin.com'
+        --skip-email;
+      \"
+    "
