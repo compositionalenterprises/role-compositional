@@ -97,7 +97,7 @@
   include_tasks: ./bind_mountpoints.yml
 
 - name: (firefly) Firefly-III is healthy
-  shell: "{{ compositional_firefly_healthcheck }}"
+  shell: "curl -sSL --fail 532d.ourcompose.com/firefly"
   register: compositional_firefly_health
   until: compositional_firefly_health['rc'] == 0
   retries: 24
@@ -123,3 +123,4 @@
       password_confirmation: "{{ compositional_firefly_admin_password }}"
       _token: "{{ compositional_firefly_login['content'].split('\n') | select('search', '_token') | first | regex_replace('.*name=\"_token\" value=\"([A-Za-z0-9]+).*$', '\\1') }}"
     status_code: 302
+  when: "'Sorry, an error occurred.' in compositional_firefly_login['content']"
