@@ -93,7 +93,7 @@
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_firefly_bind_mountpoints }}"
 
-- name: (firefly) Flush handlers to restart nginx if needed
+- name: (firefly) Reset the bind mountpoints in order to get Firefly-III healthy
   include_tasks: ./bind_mountpoints.yml
 
 - name: (firefly) Firefly-III is healthy
