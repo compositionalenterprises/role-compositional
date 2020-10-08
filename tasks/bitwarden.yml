@@ -21,6 +21,9 @@
               networks:
                   - frontend
 
+              environment:
+                ADMIN_TOKEN: "{{ compositional_bitwarden_admin_token }}"
+
       networks:
           frontend:
               external: true
@@ -42,15 +45,11 @@
   when: not item['directory'].startswith('/srv')
   register: compositional_bitwarden_src_dirs
 
-- debug:
-    var: compositional_bitwarden_src_dirs
-
 - name: (bitwarden) Register bitwarden non-volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_bitwarden_src_dirs['results'] }}"
-
 
 - name: (bitwarden) Register bitwarden volume bind-mountpoints for proxy
   set_fact:
@@ -61,7 +60,7 @@
 - name: (bitwarden) Reset the bind mountpoints in order to get Firefly-III healthy
   include_tasks: ./bind_mountpoints.yml
 
-- name: (bitwarden) Firefly-III is healthy
+- name: (bitwarden) Bitwarden is healthy
   shell: "curl -sSL --fail 532d.ourcompose.com/bitwarden"
   register: compositional_bitwarden_health
   until: compositional_bitwarden_health['rc'] == 0
@@ -75,23 +74,22 @@
     return_content: True
   register: compositional_bitwarden_login
 
-- name: (bitwarden) Post to the URL
-  uri:
-    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
-    method: POST
-    body_format: form-urlencoded
-    headers:
-      Cookie: "{{ compositional_firefly_login['cookies_string'] }}"
-    body:
-      name: Andrew
-      email: admin@{{ environment_domain }}
-      masterPasswordHash: "Admin Password"
-      masterPasswordHint: "Admin Password"
-      kdf: 0
-      kdfInterations: 100000
-      key:
-      keys:
-        encryptedPrivateKey:
-        publicKey:
-    status_code: 302
-  when: "'Sorry, an error occurred.' in compositional_firefly_login['content']"
+    #- name: (bitwarden) Post to the URL
+    #  uri:
+    #    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
+    #    method: POST
+    #    body_format: form-urlencoded
+    #    headers:
+    #      Cookie: "{{ compositional_firefly_login['cookies_string'] }}"
+    #    body:
+    #      name: Andrew
+    #      email: admin@admin.com
+    #      masterPasswordHash: "2DmRAHcl7korfTbFr5HP3ZjxYanvUVa50mqbyZ+/D9s="
+    #      masterPasswordHint: "Admin Password"
+    #      kdf: 0
+    #      kdfInterations: 100000
+    #      key:
+    #      keys:
+    #        encryptedPrivateKey:
+    #        publicKey:
+    #    status_code: 302

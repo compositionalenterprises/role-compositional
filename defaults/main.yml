@@ -150,6 +150,7 @@ compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
 compositional_bitwarden_version: '1.15.1'
 compositional_bitwarden_storage: 'local'
+compositional_bitwarden_admin_token: 'testpassword'
 compositional_bitwarden_bind_mountpoints:
   - {location: '/bitwarden/app/', directory: '/web-vault/app'}
   - {location: '/bitwarden/scripts/', directory: '/web-vault/scripts'}
