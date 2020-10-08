@@ -57,3 +57,41 @@
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_bitwarden_bind_mountpoints }}"
+
+- name: (bitwarden) Reset the bind mountpoints in order to get Firefly-III healthy
+  include_tasks: ./bind_mountpoints.yml
+
+- name: (bitwarden) Firefly-III is healthy
+  shell: "curl -sSL --fail 532d.ourcompose.com/bitwarden"
+  register: compositional_bitwarden_health
+  until: compositional_bitwarden_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+- name: (bitwarden) Get the url
+  uri:
+    url: https://{{ environment_domain }}/bitwarden/#/register
+    method: GET
+    return_content: True
+  register: compositional_bitwarden_login
+
+- name: (bitwarden) Post to the URL
+  uri:
+    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
+    method: POST
+    body_format: form-urlencoded
+    headers:
+      Cookie: "{{ compositional_firefly_login['cookies_string'] }}"
+    body:
+      name: Andrew
+      email: admin@{{ environment_domain }}
+      masterPasswordHash: "Admin Password"
+      masterPasswordHint: "Admin Password"
+      kdf: 0
+      kdfInterations: 100000
+      key:
+      keys:
+        encryptedPrivateKey:
+        publicKey:
+    status_code: 302
+  when: "'Sorry, an error occurred.' in compositional_firefly_login['content']"
