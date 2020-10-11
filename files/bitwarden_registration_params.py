@@ -37,8 +37,8 @@ def encodeCipherString(enctype, iv, ct, mac):
 
 def encrypt(pt, key, macKey):
     """
-encrypt+mac a value with a key and mac key and random iv, return cipherString
-"""
+    encrypt+mac a value with a key and mac key and random iv, return cipherString
+    """
     if not hasattr(pt, 'decode'):
         pt = bytes(pt, 'utf-8')
     padder = padding.PKCS7(128).padder()
@@ -55,8 +55,9 @@ encrypt+mac a value with a key and mac key and random iv, return cipherString
 
 
 def hashedPassword(password, salt):
-    """base64-encode a wrapped, stretched password+salt for signup/login
-"""
+    """
+    base64-encode a wrapped, stretched password+salt for signup/login
+    """
     if not hasattr(password, 'decode'):
         password = password.encode('utf-8')
     key = makeKey(password, salt)

@@ -78,6 +78,7 @@
             -p {{ compositional_bitwarden_admin_password }}
          "
   delegate_to: localhost
+  become_user: False
   register: compositional_bitwarden_registration_params
 
 - name: (bitwarden) Post the registration to the API URL
