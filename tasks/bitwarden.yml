@@ -80,14 +80,23 @@
          "
   delegate_to: localhost
   become: False
-  register: compositional_bitwarden_registration_params
+  register: compositional_bitwarden_registration_params_result
+
+- debug:
+    var: compositional_bitwarden_registration_params_result['stdout'].strip() | debug_type
+
+- set_fact:
+    compositional_bitwarden_registration_params: compositional_bitwarden_registration_params_result['stdout'].strip() | from_json
+
+- debug:
+    var: compositional_bitwarden_registration_params | debug_type
 
 - name: (bitwarden) Post the registration to the API URL
   uri:
     url: https://{{ environment_domain }}/bitwarden/api/accounts/register
     method: POST
     body_format: json
-    body: "{{ compositional_bitwarden_registration_params['stdout'].strip() }}"
+    body: "{{ compositional_bitwarden_registration_params }}"
   register: compositional_bitwarden_admin_post_result
   failed_when:
     - compositional_bitwarden_admin_post_result['status'] not in [302, 200]
