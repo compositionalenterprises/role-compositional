@@ -85,6 +85,7 @@
   uri:
     url: https://{{ environment_domain }}/bitwarden/api/accounts/register
     method: POST
+    body_format: json
     body: "{{ compositional_bitwarden_registration_params['stdout'].strip() }}"
     status_code:
       - 200
