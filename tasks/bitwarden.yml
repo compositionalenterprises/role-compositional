@@ -23,7 +23,7 @@
 
               environment:
                 ADMIN_TOKEN: "{{ compositional_bitwarden_admin_token }}"
-                LOG_LEVEL: "debug"
+                LOG_LEVEL: "trace"
 
       networks:
           frontend:
