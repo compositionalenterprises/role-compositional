@@ -83,13 +83,13 @@
   register: compositional_bitwarden_registration_params_result
 
 - debug:
-    var: compositional_bitwarden_registration_params_result['stdout'].strip() | debug_type
+    var: compositional_bitwarden_registration_params_result['stdout'].strip() | type_debug
 
 - set_fact:
     compositional_bitwarden_registration_params: compositional_bitwarden_registration_params_result['stdout'].strip() | from_json
 
 - debug:
-    var: compositional_bitwarden_registration_params | debug_type
+    var: compositional_bitwarden_registration_params | type_debug
 
 - name: (bitwarden) Post the registration to the API URL
   uri:
