@@ -160,7 +160,7 @@ def main():
     result["name"] = args['name']
     result["email"] = args['email']
     result['kdf'] = '0'
-    result['kdfIterations'] = '0'
+    result['kdfIterations'] = '100000'
     print(result)
 
 

@@ -88,8 +88,7 @@
     method: POST
     body_format: json
     body: "{{ compositional_bitwarden_registration_params['stdout'].strip() }}"
-    status_code:
-      - 200
-      - 302
   register: compositional_bitwarden_admin_post_result
-  failed_when: "'User already exists' not in compositional_bitwarden_admin_post_result['content']"
+  failed_when:
+    - compositional_bitwarden_admin_post_result['status'] not in [302, 200]
+    - "'User already exists' not in compositional_bitwarden_admin_post_result['content']"
