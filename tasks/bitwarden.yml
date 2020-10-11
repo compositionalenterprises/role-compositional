@@ -91,6 +91,9 @@
 - debug:
     var: compositional_bitwarden_registration_params | type_debug
 
+- debug:
+    var: compositional_bitwarden_registration_params
+
 - name: (bitwarden) Post the registration to the API URL
   uri:
     url: https://{{ environment_domain }}/bitwarden/api/accounts/register
