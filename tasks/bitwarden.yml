@@ -85,6 +85,9 @@
 - debug:
     var: compositional_bitwarden_registration_params_result['stdout'].strip() | type_debug
 
+- debug:
+    var: compositional_bitwarden_registration_params_result['stdout'].strip()
+
 - set_fact:
     compositional_bitwarden_registration_params: "{{ compositional_bitwarden_registration_params_result['stdout'].strip() | from_json }}"
 
