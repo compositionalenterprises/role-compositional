@@ -57,9 +57,12 @@
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_bitwarden_bind_mountpoints }}"
 
-- name: (bitwarden) Reset the bind mountpoints in order to get Firefly-III healthy
+- name: (bitwarden) Reset the bind mountpoints in order to get bitwarden healthy
   include_tasks: ./bind_mountpoints.yml
 
+#
+# Admin Password
+#
 - name: (bitwarden) Bitwarden is healthy
   shell: "curl -sSL --fail 532d.ourcompose.com/bitwarden"
   register: compositional_bitwarden_health
@@ -67,29 +70,23 @@
   retries: 24
   delay: 5
 
-- name: (bitwarden) Get the url
-  uri:
-    url: https://{{ environment_domain }}/bitwarden/#/register
-    method: GET
-    return_content: True
-  register: compositional_bitwarden_login
+- name: (bitwarden) Get the registration parameters
+  script:
+    cmd: "../files/bitwarden_registration_params.py
+            -n Admin
+            -e admin@{{ environment_domain }}
+            -p {{ compositional_bitwarden_admin_password }}
+         "
+  delegate_to: localhost
+  register: compositional_bitwarden_registration_params
 
-    #- name: (bitwarden) Post to the URL
-    #  uri:
-    #    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
-    #    method: POST
-    #    body_format: form-urlencoded
-    #    headers:
-    #      Cookie: "{{ compositional_firefly_login['cookies_string'] }}"
-    #    body:
-    #      name: Andrew
-    #      email: admin@admin.com
-    #      masterPasswordHash: "2DmRAHcl7korfTbFr5HP3ZjxYanvUVa50mqbyZ+/D9s="
-    #      masterPasswordHint: "Admin Password"
-    #      kdf: 0
-    #      kdfInterations: 100000
-    #      key:
-    #      keys:
-    #        encryptedPrivateKey:
-    #        publicKey:
-    #    status_code: 302
+- name: (bitwarden) Post the registration to the API URL
+  uri:
+    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
+    method: POST
+    body: "{{ compositional_bitwarden_registration_params['stdout'].strip() }}"
+    status_code:
+      - 200
+      - 302
+  register: compositional_bitwarden_admin_post_result
+  failed_when: "'User already exists' not in compositional_bitwarden_admin_post_result['content']"
