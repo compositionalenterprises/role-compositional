@@ -14,6 +14,7 @@ __version__ = '0.1.0'
 
 import os
 import hmac
+import json
 import base64
 import pprint
 import getpass
@@ -161,7 +162,7 @@ def main():
     result["email"] = args['email']
     result['kdf'] = '0'
     result['kdfIterations'] = '100000'
-    print(result)
+    print(json.dumps(result))
 
 
 if __name__ == '__main__':

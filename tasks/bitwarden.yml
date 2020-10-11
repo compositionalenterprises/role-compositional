@@ -83,13 +83,13 @@
   register: compositional_bitwarden_registration_params_result
 
 - debug:
-    var: compositional_bitwarden_registration_params_result['stdout'] | type_debug
+    var: compositional_bitwarden_registration_params_result['stdout'].strip() | type_debug
 
 - debug:
-    var: compositional_bitwarden_registration_params_result['stdout']['email']
+    var: compositional_bitwarden_registration_params_result['stdout'].strip()
 
 - set_fact:
-    compositional_bitwarden_registration_params: "{{ compositional_bitwarden_registration_params_result['stdout'] | from_json }}"
+    compositional_bitwarden_registration_params: "{{ compositional_bitwarden_registration_params_result['stdout'].strip() | from_json }}"
 
 - debug:
     var: compositional_bitwarden_registration_params | type_debug
