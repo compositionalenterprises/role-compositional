@@ -83,7 +83,7 @@
 #
 # Finish install if necessary
 #
-- name: (wordpress) Ensure uploads have a location to upload to
+- name: (wordpress) Automate Wordpress Initial Install
   shell: "
     docker exec -u 33 -i wordpress bash -c \"
       curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar;
