@@ -65,7 +65,7 @@
 # Admin Password
 #
 - name: (bitwarden) Bitwarden is healthy
-  shell: "curl -sSL --fail 532d.ourcompose.com/bitwarden"
+  shell: "curl -sSL --fail {{ environment_domain }}/bitwarden"
   register: compositional_bitwarden_health
   until: compositional_bitwarden_health['rc'] == 0
   retries: 24
