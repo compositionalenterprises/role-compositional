@@ -90,6 +90,13 @@
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: 'Restart Kanboard'
 
+- name: (kanboard) Kanboard is healthy
+  shell: docker exec -i kanboard bash -c "{{ compositional_kanboard_healthcheck }}"
+  register: compositional_kanboard_health
+  until: compositional_kanboard_health['rc'] == 0
+  retries: 24
+  delay: 5
+
 #
 # Bind Mountpoints
 #
