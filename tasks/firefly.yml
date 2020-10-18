@@ -62,14 +62,12 @@
   notify: 'Restart Frontend'
   no_log: True
 
-
 - name: (firefly) Symlink firefly directory as a subdirectory
   shell: docker exec -i firefly bash -c "ln -snfT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
 
 #
 # Bind Mountpoints
 #
-
 - name: (firefly) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} firefly | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
@@ -77,9 +75,6 @@
   when: not item['directory'].startswith('/srv')
   loop: "{{ compositional_firefly_bind_mountpoints }}"
   register: compositional_firefly_src_dirs
-
-- debug:
-    var: compositional_firefly_src_dirs
 
 - name: (firefly) Register firefly non-volume bind-mountpoints for proxy
   set_fact:
@@ -96,6 +91,9 @@
 - name: (firefly) Reset the bind mountpoints in order to get Firefly-III healthy
   include_tasks: ./bind_mountpoints.yml
 
+#
+# Create user admin
+#
 - name: (firefly) Firefly-III is healthy
   shell: "curl -sSL --fail {{ environment_domain }}/firefly"
   register: compositional_firefly_health
