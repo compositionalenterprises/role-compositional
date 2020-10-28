@@ -118,12 +118,14 @@
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_src_dirs['results'] }}"
 
-
 - name: (kanboard) Register kanboard volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
+
+- name: (kanboard) Reset the bind mountpoints in order to get Kanboard healthy
+  include_tasks: ./bind_mountpoints.yml
 
 #
 # Admin Password
