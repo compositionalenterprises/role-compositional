@@ -133,7 +133,7 @@
 # See https://github.com/kanboard/kanboard/issues/853 for explanation
 - name: (kanboard) Generate the password hash
   shell: "
-    docker exec -i bookstack bash -c \"
+    docker exec -i kanboard bash -c \"
       echo '
         echo password_hash(\\\"{{ compositional_kanboard_admin_password }}\\\", PASSWORD_DEFAULT);'
       | php -a\"
