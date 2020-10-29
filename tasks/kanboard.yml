@@ -90,13 +90,6 @@
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: 'Restart Kanboard'
 
-- name: (kanboard) Kanboard is healthy
-  shell: docker exec -i kanboard bash -c "curl -sSL --fail {{ environment_domain }}/kanboard"
-  register: compositional_kanboard_health
-  until: compositional_kanboard_health['rc'] == 0
-  retries: 24
-  delay: 5
-
 #
 # Bind Mountpoints
 #
@@ -108,9 +101,6 @@
   when: not item['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
   register: compositional_kanboard_src_dirs
-
-- debug:
-    var: compositional_kanboard_src_dirs
 
 - name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
   set_fact:
@@ -130,6 +120,13 @@
 #
 # Admin Password
 #
+- name: (kanboard) Kanboard is healthy
+  shell: docker exec -i kanboard bash -c "curl -sSL --fail {{ environment_domain }}/kanboard"
+  register: compositional_kanboard_health
+  until: compositional_kanboard_health['rc'] == 0
+  retries: 24
+  delay: 5
+
 # See https://github.com/kanboard/kanboard/issues/853 for explanation
 - name: (kanboard) Generate the password hash
   shell: "
