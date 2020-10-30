@@ -85,7 +85,6 @@
     state: "{{ compositional_commandcenter_state }}"
     restarted: "{{ compositional_commandcenter_restarted }}"
   register: compositional_commandcenter_output
-  no_log: True
 
 - name: (commandcenter) The commandcenter cron job to update the database with daily data
   cron:
