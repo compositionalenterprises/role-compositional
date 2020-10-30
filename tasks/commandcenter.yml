@@ -94,13 +94,6 @@
     day: "*"
     job: "/usr/bin/docker exec commandcenter /app/bin/seeds/daily.sh"
 
-
-- name: (commandcenter) Example to add a new Admin
-    # Update or Add admin script example
-    # See /app/bin/rake_admin.sh script on server for env vars
-    shell: 'docker exec -i -e CC_ADMIN_CREATE_UPDATE=CREATE -e CC_ADMIN_EMAIL=admin@ourcompose.com -e CC_ADMIN_PASSWORD=testpassword1 -e CC_ADMIN_SEND_EMAIL_FLAG=NO commandcenter /app/bin/rake_admin.sh'
-    shell: 'docker exec -i -e CC_ADMIN_CREATE_UPDATE=UPDATE -e CC_ADMIN_EMAIL=admin@ourcompose.com -e CC_ADMIN_PASSWORD=testpassword2 -e CC_ADMIN_SEND_EMAIL_FLAG=NO commandcenter /app/bin/rake_admin.sh'
-
 #
 # Bind Mountpoints
 #
@@ -128,3 +121,18 @@
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_commandcenter_bind_mountpoints }}"
+
+#
+# Admin Password
+#
+- name: (commandcenter) Create the admin account
+    # Update or Add admin script example
+    # See /app/bin/rake_admin.sh script on server for env vars
+    shell: "
+      docker exec -i
+          -e CC_ADMIN_CREATE_UPDATE=CREATE
+          -e CC_ADMIN_EMAIL=admin@{{ environment_domain }}
+          -e CC_ADMIN_PASSWORD={{ compositional_commandcenter_admin_password }}
+          -e CC_ADMIN_SEND_EMAIL_FLAG=NO commandcenter
+        '/app/bin/seeds/rake_admin.sh'
+      "

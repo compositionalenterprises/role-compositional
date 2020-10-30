@@ -90,10 +90,12 @@
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: 'Restart Kanboard'
 
+- name: Restart Kanboard here
+  meta: flush_handlers
+
 #
 # Bind Mountpoints
 #
-
 - name: (kanboard) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
