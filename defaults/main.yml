@@ -223,7 +223,7 @@ compositional_bookstack_storage: 'local'
 compositional_bookstack_backend_password: 'testpassword'
 compositional_bookstack_bind_mountpoints:
   - {location: '/bookstack/dist/', directory: '/var/www/bookstack/public/dist'}
-  - {location: '/bookstack/uploads/', directory: '/var/www/bookstack/public/uploads'}
+  - {location: '/bookstack/uploads/', directory: '/srv/{{ compositional_bookstack_storage }}/bookstack_uploads'}
 compositional_bookstack_mysql_script: |
   CREATE USER IF NOT EXISTS 'bookstack'@'%' IDENTIFIED BY '{{ compositional_bookstack_backend_password }}';
   CREATE DATABASE IF NOT EXISTS bookstack;
