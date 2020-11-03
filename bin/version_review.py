@@ -144,16 +144,19 @@ def report(service_versions):
                 # start comparing minor versions
                 if not service_version.count('.') > 1:
                     if service_versions['latest'][service]['minor']:
+                        common.eprint("Using Minor Version")
                         minor_version = service_versions['latest'][service]['minor']
                         minor_version = re.sub('[a-zA-Z-]', '', minor_version)
                         comparable_version = float(minor_version)
                     else:
+                        common.eprint("Using Bugfix Version")
                         bugfix_version = service_versions['latest'][service]['bugfix']
                         bugfix_version = re.sub('[a-zA-Z-]', '', bugfix_version)
                         comparable_version = float('.'.join(
                             bugfix_version.split('.')[:2]))
+                    common.eprint("Comparable Version: {}".format(comparable_version))
                     if int(service_version.split('.')[0]) < int(
-                            bugfix_version.split('.')[0]):
+                            str(comparable_version).split('.')[0]):
                         warning = "WARNING: Major Version Discrepancy"
                         common.eprint(warning.format(service_version_key))
                     elif float(service_version) < comparable_version:
