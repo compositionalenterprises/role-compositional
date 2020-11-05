@@ -86,7 +86,7 @@ compositional_mariadb_healthcheck: |
 compositional_kanboard_build: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
-compositional_kanboard_version: 'v1.2.15'
+compositional_kanboard_version: 'v1.2.16'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_backend_password: 'testpassword'
 compositional_kanboard_bind_mountpoints:
@@ -107,7 +107,7 @@ compositional_kanboard_healthcheck: |
 compositional_nextcloud_build: yes
 compositional_nextcloud_state: present
 compositional_nextcloud_restarted: yes
-compositional_nextcloud_version: '18.0'
+compositional_nextcloud_version: '19.0'
 compositional_nextcloud_storage: 'local'
 compositional_nextcloud_backend_password: 'testpassword'
 compositional_nextcloud_mysql_script: |
@@ -145,7 +145,7 @@ compositional_wordpress_healthcheck: |
 compositional_bitwarden_build: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
-compositional_bitwarden_version: '1.15.1'
+compositional_bitwarden_version: '1.16.3'
 compositional_bitwarden_storage: 'local'
 compositional_bitwarden_bind_mountpoints:
   - {location: '/bitwarden/app/', directory: '/web-vault/app'}
@@ -161,7 +161,7 @@ compositional_bitwarden_bind_mountpoints:
 compositional_firefly_build: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: yes
-compositional_firefly_version: 'release-5.2.8'
+compositional_firefly_version: 'version-5.4.5'
 compositional_firefly_storage: 'local'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_backend_password: 'testpassword'
@@ -187,7 +187,7 @@ compositional_firefly_healthcheck: |
 compositional_jekyll_build: yes
 compositional_jekyll_state: present
 compositional_jekyll_restarted: yes
-compositional_jekyll_version: '4.0'
+compositional_jekyll_version: '4.0.1'
 compositional_jekyll_storage: 'local'
 compositional_jekyll_port: '8080'
 compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.git'
