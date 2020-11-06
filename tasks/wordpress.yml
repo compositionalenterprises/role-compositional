@@ -61,6 +61,9 @@
   register: compositional_wordpress_output
   no_log: True
 
+#
+# Setup Configuration
+#
 - name: (wordpress) Symlink wordpress directory as a sub-directory
   shell: docker exec -i wordpress bash -c "ln -snfT /var/www/html/ /var/www/html/wordpress"
 
@@ -76,3 +79,21 @@
 - name: (wordpress) Ensure uploads have a location to upload to
   shell: docker exec -i wordpress bash -c "mkdir -p /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content/uploads"
   when: compositional_wordpress_output.changed
+
+#
+# Finish install if necessary
+#
+- name: (wordpress) Automate Wordpress Initial Install
+  shell: "
+    docker exec -u 33 -i wordpress bash -c \"
+      curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar;
+      php wp-cli.phar core is-installed ||
+      php wp-cli.phar core install
+        --url='{{ environment_domain }}'
+        --title='{{ compositional_wordpress_title }}'
+        --admin_user='admin'
+        --admin_password='{{ compositional_wordpress_admin_password }}'
+        --admin_email='admin@admin.com'
+        --skip-email;
+      \"
+    "
