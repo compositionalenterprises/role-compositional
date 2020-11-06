@@ -121,3 +121,37 @@
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_commandcenter_bind_mountpoints }}"
+
+#
+# Admin Password
+#
+- name: (commandcenter) CommandCenter has all of its database migrations ran
+  shell: "
+    docker exec -i commandcenter sh -c \"
+      export RAILS_ENV=production;
+        bundle exec rake db:migrate:status 2>/dev/null |
+          sed '/^$/d' |
+          tail -n 1 |
+          tr -s ' ' |
+          cut -d ' ' -f 2
+      \"
+    "
+  register: compositional_commandcenter_migrations
+  until: "'up' in compositional_commandcenter_migrations['stdout']"
+  retries: 24
+  delay: 5
+
+- name: (commandcenter) Create the admin account
+  # Update or Add admin script example
+  # See /app/bin/rake_admin.sh script on server for env vars
+  shell: "
+    docker exec -i
+        -e CC_ADMIN_CREATE_UPDATE=CREATE
+        -e CC_ADMIN_EMAIL=admin@{{ environment_domain }}
+        -e CC_ADMIN_PASSWORD={{ compositional_commandcenter_admin_password }}
+        -e CC_ADMIN_SEND_EMAIL_FLAG=NO commandcenter
+      '/app/bin/seeds/rake_admin.sh'
+    "
+  register: compositional_commandcenter_create_admin
+  failed_when:
+    - compositional_commandcenter_create_admin['rc'] not in [0, 127]
