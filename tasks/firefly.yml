@@ -59,6 +59,7 @@
     state: "{{ compositional_firefly_state }}"
     restarted: "{{ compositional_firefly_restarted }}"
   register: compositional_firefly_output
+  notify: 'Restart Frontend'
   no_log: True
 
 - name: (firefly) Symlink firefly directory as a subdirectory
@@ -67,7 +68,6 @@
 #
 # Bind Mountpoints
 #
-
 - name: (firefly) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} firefly | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
@@ -76,18 +76,49 @@
   loop: "{{ compositional_firefly_bind_mountpoints }}"
   register: compositional_firefly_src_dirs
 
-- debug:
-    var: compositional_firefly_src_dirs
-
 - name: (firefly) Register firefly non-volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_firefly_src_dirs['results'] }}"
 
-
 - name: (firefly) Register firefly volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_firefly_bind_mountpoints }}"
+
+- name: (firefly) Reset the bind mountpoints in order to get Firefly-III healthy
+  include_tasks: ./bind_mountpoints.yml
+
+#
+# Create user admin
+#
+- name: (firefly) Firefly-III is healthy
+  shell: "curl -sSL --fail {{ environment_domain }}/firefly"
+  register: compositional_firefly_health
+  until: compositional_firefly_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+- name: (firefly) Get the url
+  uri:
+    url: https://{{ environment_domain }}/firefly/register
+    method: GET
+    return_content: True
+  register: compositional_firefly_login
+
+- name: (firefly) Post to the URL
+  uri:
+    url: https://{{ environment_domain }}/firefly/register
+    method: POST
+    body_format: form-urlencoded
+    headers:
+      Cookie: "{{ compositional_firefly_login['cookies_string'] }}"
+    body:
+      email: admin@{{ environment_domain }}
+      password: "{{ compositional_firefly_admin_password }}"
+      password_confirmation: "{{ compositional_firefly_admin_password }}"
+      _token: "{{ compositional_firefly_login['content'].split('\n') | select('search', '_token') | first | regex_replace('.*name=\"_token\" value=\"([A-Za-z0-9]+).*$', '\\1') }}"
+    status_code: 302
+  when: "'Sorry, an error occurred.' not in compositional_firefly_login['content']"

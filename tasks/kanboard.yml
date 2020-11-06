@@ -90,10 +90,12 @@
     dest: '/var/lib/docker/volumes/kanboard_nginx/_data/nginx.conf'
   notify: 'Restart Kanboard'
 
+- name: Restart Kanboard here
+  meta: flush_handlers
+
 #
 # Bind Mountpoints
 #
-
 - name: (kanboard) Find source filesystem directory
   shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} kanboard | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
   args:
@@ -102,18 +104,45 @@
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
   register: compositional_kanboard_src_dirs
 
-- debug:
-    var: compositional_kanboard_src_dirs
-
 - name: (kanboard) Register kanboard non-volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_src_dirs['results'] }}"
 
-
 - name: (kanboard) Register kanboard volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_kanboard_bind_mountpoints }}"
+
+- name: (kanboard) Reset the bind mountpoints in order to get Kanboard healthy
+  include_tasks: ./bind_mountpoints.yml
+
+#
+# Admin Password
+#
+- name: (kanboard) Kanboard is healthy
+  shell: docker exec -i kanboard bash -c "curl -sSL --fail {{ environment_domain }}/kanboard"
+  register: compositional_kanboard_health
+  until: compositional_kanboard_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+# See https://github.com/kanboard/kanboard/issues/853 for explanation
+- name: (kanboard) Generate the password hash
+  shell: "
+    docker exec -i kanboard bash -c \"
+      echo '
+        echo password_hash(\\\"{{ compositional_kanboard_admin_password }}\\\", PASSWORD_DEFAULT);'
+      | php -a\"
+    "
+  register: compositional_kanboard_admin_password_hash
+
+- name: (kanboard) The existing password is replaced in the database
+  shell: "
+    docker exec -i database bash -c \"
+      mysql -uroot -p{{ compositional_database_root_password }} -e
+        \\\"use kanboard; UPDATE users SET password='{{ compositional_kanboard_admin_password_hash['stdout_lines'][-1] | replace ('$', '\\\\\\$')}}' WHERE username='admin';\\\"
+      \"
+    "

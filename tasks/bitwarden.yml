@@ -21,6 +21,10 @@
               networks:
                   - frontend
 
+              environment:
+                ADMIN_TOKEN: "{{ compositional_bitwarden_admin_token }}"
+                LOG_LEVEL: "debug"
+
       networks:
           frontend:
               external: true
@@ -42,18 +46,53 @@
   when: not item['directory'].startswith('/srv')
   register: compositional_bitwarden_src_dirs
 
-- debug:
-    var: compositional_bitwarden_src_dirs
-
 - name: (bitwarden) Register bitwarden non-volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_bitwarden_src_dirs['results'] }}"
 
-
 - name: (bitwarden) Register bitwarden volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_bitwarden_bind_mountpoints }}"
+
+- name: (bitwarden) Reset the bind mountpoints in order to get bitwarden healthy
+  include_tasks: ./bind_mountpoints.yml
+
+#
+# Admin Password
+#
+- name: (bitwarden) Bitwarden is healthy
+  shell: "curl -sSL --fail {{ environment_domain }}/bitwarden"
+  register: compositional_bitwarden_health
+  until: compositional_bitwarden_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+- name: (bitwarden) Get the registration parameters
+  script:
+    cmd: "../files/bitwarden_registration_params.py
+            -n Admin
+            -e admin@{{ environment_domain }}
+            -p {{ compositional_bitwarden_admin_password }}
+         "
+  delegate_to: localhost
+  become: False
+  register: compositional_bitwarden_registration_params_result
+
+- name: (bitwarden) Set the json fact
+  set_fact:
+    compositional_bitwarden_registration_params: "{{ compositional_bitwarden_registration_params_result['stdout'].strip() | from_json }}"
+
+- name: (bitwarden) Post the registration to the API URL
+  uri:
+    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
+    method: POST
+    body_format: json
+    body: "{{ compositional_bitwarden_registration_params }}"
+  register: compositional_bitwarden_admin_post_result
+  failed_when:
+    - compositional_bitwarden_admin_post_result['status'] not in [302, 200]
+    - "'User already exists' not in compositional_bitwarden_admin_post_result['content']"
