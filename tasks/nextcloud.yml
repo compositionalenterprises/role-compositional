@@ -121,3 +121,7 @@
 - name: (nextcloud) Upgrade Nextcloud DB
   shell: 'docker exec -u 33 -i nextcloud bash -c "./occ upgrade --no-interaction"'
   when: compositional_nextcloud_status['needsDbUpgrade']
+
+- name: (nextcloud) Turn off maintenance mode
+  shell: 'docker exec -u 33 -i nextcloud bash -c "./occ maintenance:mode --off"'
+  when: compositional_nextcloud_status['maintenance']
