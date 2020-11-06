@@ -130,6 +130,22 @@
 #
 # Admin Password
 #
+- name: (portal) Portal has all of its database migrations ran
+  shell: "
+    docker exec -i portal bash -c \"
+      export RAILS_ENV=production;
+      bundle exec rake db:migrate:status 2>/dev/null |
+        sed '/^$/d' |
+        tail -n 1 |
+        tr -s ' ' |
+        cut -d ' ' -f 2
+      \"
+    "
+  register: compositional_portal_migrations
+  until: "'up' in compositional_portal_migrations['stdout']"
+  retries: 24
+  delay: 5
+
 - name: (portal) Create the admin account
   # Update or Add admin script example
   # See /app/bin/rake_admin.sh script on server for env vars
