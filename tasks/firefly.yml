@@ -63,7 +63,7 @@
   no_log: True
 
 - name: (firefly) Symlink firefly directory as a subdirectory
-  shell: docker exec -i firefly bash -c "ln -snfT /var/www/firefly-iii/public/ /var/www/firefly-iii/public/firefly"
+  shell: docker exec -i firefly bash -c "ln -snfT /var/www/html/public/ /var/www/html/public/firefly"
 
 #
 # Bind Mountpoints
