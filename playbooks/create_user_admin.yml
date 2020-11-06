@@ -1,0 +1,185 @@
+- name: Create the user who is the administrator on all of the services deployed
+  hosts: all
+  vars_files:
+    - ../roles/compositional/defaults/main.yml
+    - ../environment/group_vars/all/all.yml
+    - ../environment/group_vars/compositional/all.yml
+
+  pre_tasks:
+    - name: Fail when environment_admin_pass not passed in
+      fail:
+        msg: "Please pass in `environment_admin_pass` for the password"
+      when: not environment_admin_pass
+
+  tasks:
+    - debug:
+        var: compositional_services
+
+    - name: Bitwarden
+      block:
+        - name: (bitwarden) Get the registration parameters
+          script:
+            cmd: "../roles/compositional/files/bitwarden_registration_params.py
+                    -n {{ environment_admin }}
+                    -e {{ environment_admin }}@{{ environment_domain }}
+                    -p {{ environment_admin_pass }}
+                 "
+          delegate_to: localhost
+          become: False
+          register: cua_bitwarden_registration_params_result
+
+        - name: (bitwarden) Set the json fact
+          set_fact:
+            cua_bitwarden_registration_params: "{{ cua_bitwarden_registration_params_result['stdout'].strip() | from_json }}"
+
+        - name: (bitwarden) Post the registration to the API URL
+          uri:
+            url: https://{{ environment_domain }}/bitwarden/api/accounts/register
+            method: POST
+            body_format: json
+            body: "{{ cua_bitwarden_registration_params }}"
+          register: cua_bitwarden_admin_post_result
+          failed_when:
+            - cua_bitwarden_admin_post_result['status'] not in [302, 200]
+            - "'User already exists' not in cua_bitwarden_admin_post_result['content']"
+
+      when: "'bitwarden' in compositional_services"
+
+    - name: (bookstack) Set up user admin using php artisan command
+      # While it's crap that we have to use double escapes, it's the only way that bash doesn't throw
+      # an error when passing the parenthesis.
+      shell: "
+        docker exec -u 0 -i bookstack bash -c \"
+          php artisan bookstack:create-admin
+            --email={{ environment_admin }}@{{ environment_domain }}
+            --name={{ environment_admin }}
+            --password={{ environment_admin_pass }}
+          \"
+        "
+      when: "'bookstack' in compositional_services"
+
+    - name: (commandcenter) Create the admin account
+      # Update or Add admin script example
+      # See /app/bin/rake_admin.sh script on server for env vars
+      shell: "
+        docker exec -i
+            -e CC_ADMIN_CREATE_UPDATE=CREATE
+            -e CC_ADMIN_EMAIL={{ environment_admin }}@{{ environment_domain }}
+            -e CC_ADMIN_PASSWORD={{ environment_admin_pass }}
+            -e CC_ADMIN_SEND_EMAIL_FLAG=NO commandcenter
+          '/app/bin/seeds/rake_admin.sh'
+        "
+      register: cua_commandcenter_create_admin
+      failed_when:
+        - cua_commandcenter_create_admin['rc'] not in [0, 127]
+      when: "'commandcenter' in compositional_services"
+
+    - name: Firefly
+      block:
+        - name: (firefly) Copy CreateUser PHP command file into /tmp on the server
+          copy:
+            src: ../files/firefly_CreateUser.php
+            dest: /tmp
+
+        - name: (firefly) Copy CreateUser PHP command file into container
+          shell: docker cp /tmp/firefly_CreateUser.php firefly:/var/www/firefly-iii/app/Console/Commands/CreateUser.php
+
+        - name: (firefly) Add Str import in UserRepository PHP script
+          shell: "
+              docker exec -i firefly bash -c \"
+                sed -i '/use Illuminate\\\\\\\\Support\\\\\\\\Collection;/a use Illuminate\\\\\\\\Support\\\\\\\\Str;' app/Repositories/User/UserRepository.php
+              \"
+            "
+
+        - name: (firefly) Change str_random to Str random in UserRepository PHP script
+          shell: "
+              docker exec -i firefly bash -c \"
+                sed -i 's/str_random/Str::random/' app/Repositories/User/UserRepository.php
+              \"
+            "
+
+        - name: (firefly) Create new Firefly-III user through the CLI
+          shell: "
+              docker exec -i firefly bash -c \"
+                php artisan firefly-iii:create-user
+                  {{ environment_admin }}@{{ environment_domain }}
+                  {{ environment_admin_pass }}
+              \"
+            "
+
+      when: "'firefly' in compositional_services"
+
+    - name: Kanboard
+      block:
+        - name: (kanboard) Copy CreateUser PHP command file into /tmp on the server
+          copy:
+            src: ../files/kanboard_CreateUserAdminCommand.php
+            dest: /tmp
+
+        - name: (kanboard) Copy CreateUserAdminCommand PHP command file into container
+          shell: docker cp /tmp/kanboard_CreateUserAdminCommand.php kanboard:/var/www/app/app/Console/CreateUserAdminCommand.php
+
+        - name: (kanboard) Add CreateUserAdminCommand import in CommandProvider PHP script
+          shell: "
+              docker exec -i kanboard bash -c \"
+                sed -i '/use Kanboard\\\\\\\\Console\\\\\\\\JsCommand;/a use Kanboard\\\\\\\\Console\\\\\\\\CreateUserAdminCommand;' /var/www/app/app/ServiceProvider/CommandProvider.php;
+                sed -i '/new JsCommand.*/a \\ \\ \\ \\ \\ \\ \\ \\ \\$application->add(new CreateUserAdminCommand(\\$container));' /var/www/app/app/ServiceProvider/CommandProvider.php
+              \"
+            "
+
+        - name: (kanboard) Create new Kanboard user through the CLI
+          shell: "
+              docker exec -i kanboard bash -c \"
+                /var/www/app/cli user:create-admin {{ environment_admin }} {{ environment_admin_pass }} {{ environment_admin }}@{{ environment_domain }}
+              \"
+            "
+
+      when: "'kanboard' in compositional_services"
+
+    - name: (nextcloud) Set Nextcloud user admin
+      shell: "
+        docker exec -iu 33 nextcloud bash -c \"
+          export OC_PASS='{{ environment_admin_pass }}';
+          php occ user:add
+            --password-from-env
+            --display-name='{{ environment_admin }}'
+            --group='users,admin'
+            {{ environment_admin }}
+          \"
+        "
+      when: "'nextcloud' in compositional_services"
+      register: cua_nextcloud_add_user
+      failed_when:
+        - cua_nextcloud_add_user['rc'] != 0
+        - "'already exists' not in cua_nextcloud_add_user['stdout']"
+
+    - name: (portal) Create the admin account
+      # Update or Add admin script example
+      # See /app/bin/rake_admin.sh script on server for env vars
+      shell: "
+        docker exec -i
+            -e PORTAL_ADMIN_CREATE_UPDATE=CREATE
+            -e PORTAL_ADMIN_EMAIL={{ environment_admin }}@{{ environment_domain }}
+            -e PORTAL_ADMIN_PASSWORD={{ environment_admin_pass }}
+            -e PORTAL_ADMIN_SEND_EMAIL_FLAG=NO portal
+          '/app/bin/seeds/rake_admin.sh'
+        "
+      register: cua_portal_create_admin
+      failed_when:
+        - cua_portal_create_admin['rc'] not in [0, 127]
+      when: "'portal' in compositional_services"
+
+    - name: (rundeck) Set user admin password in realm.properties
+      lineinfile:
+        line: '{{ environment_admin }}:{{ environment_admin_pass }},user,admin'
+        path: "/srv/{{ compositional_rundeck_storage }}/rundeck_config/realm.properties"
+        insertafter: '^admin:'
+      when: "'rundeck' in compositional_services"
+
+    - name: (wordpress) Set up user admin
+      shell: "
+        docker exec -u 33 -i wordpress bash -c \"
+          php wp-cli.phar user create {{ environment_admin }} {{ environment_admin }}@{{ environment_domain }} --role=administrator --user_pass='{{ environment_admin_pass }}'
+          \"
+        "
+      when: "'wordpress' in compositional_services"

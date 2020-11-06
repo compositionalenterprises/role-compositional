@@ -93,3 +93,7 @@
         module: shell
         cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
         chdir: ../environment/
+
+- name: Create User Admin accounts
+  import_playbook: create_user_admin.yml
+
