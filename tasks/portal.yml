@@ -132,7 +132,7 @@
 #
 - name: (portal) Portal has all of its database migrations ran
   shell: "
-    docker exec -i portal bash -c \"
+    docker exec -i portal sh -c \"
       export RAILS_ENV=production;
       bundle exec rake db:migrate:status 2>/dev/null |
         sed '/^$/d' |

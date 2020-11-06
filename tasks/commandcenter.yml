@@ -127,7 +127,7 @@
 #
 - name: (commandcenter) CommandCenter has all of its database migrations ran
   shell: "
-    docker exec -i commandcenter bash -c \"
+    docker exec -i commandcenter sh -c \"
       export RAILS_ENV=production;
         bundle exec rake db:migrate:status 2>/dev/null |
           sed '/^$/d' |
