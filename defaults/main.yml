@@ -172,11 +172,11 @@ compositional_firefly_admin_password: 'testpassword1234'
 compositional_firefly_backend_password: 'testpassword'
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_bind_mountpoints:
-  - {location: '/firefly/v1/css/', directory: '/var/www/firefly-iii/public/v1/css'}
-  - {location: '/firefly/v1/fonts/', directory: '/var/www/firefly-iii/public/v1/fonts'}
-  - {location: '/firefly/v1/images/', directory: '/var/www/firefly-iii/public/v1/images'}
-  - {location: '/firefly/v1/js/', directory: '/var/www/firefly-iii/public/v1/js'}
-  - {location: '/firefly/v1/lib/', directory: '/var/www/firefly-iii/public/v1/lib'}
+  - {location: '/firefly/v1/css/', directory: '/var/www/html/public/v1/css'}
+  - {location: '/firefly/v1/fonts/', directory: '/var/www/html/public/v1/fonts'}
+  - {location: '/firefly/v1/images/', directory: '/var/www/html/public/v1/images'}
+  - {location: '/firefly/v1/js/', directory: '/var/www/html/public/v1/js'}
+  - {location: '/firefly/v1/lib/', directory: '/var/www/html/public/v1/lib'}
 compositional_firefly_mysql_script: |
   CREATE USER IF NOT EXISTS 'firefly'@'%' IDENTIFIED BY '{{ compositional_firefly_backend_password }}';
   CREATE DATABASE IF NOT EXISTS firefly;
