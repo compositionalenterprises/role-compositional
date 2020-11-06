@@ -42,7 +42,8 @@ SERVICES = {
                 'path': 'solidnerd/bookstack'
                 },
             'passwords': {
-                'compositional_bookstack_backend_password': {}
+                'compositional_bookstack_backend_password': {},
+                'compositional_bookstack_admin_password': {}
                 }
             },
         'bitwarden': {
@@ -50,6 +51,9 @@ SERVICES = {
                 'source': 'dockerhub',
                 'path': 'bitwardenrs/server'
                 },
+            'passwords': {
+                'compositional_bitwarden_admin_password': {},
+                }
             },
         'kanboard': {
             'registry': {
@@ -57,7 +61,8 @@ SERVICES = {
                 'path': 'kanboard/kanboard'
                 },
             'passwords': {
-                'compositional_kanboard_backend_password': {}
+                'compositional_kanboard_backend_password': {},
+                'compositional_kanboard_admin_password': {}
                 }
             },
         'nextcloud': {
@@ -66,7 +71,8 @@ SERVICES = {
                 'path': 'library/nextcloud'
                 },
             'passwords': {
-                'compositional_nextcloud_backend_password': {}
+                'compositional_nextcloud_backend_password': {},
+                'compositional_nextcloud_admin_password': {}
                 }
             },
         'wordpress': {
@@ -75,7 +81,8 @@ SERVICES = {
                 'path': 'library/wordpress'
                 },
             'passwords': {
-                'compositional_wordpress_backend_password': {}
+                'compositional_wordpress_backend_password': {},
+                'compositional_wordpress_admin_password': {}
                 }
             },
         'firefly': {
@@ -87,7 +94,10 @@ SERVICES = {
                 'compositional_firefly_app_key': {
                     'length': 32
                     },
-                'compositional_firefly_backend_password': {}
+                'compositional_firefly_backend_password': {},
+                'compositional_firefly_admin_password': {
+                    'length': 16
+                    }
                 }
             },
         'rundeck': {
@@ -96,7 +106,8 @@ SERVICES = {
                 'path': 'rundeck/rundeck'
                 },
             'passwords': {
-                'compositional_rundeck_backend_password': {}
+                'compositional_rundeck_backend_password': {},
+                'compositional_rundeck_admin_password': {}
                 }
             },
         'mysql': {
@@ -114,6 +125,7 @@ SERVICES = {
                 'path': 'compositionalenterprises/portal'
                 },
             'passwords': {
+                'compositional_portal_backend_password': {},
                 'compositional_portal_admin_password': {}
                 }
             },
