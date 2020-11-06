@@ -121,9 +121,26 @@
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_portal_src_dirs['results'] }}"
 
-
 - name: (portal) Register portal volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
   when: item['directory'].startswith('/srv')
   loop: "{{ compositional_portal_bind_mountpoints }}"
+
+#
+# Admin Password
+#
+- name: (portal) Create the admin account
+    # Update or Add admin script example
+    # See /app/bin/rake_admin.sh script on server for env vars
+    shell: "
+      docker exec -i
+          -e PORTAL_ADMIN_CREATE_UPDATE=CREATE
+          -e PORTAL_ADMIN_EMAIL=admin@{{ environment_domain }}
+          -e PORTAL_ADMIN_PASSWORD={{ compositional_commandcenter_admin_password }}
+          -e PORTAL_ADMIN_SEND_EMAIL_FLAG=NO portal
+        '/app/bin/seeds/rake_admin.sh'
+      "
+    register: compositional_portal_create_admin
+    failed_when:
+      - compositional_portal_create_admin['rc'] not in [0, 127]

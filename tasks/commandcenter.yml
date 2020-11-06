@@ -136,3 +136,6 @@
           -e CC_ADMIN_SEND_EMAIL_FLAG=NO commandcenter
         '/app/bin/seeds/rake_admin.sh'
       "
+    register: compositional_commandcenter_create_admin
+    failed_when:
+      - compositional_commandcenter_create_admin['rc'] not in [0, 127]
