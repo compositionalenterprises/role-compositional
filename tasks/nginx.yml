@@ -62,6 +62,10 @@
     path: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}"
     state: directory
 
+- name: (nginx) Services directory is empty
+  shell:
+    cmd: "rm -rf /srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/*"
+
 - name: (nginx) Set Frontend Type
   set_fact:
     compositional_frontend_type: 'nginx'
