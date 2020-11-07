@@ -6,59 +6,12 @@ import yaml
 import common
 import random
 import shutil
-import string
 import pathlib
 import argparse
 import fileinput
 import subprocess
 import ansible_vault
 import update_apitoken
-
-
-def put_repo_in_gitlab(local_repo, domain):
-    #
-    # It takes a lot to keep these lines to a limit of chars under 79 chars
-    # long
-    #
-    environment_domain = domain.replace('.', '-')
-    gitlab_prefix = 'git@gitlab.com:compositionalenterprises'
-    origin_url = "{}/environment.git".format(gitlab_prefix)
-    dirpath_to_script = os.path.dirname(os.path.realpath(__file__))
-    path_to_vault = 'playbooks/group_vars/all/vault.yml'
-    vault_file_path = "{}/../{}".format(dirpath_to_script, path_to_vault)
-    path_to_vault_pass = "{}/../.vault_pass".format(dirpath_to_script)
-
-    # Get the GitLab API personal oauth token
-    with open(path_to_vault_pass, 'r') as plays_vault_pass_file:
-        plays_vault_pass = plays_vault_pass_file.read().strip()
-    vault = ansible_vault.Vault(plays_vault_pass)
-    vault_content = vault.load(open(vault_file_path).read())
-    private_token = vault_content['vault_gitlab_oauth_token']
-
-    # Add all files
-    subprocess.run(['git', 'add', '-A', '.'],
-            cwd="/tmp/{}".format(environment_domain))
-
-    # Commit those files
-    subprocess.run(['git', 'commit', '-m', 'Setup Commit'],
-            cwd="/tmp/{}".format(environment_domain))
-
-    # Push the repo up
-    subprocess.run(['git', 'push', '-u', 'origin', environment_domain],
-            cwd="/tmp/{}".format(environment_domain))
-
-def create_pass(pass_len=16):
-    """
-    Since we're reusing the functionality, split out here the ability to
-    generate a password of a specific length
-    """
-    # Generate the new password
-    new_pass = ''
-    for _ in range(pass_len):
-        chars = string.ascii_letters + string.digits
-        new_pass += random.SystemRandom().choice(chars)
-
-    return new_pass
 
 
 def create_vaulted_passwords(local_repo, service, vault_pass):
@@ -79,7 +32,7 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
         if 'length' in common.SERVICES[service]['passwords'][password_var]:
             pass_len = common.SERVICES[service]['passwords'][password_var]['length']
 
-        new_pass = create_pass(pass_len=pass_len)
+        new_pass = common.create_pass(pass_len=pass_len)
 
         vault_file_path = "{}/vault.yml".format(vars_dir)
         if os.path.isfile(vault_file_path):
@@ -103,7 +56,7 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
             vault_string = subprocess.run(create_vault_command,
                     stdout=subprocess.PIPE, cwd=local_repo)
             vault_string = vault_string.stdout.decode()
-            # string off the string header
+            # strip off the string header
             vault_string = '\n'.join(vault_string.split('\n')[1:])
             # replace the indentation
             vault_string = vault_string.replace(' ', '')
@@ -114,57 +67,6 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
         # Write the vault file back out
         with open(vault_file_path, 'w') as vault_file:
             vault_file.write(vault_string)
-
-
-def create_local_repo(domain):
-    """
-    Creates a local repo from the upstream environment repo
-    """
-    # Set up shorthand strings to use below
-    environment_domain = domain.replace('.', '-')
-    gitlab_domain = 'gitlab.com'
-    gitlab_prefix = "git@{}:compositionalenterprises".format(gitlab_domain)
-    origin_url = "{}/environment.git".format(gitlab_prefix)
-
-    #
-    # Deal with brand new ssh keys for repos
-    #
-    # Add the ssh key for the remote repo
-    gitlab_keys = subprocess.run(['ssh-keyscan', gitlab_domain],
-            stdout=subprocess.PIPE, encoding='utf-8')
-    # get a list of all of the keys without any empty strings
-    gitlab_keys = list(filter(None, gitlab_keys.stdout.split('\n')))
-    # Format the known_hosts absolute filepath
-    known_hosts = "{}/.ssh/known_hosts".format(str(pathlib.Path.home()))
-    # Loop through the keys and perform a lineinfile
-    for gitlab_key in gitlab_keys:
-        key_found = False
-        key_ident = ' '.join(gitlab_key.split(' ')[:2])
-        try:
-            for line in fileinput.input(known_hosts):
-                if line.startswith(key_ident):
-                    print(gitlab_key.strip())
-                    key_found = True
-                    continue
-        except FileNotFoundError:
-            # This file doesn't exist yet. It must be a fresh isntall
-            pass
-        if key_found:
-            # Go to the next key if we've found this one
-            continue
-        else:
-            # This is a new key, so append it to the file
-            with open(known_hosts, 'a') as known_hosts_file:
-                known_hosts_file.write("{}\n".format(gitlab_key.strip()))
-
-    # Clone down the template 'environment' repo
-    subprocess.run(['git', 'clone', "{}/environment.git".format(gitlab_prefix),
-        environment_domain], cwd='/tmp')
-    # Checkout a new branch
-    subprocess.run(['git', 'checkout', '-b', environment_domain],
-            cwd="/tmp/{}".format(environment_domain))
-
-    return "/tmp/{}".format(environment_domain)
 
 
 def format_services(services):
@@ -231,7 +133,7 @@ def main():
     args = parse_args()
 
     # Set up the local repo
-    local_repo = create_local_repo(args['domain'])
+    local_repo = common.create_local_repo(args['domain'])
     all_comp_yaml_init = {
             'compositional_services': args['services'],
             'compositional_portal_admin_email': '{{ environment_email }}',
@@ -268,7 +170,7 @@ def main():
     for default_service in ['mysql']:
         create_vaulted_passwords(local_repo, default_service, vault_pass)
 
-    put_repo_in_gitlab(local_repo, args['domain'])
+    common.put_repo_in_gitlab(local_repo, args['domain'])
 
     print("Environment {} created!".format(args['domain']))
     if not args['vaultpass']:
