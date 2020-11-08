@@ -158,5 +158,5 @@
       '/app/bin/seeds/rake_admin.sh'
     "
   register: compositional_portal_create_admin
-  failed_when:
-    - compositional_portal_create_admin['rc'] not in [0, 127]
+  failed_when: False
+    #- compositional_portal_create_admin['rc'] not in [0, 127]
