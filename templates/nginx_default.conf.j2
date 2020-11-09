@@ -112,10 +112,9 @@ server {
     # Hardening
     #
     server_tokens off;
-    more_set_headers "Server: Unknown;"
     add_header Referrer-Policy "no-referrer";
     add_header X-FRAME-Options "SAMEORIGIN" always;
-    add_header X-XSS-Protection "1; mode=block" always
+    add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self';" always;
     add_header Strict-Transport-Security "max-age=63072000" always;
