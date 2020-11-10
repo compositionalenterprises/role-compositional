@@ -59,6 +59,13 @@
     restarted: "{{ compositional_jekyll_restarted }}"
   register: compositional_jekyll_output
 
+- name: Wait for jekyll to build the site and start up the server
+  shell: docker logs jekyll | grep 'Server running...'
+  register: compositional_jekyll_server_running
+  until: compositional_jekyll_server_running['rc'] == 0
+  retries: 24
+  delay: 5
+
 #
 # Bind Mountpoints
 #
@@ -70,9 +77,6 @@
   loop: "{{ compositional_jekyll_bind_mountpoints }}"
   when: not item['directory'].startswith('/srv')
   register: compositional_jekyll_src_dirs
-
-- debug:
-    var: compositional_jekyll_src_dirs
 
 - name: (jekyll) Register jekyll non-volume bind-mountpoints for proxy
   set_fact:
