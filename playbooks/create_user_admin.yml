@@ -82,7 +82,7 @@
             dest: /tmp
 
         - name: (firefly) Copy CreateUser PHP command file into container
-          shell: docker cp /tmp/firefly_CreateUser.php firefly:/var/www/firefly-iii/app/Console/Commands/CreateUser.php
+          shell: docker cp /tmp/firefly_CreateUser.php firefly:/var/www/html/app/Console/Commands/CreateUser.php
 
         - name: (firefly) Add Str import in UserRepository PHP script
           shell: "
