@@ -105,7 +105,7 @@ def parse_args():
                         required=False)
     parser.add_argument('-a', '--envadmin',
                         help='The admins username for this instance',
-                        default='admin',
+                        default='user',
                         required=False)
 
     args = vars(parser.parse_args())
@@ -121,6 +121,8 @@ def parse_args():
         args['dropletsize'] = 's-1vcpu-1gb'
     if not args['email']:
         args['email'] = "{{ environment_admin }}@{{ environment_domain }}"
+    else:
+        args['envadmin'] = args['email'].split('@')[0]
     args['services'] = format_services(args['services'])
     args['domain'] = args['domain'].lower()
 
