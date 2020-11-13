@@ -34,6 +34,7 @@
         --apipass "{{ cloudns_api_pass }}" 
         --fqdn "{{ environment_domain }}" 
         --type 'delete'
+      no_log: True
       delegate_to: localhost
 
 - name: Remove the floating IP
