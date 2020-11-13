@@ -84,13 +84,6 @@
         - name: (firefly) Copy CreateUser PHP command file into container
           shell: docker cp /tmp/firefly_CreateUser.php firefly:/var/www/html/app/Console/Commands/CreateUser.php
 
-        - name: (firefly) Add Str import in UserRepository PHP script
-          shell: "
-              docker exec -i firefly bash -c \"
-                sed -i '/use Illuminate\\\\\\\\Support\\\\\\\\Collection;/a use Illuminate\\\\\\\\Support\\\\\\\\Str;' app/Repositories/User/UserRepository.php
-              \"
-            "
-
         - name: (firefly) Change str_random to Str random in UserRepository PHP script
           shell: "
               docker exec -i firefly bash -c \"
