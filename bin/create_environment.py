@@ -158,7 +158,7 @@ def main():
 
     # Create the master environment vault pass
     if not args['vaultpass']:
-        vault_pass = create_pass()
+        vault_pass = common.create_pass()
     else:
         vault_pass = args['vaultpass']
 
