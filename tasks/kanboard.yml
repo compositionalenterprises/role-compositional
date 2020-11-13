@@ -123,7 +123,7 @@
 # Admin Password
 #
 - name: (kanboard) Kanboard is healthy
-  shell: docker exec -i kanboard bash -c "curl -sSL --fail {{ environment_domain }}/kanboard"
+  shell: docker exec -i kanboard bash -c "curl -sSL --fail localhost/kanboard"
   register: compositional_kanboard_health
   until: compositional_kanboard_health['rc'] == 0
   retries: 24

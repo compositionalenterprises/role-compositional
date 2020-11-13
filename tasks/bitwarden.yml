@@ -65,7 +65,7 @@
 # Admin Password
 #
 - name: (bitwarden) Bitwarden is healthy
-  shell: "curl -sSL --fail {{ environment_domain }}/bitwarden"
+  shell: docker exec -i bitwarden bash -c "curl -sSL --fail localhost"
   register: compositional_bitwarden_health
   until: compositional_bitwarden_health['rc'] == 0
   retries: 24
@@ -88,7 +88,7 @@
 
 - name: (bitwarden) Post the registration to the API URL
   uri:
-    url: https://{{ environment_domain }}/bitwarden/api/accounts/register
+    url: https://localhost/api/accounts/register
     method: POST
     body_format: json
     body: "{{ compositional_bitwarden_registration_params }}"
