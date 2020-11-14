@@ -95,7 +95,11 @@
 # Create user admin
 #
 - name: (firefly) Firefly-III is healthy
-  shell: "curl -sSL --fail {{ environment_domain }}/firefly"
+  shell: "
+    docker exec -i firefly bash -c \"
+      curl -sSL --fail http://localhost:8080/firefly
+    \"
+  "
   register: compositional_firefly_health
   until: compositional_firefly_health['rc'] == 0
   retries: 24

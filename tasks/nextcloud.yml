@@ -77,7 +77,6 @@
   set_fact:
     compositional_nextcloud_status: "{{ compositional_nextcloud_status_result['stdout'] | from_json }}"
 
-# TODO: Why doesn't this work when we pass the NEXTCLOUD_ADMIN_USER to the docker container
 - name: (nextcloud) Install Nextcloud
   shell: docker exec -u 33 -i nextcloud bash -c "./occ maintenance:install --admin-user 'admin' --admin-pass '{{ compositional_nextcloud_admin_password }}'"
   when: not compositional_nextcloud_status['installed']
