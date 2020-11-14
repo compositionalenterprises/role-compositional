@@ -84,7 +84,6 @@
   when: not item['item']['directory'].startswith('/srv')
   loop: "{{ compositional_jekyll_src_dirs['results'] }}"
 
-
 - name: (jekyll) Register jekyll volume bind-mountpoints for proxy
   set_fact:
     compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
