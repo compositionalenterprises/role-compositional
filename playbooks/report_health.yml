@@ -1,0 +1,11 @@
+---
+- name: Check the health of all of the services
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/compositional/all.yml
+  tasks:
+    - name: Check for all of the services being healthy
+      shell: docker inspect --format='{% raw %}{{.State.Health.Status}}{% endraw %}' {{ item }}
+      loop: "{{ compositional_services }}"
+      register: report_health_result
+      failed_when: report_health_result['stdout'] != 'healthy'
