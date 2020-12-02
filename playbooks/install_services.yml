@@ -16,7 +16,7 @@
     certbot_auto_renew_options: "--quiet --no-self-upgrade --pre-hook='docker stop proxy' --post-hook='docker start proxy'"
     certbot_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
     certbot_create_if_missing: True
-    certbot_install_from_source: True
+    certbot_install_from_source: False
     certbot_create_standalone_stop_services:
       - 'docker'
     certbot_certs:
