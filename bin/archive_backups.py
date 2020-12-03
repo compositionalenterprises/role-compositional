@@ -129,11 +129,11 @@ def get_results(args, backups):
             replacement = lineage[lineage.index(generation) + 1]
             try:
                 new_generation = domain_backups[replacement]
+                domain_backups[generation] = new_generation
             except KeyError:
                 common.eprint(
                     "Could not promote {} generation. Does not exist".format(
                         replacement))
-                domain_backups[generation] = new_generation
         elif promotion and generation == 'son':
             # Store a current backup as it is due to become the latest snapshot
             # of the son generation
