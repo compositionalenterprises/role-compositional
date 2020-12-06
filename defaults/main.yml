@@ -321,7 +321,7 @@ compositional_portal_initial_install: "0"
 # range takes (i, j) where the generated ints are [i, i+1, i+2, ..., j-1].
 # So, by doing this, we are actually NOT allowing anything to be set at 3:60, etc.
 # but the highest option we could have would be 5:59
-compositional_portal_cron_minute: "{{ range(0, 60) | random }}
+compositional_portal_cron_minute: "{{ range(0, 60) | random }}"
 compositional_portal_cron_hour: "{{ range(3, 5) | random }}"
 compositional_portal_cron_day: "*/2"
 compositional_portal_bind_mountpoints:
