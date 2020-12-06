@@ -309,7 +309,7 @@ compositional_commandcenter_healthcheck: |
 compositional_portal_build: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
-compositional_portal_version: '1.4.1'
+compositional_portal_version: 'dev'
 compositional_portal_storage: 'local'
 compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
