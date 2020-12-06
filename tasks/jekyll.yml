@@ -63,7 +63,7 @@
   shell: docker logs jekyll | grep 'Server running...'
   register: compositional_jekyll_server_running
   until: compositional_jekyll_server_running['rc'] == 0
-  retries: 24
+  retries: 72
   delay: 5
 
 #
