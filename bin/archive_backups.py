@@ -127,8 +127,13 @@ def get_results(args, backups):
         if promotion and generation != 'son':
             # Change the archive to reflect the change after the promotion
             replacement = lineage[lineage.index(generation) + 1]
-            new_generation = domain_backups[replacement]
-            domain_backups[generation] = new_generation
+            try:
+                new_generation = domain_backups[replacement]
+                domain_backups[generation] = new_generation
+            except KeyError:
+                common.eprint(
+                    "Could not promote {} generation. Does not exist".format(
+                        replacement))
         elif promotion and generation == 'son':
             # Store a current backup as it is due to become the latest snapshot
             # of the son generation
