@@ -95,7 +95,7 @@
 - name: (portal) The portal cron job for health checks
   cron:
     name: "Portal Health Check"
-    minute: "*/5"
+    minute: "*/10"
     hour: "*"
     day: "*"
     job: "/usr/bin/docker exec portal /app/bin/seeds/health_check.sh"
