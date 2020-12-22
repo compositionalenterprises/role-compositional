@@ -10,13 +10,13 @@
   # initialized:
   #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
   shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED\""'
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 - name: (wordpress) Set up the MySQL database
   shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_wordpress_mysql_script }}"
   args:
     executable: '/bin/bash'
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 - name: (wordpress) The latest wordpress service is built and {{ compositional_wordpress_state }}
   docker_compose:
@@ -59,7 +59,7 @@
     state: "{{ compositional_wordpress_state }}"
     restarted: "{{ compositional_wordpress_restarted }}"
   register: compositional_wordpress_output
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 #
 # Setup Configuration

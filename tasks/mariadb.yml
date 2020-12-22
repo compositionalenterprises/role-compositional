@@ -29,7 +29,7 @@
     state: "{{ compositional_mariadb_state }}"
     restarted: "{{ compositional_mariadb_restarted }}"
   register: compositional_backend_output
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 - name: (mariadb) Set Backend Type
   set_fact:
