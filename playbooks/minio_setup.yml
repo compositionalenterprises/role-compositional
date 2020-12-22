@@ -1,7 +1,9 @@
 ---
 - hosts: all
   vars_files:
+    - ../roles/compositional/defaults/main.yml
     - ../environment/group_vars/all/all.yml
+    - ../environment/group_vars/compositional/all.yml
   tasks:
     - name: MinIO Client is installed
       uri:
@@ -12,4 +14,4 @@
 
     - name: MinIO Client is registered with our domain
       command: /usr/local/bin/mc config host add backups {{ minio_server }} {{ minio_access_key }} {{ minio_secret_key }}
-      no_log: True
+      no_log: "{{ compositional_no_log }}"
