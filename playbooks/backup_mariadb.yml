@@ -2,9 +2,7 @@
 - name: Dump MariaDB Backup files onto filesystem
   hosts: all
   vars_files:
-    - ../roles/compositional/defaults/main.yml
     - ../environment/group_vars/all/all.yml
-    - ../environment/group_vars/compositional/all.yml
   tasks:
     - name: Remove previous mariabackup
       file:
@@ -25,7 +23,7 @@
         - 'logical'
 
     - name: Perform mysqldump
-      no_log: "{{ compositional_no_log }}"
+      no_log: True
       shell: "
         docker exec -it database bash -c '
           mysqldump -u root -p{{ compositional_database_root_password }}

@@ -1,9 +1,7 @@
 ---
 - name: Set var to not delete backups by default
   vars_files:
-    - ../roles/compositional/defaults/main.yml
     - ../environment/group_vars/all/all.yml
-    - ../environment/group_vars/compositional/all.yml
   hosts: localhost
   connection: local
   gather_facts: False
@@ -36,7 +34,7 @@
         --apipass "{{ cloudns_api_pass }}" 
         --fqdn "{{ environment_domain }}" 
         --type 'delete'
-      no_log: "{{ compositional_no_log }}"
+      no_log: True
       delegate_to: localhost
 
 - name: Remove the floating IP
