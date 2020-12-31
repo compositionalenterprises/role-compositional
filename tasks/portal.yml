@@ -87,6 +87,7 @@
           backend:
               external: true
     pull: "{{ compositional_portal_pull }}"
+    build: "yes"
     state: "{{ compositional_portal_state }}"
     restarted: "{{ compositional_portal_restarted }}"
   register: compositional_portal_output
