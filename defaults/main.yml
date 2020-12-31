@@ -307,7 +307,7 @@ compositional_commandcenter_healthcheck: |
 #
 # Portal
 #
-compositional_portal_build: yes
+compositional_portal_pull: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
 compositional_portal_version: '1.4.3'
