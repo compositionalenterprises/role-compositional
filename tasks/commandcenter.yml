@@ -81,7 +81,7 @@
           backend:
               external: true
 
-    build: "{{ compositional_commandcenter_build }}"
+    pull: "{{ compositional_commandcenter_pull }}"
     state: "{{ compositional_commandcenter_state }}"
     restarted: "{{ compositional_commandcenter_restarted }}"
   register: compositional_commandcenter_output

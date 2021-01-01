@@ -29,7 +29,7 @@
           frontend:
               external: true
 
-    build: "{{ compositional_bitwarden_build }}"
+    pull: "{{ compositional_bitwarden_pull }}"
     state: "{{ compositional_bitwarden_state }}"
     restarted: "{{ compositional_bitwarden_restarted }}"
   register: compositional_bitwarden_output

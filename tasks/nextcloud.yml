@@ -54,7 +54,7 @@
               external: true
           backend:
               external: true
-    build: "{{ compositional_nextcloud_build }}"
+    pull: "{{ compositional_nextcloud_pull }}"
     state: "{{ compositional_nextcloud_state }}"
     restarted: "{{ compositional_nextcloud_restarted }}"
   register: compositional_nextcloud_output_1
