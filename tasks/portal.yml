@@ -45,52 +45,104 @@
     - 'production.key'
     - 'production.yml.enc'
 
-- name: (portal) The latest portal service is built and {{ compositional_portal_state }}
-  docker_compose:
-    project_name: portal
-    definition:
-      version: '3.6'
-      services:
-          portal:
-              image: "compositionalenterprises/portal:{{ compositional_portal_version }}"
-              container_name: portal
-              restart: always
-              volumes:
-                  - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
-              networks:
-                  - frontend
-                  - backend
-              environment:
-                DB_HOST: 'database'
-                DB_NAME: 'portal'
-                DB_USER: 'portal'
-                DB_PASS: "{{ compositional_portal_backend_password }}"
-                BASE_URL: "{{ environment_domain }}"
-                ORG_NAME: "{{ compositional_portal_org_name }}"
-                ADMIN_EMAIL: "{{ compositional_portal_admin_email }}"
-                ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
-                SERVICES: "{{ compositional_services | join(' ') }}"
-                RAILS_RELATIVE_URL_ROOT: '/portal'
-                HOST: "{{ environment_domain }}"
-                RUNDECK_API_TOKEN: "{{ ourcompose_rundeck_apitoken }}"
-                ENVIRONMENT_VAULT_PASSWORD: "{{ lookup('file', '../environment/.vault_pass') }}"
-                INITIAL_INSTALL: "{{ compositional_portal_initial_install }}"
-              healthcheck:
-                test: "{{ compositional_portal_healthcheck }}"
-                interval: 5s
-                timeout: 30s
-                retries: 3
+- name: Deploy Container
+  block:
+    - name: (portal) The latest portal service is built and {{ compositional_portal_state }}
+      docker_compose:
+        project_name: portal
+        definition:
+          version: '3.6'
+          services:
+              portal:
+                  image: "compositionalenterprises/portal:{{ compositional_portal_version }}"
+                  container_name: portal
+                  restart: always
+                  volumes:
+                      - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
+                  networks:
+                      - frontend
+                      - backend
+                  environment:
+                    DB_HOST: 'database'
+                    DB_NAME: 'portal'
+                    DB_USER: 'portal'
+                    DB_PASS: "{{ compositional_portal_backend_password }}"
+                    BASE_URL: "{{ environment_domain }}"
+                    ORG_NAME: "{{ compositional_portal_org_name }}"
+                    ADMIN_EMAIL: "{{ compositional_portal_admin_email }}"
+                    ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
+                    SERVICES: "{{ compositional_services | join(' ') }}"
+                    RAILS_RELATIVE_URL_ROOT: '/portal'
+                    HOST: "{{ environment_domain }}"
+                    RUNDECK_API_TOKEN: "{{ ourcompose_rundeck_apitoken }}"
+                    ENVIRONMENT_VAULT_PASSWORD: "{{ lookup('file', '../environment/.vault_pass') }}"
+                    INITIAL_INSTALL: "{{ compositional_portal_initial_install }}"
+                  healthcheck:
+                    test: "{{ compositional_portal_healthcheck }}"
+                    interval: 5s
+                    timeout: 30s
+                    retries: 3
 
-      networks:
-          frontend:
-              external: true
-          backend:
-              external: true
-    pull: "{{ compositional_portal_pull }}"
-    state: "{{ compositional_portal_state }}"
-    restarted: "{{ compositional_portal_restarted }}"
-  register: compositional_portal_output
-  no_log: "{{ compositional_no_log }}"
+          networks:
+              frontend:
+                  external: true
+              backend:
+                  external: true
+        pull: "{{ compositional_portal_pull }}"
+        state: "{{ compositional_portal_state }}"
+        restarted: "{{ compositional_portal_restarted }}"
+      register: compositional_portal_output
+      no_log: "{{ compositional_no_log }}"
+  rescue:
+    - name: (portal) Forcibly clean the docker cache
+      command: docker system prune -a -f
+
+    - name: (portal) The latest portal service is built and {{ compositional_portal_state }}
+      docker_compose:
+        project_name: portal
+        definition:
+          version: '3.6'
+          services:
+              portal:
+                  image: "compositionalenterprises/portal:{{ compositional_portal_version }}"
+                  container_name: portal
+                  restart: always
+                  volumes:
+                      - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
+                  networks:
+                      - frontend
+                      - backend
+                  environment:
+                    DB_HOST: 'database'
+                    DB_NAME: 'portal'
+                    DB_USER: 'portal'
+                    DB_PASS: "{{ compositional_portal_backend_password }}"
+                    BASE_URL: "{{ environment_domain }}"
+                    ORG_NAME: "{{ compositional_portal_org_name }}"
+                    ADMIN_EMAIL: "{{ compositional_portal_admin_email }}"
+                    ADMIN_PASSWORD: "{{ compositional_portal_admin_password }}"
+                    SERVICES: "{{ compositional_services | join(' ') }}"
+                    RAILS_RELATIVE_URL_ROOT: '/portal'
+                    HOST: "{{ environment_domain }}"
+                    RUNDECK_API_TOKEN: "{{ ourcompose_rundeck_apitoken }}"
+                    ENVIRONMENT_VAULT_PASSWORD: "{{ lookup('file', '../environment/.vault_pass') }}"
+                    INITIAL_INSTALL: "{{ compositional_portal_initial_install }}"
+                  healthcheck:
+                    test: "{{ compositional_portal_healthcheck }}"
+                    interval: 5s
+                    timeout: 30s
+                    retries: 3
+
+          networks:
+              frontend:
+                  external: true
+              backend:
+                  external: true
+        pull: "{{ compositional_portal_pull }}"
+        state: "{{ compositional_portal_state }}"
+        restarted: "{{ compositional_portal_restarted }}"
+      register: compositional_portal_output
+      no_log: "{{ compositional_no_log }}"
 
 - name: (portal) The portal cron job for health checks
   cron:
