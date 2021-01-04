@@ -10,13 +10,13 @@
   # initialized:
   #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
   shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED\""'
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 - name: (commandcenter) Set up the MySQL database
   shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_commandcenter_mysql_script }}"
   args:
     executable: '/bin/bash'
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 - name: (commandcenter) Ensure commandcenter_credentials directory exists
   file:
@@ -85,7 +85,7 @@
     state: "{{ compositional_commandcenter_state }}"
     restarted: "{{ compositional_commandcenter_restarted }}"
   register: compositional_commandcenter_output
-  no_log: True
+  no_log: "{{ compositional_no_log }}"
 
 - name: (commandcenter) The commandcenter cron job to update the database with daily data
   cron:

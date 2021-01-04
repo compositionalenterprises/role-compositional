@@ -39,6 +39,7 @@ compositional_setup_services: True
 #   - {domain: 'ourcomposecast.com', redirect: 'https://ourcompose.com/jekyll', cert: 'live/ourcomposecast.com/fullchain.pem', key: 'live/ourcomposecast.com/privkey.pem'}
 #   - {domain: 'ourcomposesignup.com', redirect: 'https://ourcompose.com/commandcenter', cert: 'live/ourcomposesignup.com/fullchain.pem', key: 'live/ourcomposesignup.com/privkey.pem'}
 compositional_domain_redirects: []
+compositional_no_log: True
 
 #
 # Environment Vars
@@ -309,7 +310,7 @@ compositional_commandcenter_healthcheck: |
 compositional_portal_build: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
-compositional_portal_version: '1.4.2'
+compositional_portal_version: '1.4.3'
 compositional_portal_storage: 'local'
 compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
@@ -318,8 +319,11 @@ compositional_portal_admin_password: 'testpassword'
 compositional_portal_org_name: "{{ environment_domain.split('.')[0].upper() }}"
 compositional_portal_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
 compositional_portal_initial_install: "0"
-compositional_portal_cron_minute: "20"
-compositional_portal_cron_hour: "4"
+# range takes (i, j) where the generated ints are [i, i+1, i+2, ..., j-1].
+# So, by doing this, we are actually NOT allowing anything to be set at 3:60, etc.
+# but the highest option we could have would be 5:59
+compositional_portal_cron_minute: "{{ range(0, 60) | random }}"
+compositional_portal_cron_hour: "{{ range(3, 5) | random }}"
 compositional_portal_cron_day: "*/2"
 compositional_portal_bind_mountpoints:
   - {location: '/portal/packs/', directory: '/app/public/packs'}
