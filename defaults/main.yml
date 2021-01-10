@@ -310,8 +310,9 @@ compositional_commandcenter_healthcheck: |
 compositional_portal_build: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
-compositional_portal_version: '1.4.4'
+compositional_portal_version: 'dev'
 compositional_portal_storage: 'local'
+compositional_portal_role_branch: 'master'
 compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
 compositional_portal_production_yml_enc: 'mMb7knWzem8t5jXbs66LiTh+MuR4VhwttCJcshES87zG37kDxQ6tqKE5FiW3BW70orag1vVTxfL6kxnd665c/P0L9/ImWFKtbPNBbomsy/CVyFbQo4VkWC0SOi1FzKNFKkmLPdjcqFt0A37BYQjXdTNk+7x9IGyTI2tZg4h2p6qqGXB5NBJYIWoXEmCTnO9H05HxMoCqhTQCoCZeKeXKVIppweTsT80LIIVM6VJIomaSItp/XzMrmvaKek466hw9koR5z7dinzAtJnnsrBzbfF2+yAtryp8jpi+gvpll--qAM4pQghNMegIdn5--uKGo/l6lbwxIORk+raRVOw=='
