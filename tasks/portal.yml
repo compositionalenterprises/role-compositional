@@ -1,4 +1,4 @@
----
+--
 - name: (portal) Nginx conf is deployed
   template:
     src: "nginx_portal.conf.j2"
