@@ -1,4 +1,4 @@
---
+---
 - name: (portal) Nginx conf is deployed
   template:
     src: "nginx_portal.conf.j2"
@@ -59,7 +59,6 @@
                   restart: always
                   volumes:
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
-                      - "/srv/{{ compositional_nginx_storage }}/nginx_logs:/srv/nginx_logs"
                   networks:
                       - frontend
                       - backend
@@ -111,7 +110,6 @@
                   restart: always
                   volumes:
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
-                      - "/srv/{{ compositional_nginx_storage }}/nginx_logs:/srv/nginx_logs"
                   networks:
                       - frontend
                       - backend
