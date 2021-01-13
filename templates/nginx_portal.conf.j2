@@ -1,6 +1,6 @@
 {% for bind_mountpoint in compositional_portal_bind_mountpoints %}
 location {{ bind_mountpoint['location'] }} {
-    access_log /var/log/ngin/services/portal_{{ bind_mountpoint['location'].split('/')[-2] }}_access.log;
+    access_log /var/log/nginx/services/portal_{{ bind_mountpoint['location'].split('/')[-2] }}_access.log;
 }
 {% endfor %}
 
