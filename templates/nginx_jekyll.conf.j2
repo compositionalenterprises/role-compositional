@@ -1,6 +1,6 @@
 {% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}
 location {{ bind_mountpoint['location'] }} {
-    access_log /var/log/nginx/services/jekyll_{{ bind_mountpoint['location'] | split('/') | last }}_access.log
+    access_log /var/log/nginx/services/jekyll_{{ bind_mountpoint['location'].split('/') | last }}_access.log
 }
 {% endfor %}
 
