@@ -48,3 +48,26 @@
       ansible_python_interpreter: "/usr/bin/env python3-docker"
       # Here we're only installing the proxy and the database
       compositional_setup_services: False
+
+  post_tasks:
+    - name: Create podcast download-tracking script on ourcompose.com
+      block:
+        - name: Create episode_stats directory
+          file:
+            path: "/srv/local/nginx_episode_stats"
+            state: directory
+
+        - name: Place the script
+          copy:
+            src: ../files/episode_stats.sh
+            dest: /root/episode_stats.sh
+            mode: 0755
+
+        - name: Add cronjob to run at the top of every hour
+          cron:
+            name: "Run the episode stats report"
+            special_time: "hourly"
+            job: /root/episode_stats.sh
+
+      when: "'{{ environment_domain }}' == 'ourcompose.com'"
+      tags: ['comp']
