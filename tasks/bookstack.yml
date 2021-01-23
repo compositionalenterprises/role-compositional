@@ -55,7 +55,7 @@
               external: true
       volumes:
         nginx:
-    build: "{{ compositional_bookstack_build }}"
+    pull: "{{ compositional_bookstack_pull }}"
     state: "{{ compositional_bookstack_state }}"
     restarted: "{{ compositional_bookstack_restarted }}"
   register: compositional_bookstack_output

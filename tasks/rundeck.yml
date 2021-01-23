@@ -71,7 +71,7 @@
               external: true
           backend:
               external: true
-    build: "{{ compositional_rundeck_build }}"
+    pull: "{{ compositional_rundeck_pull }}"
     state: "{{ compositional_rundeck_state }}"
   register: compositional_rundeck_output
 

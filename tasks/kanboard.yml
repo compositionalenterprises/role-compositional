@@ -75,7 +75,7 @@
               external: true
       volumes:
         nginx:
-    build: "{{ compositional_kanboard_build }}"
+    pull: "{{ compositional_kanboard_pull }}"
     state: "{{ compositional_kanboard_state }}"
     restarted: "{{ compositional_kanboard_restarted }}"
   register: compositional_kanboard_output

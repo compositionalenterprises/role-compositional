@@ -57,7 +57,7 @@ compositional_proxy_html_dir: '/usr/share/nginx/html'
 #
 # Nginx Frontend
 #
-compositional_nginx_build: 'yes'
+compositional_nginx_pull: 'yes'
 compositional_nginx_state: 'present'
 compositional_nginx_restarted: no
 compositional_nginx_version: '1.17'
@@ -72,7 +72,7 @@ compositional_nginx_healthcheck: |
 #
 # MariaDB Backend
 #
-compositional_mariadb_build: 'yes'
+compositional_mariadb_pull: 'yes'
 compositional_mariadb_state: 'present'
 compositional_mariadb_restarted: yes
 compositional_mariadb_version: '10.4'
@@ -84,7 +84,7 @@ compositional_mariadb_healthcheck: |
 #
 # Kanboard
 #
-compositional_kanboard_build: yes
+compositional_kanboard_pull: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
 compositional_kanboard_version: 'v1.2.17'
@@ -106,7 +106,7 @@ compositional_kanboard_healthcheck: |
 #
 # Nextcloud
 #
-compositional_nextcloud_build: yes
+compositional_nextcloud_pull: yes
 compositional_nextcloud_state: present
 compositional_nextcloud_restarted: yes
 compositional_nextcloud_version: '19.0'
@@ -127,7 +127,7 @@ compositional_nextcloud_healthcheck: |
 #
 # Wordpress
 #
-compositional_wordpress_build: yes
+compositional_wordpress_pull: yes
 compositional_wordpress_state: present
 compositional_wordpress_restarted: yes
 compositional_wordpress_version: '5.5'
@@ -146,7 +146,7 @@ compositional_wordpress_healthcheck: |
 #
 # Bitwarden
 #
-compositional_bitwarden_build: yes
+compositional_bitwarden_pull: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
 compositional_bitwarden_version: '1.17.0'
@@ -163,14 +163,14 @@ compositional_bitwarden_bind_mountpoints:
 #
 # Firefly
 #
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
-compositional_firefly_build: yes
+compositional_firefly_pull: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: yes
 compositional_firefly_version: 'version-5.4.5'
 compositional_firefly_storage: 'local'
 compositional_firefly_admin_password: 'testpassword1234'
 compositional_firefly_backend_password: 'testpassword'
+# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
 compositional_firefly_app_key: 'testtesttesttesttesttesttesttest'
 compositional_firefly_bind_mountpoints:
   - {location: '/firefly/v1/css/', directory: '/var/www/html/public/v1/css'}
@@ -191,7 +191,7 @@ compositional_firefly_healthcheck: |
 # Jekyll
 #
 # This value has to be exactly 32 characters, it is the encryption key for your database and sessions
-compositional_jekyll_build: yes
+compositional_jekyll_pull: yes
 compositional_jekyll_state: present
 compositional_jekyll_restarted: yes
 compositional_jekyll_version: '4.0.1'
@@ -238,7 +238,7 @@ compositional_jekyll_healthcheck: |
 #
 # Rundeck
 #
-compositional_rundeck_build: yes
+compositional_rundeck_pull: yes
 compositional_rundeck_state: present
 compositional_rundeck_restarted: yes
 compositional_rundeck_version: '3.2.9'
@@ -263,7 +263,7 @@ compositional_rundeck_healthcheck: |
 #
 # BookStack
 #
-compositional_bookstack_build: yes
+compositional_bookstack_pull: yes
 compositional_bookstack_state: present
 compositional_bookstack_restarted: yes
 compositional_bookstack_version: '0.29.3'
@@ -285,7 +285,7 @@ compositional_bookstack_healthcheck: |
 #
 # CommandCenter
 #
-compositional_commandcenter_build: yes
+compositional_commandcenter_pull: yes
 compositional_commandcenter_state: present
 compositional_commandcenter_restarted: yes
 compositional_commandcenter_version: '1.7.3'
@@ -307,11 +307,12 @@ compositional_commandcenter_healthcheck: |
 #
 # Portal
 #
-compositional_portal_build: yes
+compositional_portal_pull: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
 compositional_portal_version: '1.4.4'
 compositional_portal_storage: 'local'
+compositional_portal_role_branch: 'master'
 compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
 compositional_portal_production_yml_enc: 'mMb7knWzem8t5jXbs66LiTh+MuR4VhwttCJcshES87zG37kDxQ6tqKE5FiW3BW70orag1vVTxfL6kxnd665c/P0L9/ImWFKtbPNBbomsy/CVyFbQo4VkWC0SOi1FzKNFKkmLPdjcqFt0A37BYQjXdTNk+7x9IGyTI2tZg4h2p6qqGXB5NBJYIWoXEmCTnO9H05HxMoCqhTQCoCZeKeXKVIppweTsT80LIIVM6VJIomaSItp/XzMrmvaKek466hw9koR5z7dinzAtJnnsrBzbfF2+yAtryp8jpi+gvpll--qAM4pQghNMegIdn5--uKGo/l6lbwxIORk+raRVOw=='
