@@ -55,7 +55,7 @@
           external: true
         backend:
           external: true
-    build: "{{ compositional_firefly_build }}"
+    pull: "{{ compositional_firefly_pull }}"
     state: "{{ compositional_firefly_state }}"
     restarted: "{{ compositional_firefly_restarted }}"
   register: compositional_firefly_output

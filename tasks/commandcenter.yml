@@ -45,47 +45,95 @@
     - 'production.key'
     - 'production.yml.enc'
 
-- name: (commandcenter) The commandcenter service version {{ compositional_commandcenter_version }} is built and {{ compositional_commandcenter_state }}
-  docker_service:
-    project_name: commandcenter
-    definition:
-      version: '3.6'
-      services:
-          commandcenter:
-              image: "compositionalenterprises/commandcenter:{{ compositional_commandcenter_version }}"
-              container_name: commandcenter
-              restart: always
-              volumes:
-                  - "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials:/app/config/credentials"
-              networks:
-                  - frontend
-                  - backend
-              environment:
-                DB_HOST: 'database'
-                DB_NAME: 'commandcenter'
-                DB_USER: 'commandcenter'
-                DB_PASS: "{{ compositional_commandcenter_backend_password }}"
-                RAILS_RELATIVE_URL_ROOT: '/commandcenter'
-                ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
-                ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
-                HOST: "https://{{ environment_domain }}"
-              healthcheck:
-                test: "{{ compositional_commandcenter_healthcheck }}"
-                interval: 5s
-                timeout: 30s
-                retries: 3
+- name: Deploy Container
+  block:
+    - name: (commandcenter) The commandcenter service version {{ compositional_commandcenter_version }} is built and {{ compositional_commandcenter_state }}
+      docker_service:
+        project_name: commandcenter
+        definition:
+          version: '3.6'
+          services:
+              commandcenter:
+                  image: "compositionalenterprises/commandcenter:{{ compositional_commandcenter_version }}"
+                  container_name: commandcenter
+                  restart: always
+                  volumes:
+                      - "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials:/app/config/credentials"
+                  networks:
+                      - frontend
+                      - backend
+                  environment:
+                    DB_HOST: 'database'
+                    DB_NAME: 'commandcenter'
+                    DB_USER: 'commandcenter'
+                    DB_PASS: "{{ compositional_commandcenter_backend_password }}"
+                    RAILS_RELATIVE_URL_ROOT: '/commandcenter'
+                    ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
+                    ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
+                    HOST: "https://{{ environment_domain }}"
+                  healthcheck:
+                    test: "{{ compositional_commandcenter_healthcheck }}"
+                    interval: 5s
+                    timeout: 30s
+                    retries: 3
 
-      networks:
-          frontend:
-              external: true
-          backend:
-              external: true
+          networks:
+              frontend:
+                  external: true
+              backend:
+                  external: true
 
-    build: "{{ compositional_commandcenter_build }}"
-    state: "{{ compositional_commandcenter_state }}"
-    restarted: "{{ compositional_commandcenter_restarted }}"
-  register: compositional_commandcenter_output
-  no_log: "{{ compositional_no_log }}"
+        pull: "{{ compositional_commandcenter_pull }}"
+        state: "{{ compositional_commandcenter_state }}"
+        restarted: "{{ compositional_commandcenter_restarted }}"
+      register: compositional_commandcenter_output
+      no_log: "{{ compositional_no_log }}"
+
+  rescue:
+    - name: (commandcenter) Forcibly clean the docker cache
+      command: docker system prune -a -f
+
+    - name: (commandcenter) The commandcenter service version {{ compositional_commandcenter_version }} is built and {{ compositional_commandcenter_state }}
+      docker_service:
+        project_name: commandcenter
+        definition:
+          version: '3.6'
+          services:
+              commandcenter:
+                  image: "compositionalenterprises/commandcenter:{{ compositional_commandcenter_version }}"
+                  container_name: commandcenter
+                  restart: always
+                  volumes:
+                      - "/srv/{{ compositional_commandcenter_storage }}/commandcenter_credentials:/app/config/credentials"
+                  networks:
+                      - frontend
+                      - backend
+                  environment:
+                    DB_HOST: 'database'
+                    DB_NAME: 'commandcenter'
+                    DB_USER: 'commandcenter'
+                    DB_PASS: "{{ compositional_commandcenter_backend_password }}"
+                    RAILS_RELATIVE_URL_ROOT: '/commandcenter'
+                    ADMIN_EMAIL: "{{ environment_admin }}@{{ environment_domain }}"
+                    ADMIN_PASSWORD: "{{ compositional_commandcenter_admin_password }}"
+                    HOST: "https://{{ environment_domain }}"
+                  healthcheck:
+                    test: "{{ compositional_commandcenter_healthcheck }}"
+                    interval: 5s
+                    timeout: 30s
+                    retries: 3
+
+          networks:
+              frontend:
+                  external: true
+              backend:
+                  external: true
+
+        pull: "{{ compositional_commandcenter_pull }}"
+        state: "{{ compositional_commandcenter_state }}"
+        restarted: "{{ compositional_commandcenter_restarted }}"
+      register: compositional_commandcenter_output
+      no_log: "{{ compositional_no_log }}"
 
 - name: (commandcenter) The commandcenter cron job to update the database with daily data
   cron:
