@@ -81,7 +81,7 @@ All of the services have variables with the prefix: `compositional_<service name
 
 There are several variables that are typical of all of the services using that prefix. These are all directly associated with their related [docker_compose ansible module](https://docs.ansible.com/ansible/latest/modules/docker_compose_module.html) options:
 
-- [build](https://docs.ansible.com/ansible/latest/modules/docker_compose_module.html#parameter-build)
+- [pull](https://docs.ansible.com/ansible/latest/modules/docker_compose_module.html#parameter-pull)
 - [state](https://docs.ansible.com/ansible/latest/modules/docker_compose_module.html#parameter-state)
 - [restarted](https://docs.ansible.com/ansible/latest/modules/docker_compose_module.html#parameter-restarted)
 

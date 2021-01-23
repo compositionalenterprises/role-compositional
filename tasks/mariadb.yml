@@ -25,7 +25,7 @@
       networks:
           backend:
               name: backend
-    build: "{{ compositional_mariadb_build }}"
+    pull: "{{ compositional_mariadb_pull }}"
     state: "{{ compositional_mariadb_state }}"
     restarted: "{{ compositional_mariadb_restarted }}"
   register: compositional_backend_output

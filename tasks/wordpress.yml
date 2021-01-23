@@ -55,7 +55,7 @@
               external: true
           backend:
               external: true
-    build: "{{ compositional_wordpress_build }}"
+    pull: "{{ compositional_wordpress_pull }}"
     state: "{{ compositional_wordpress_state }}"
     restarted: "{{ compositional_wordpress_restarted }}"
   register: compositional_wordpress_output
