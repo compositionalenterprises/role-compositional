@@ -67,7 +67,7 @@
   include_tasks: ./bind_mountpoints.yml
 
 - name: (nextcloud) Get nextcloud status
-  command: curl -sSL {{ environment_domain }}/nextcloud/status.php
+  shell: docker exec -u 33 -i nextcloud bash -c "curl -SL http://localhost/status.php"
   register: compositional_nextcloud_status_result
   until: compositional_nextcloud_status_result['stdout'].startswith('{')
   retries: 24
