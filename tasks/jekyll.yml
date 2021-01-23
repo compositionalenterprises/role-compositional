@@ -54,7 +54,7 @@
       networks:
           frontend:
               external: true
-    build: "{{ compositional_jekyll_build }}"
+    pull: "{{ compositional_jekyll_pull }}"
     state: "{{ compositional_jekyll_state }}"
     restarted: "{{ compositional_jekyll_restarted }}"
   register: compositional_jekyll_output
