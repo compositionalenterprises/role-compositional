@@ -60,7 +60,7 @@
   register: compositional_jekyll_output
 
 - name: Wait for jekyll to build the site and start up the server
-  shell: docker logs jekyll | grep 'Server running...'
+  shell: docker logs --since 6m jekyll | grep 'Server running...'
   register: compositional_jekyll_server_running
   until: compositional_jekyll_server_running['rc'] == 0
   retries: 72
