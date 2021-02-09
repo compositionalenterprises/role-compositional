@@ -63,6 +63,7 @@
                   - backend
               environment:
                 DATABASE_URL: "{{ compositional_backend_type }}://kanboard:{{ compositional_kanboard_backend_password }}@database:{{ compositional_backend_port }}/kanboard"
+                PLUGIN_INSTALLER: 'true'
               healthcheck:
                 test: "{{ compositional_kanboard_healthcheck }}"
                 interval: 5s
