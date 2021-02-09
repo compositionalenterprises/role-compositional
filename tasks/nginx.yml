@@ -15,6 +15,7 @@
               volumes:
                   - "/srv/{{ compositional_nginx_storage }}/nginx_conf.d:/etc/nginx/conf.d"
                   - "/srv/{{ compositional_nginx_storage }}/nginx_html:/usr/share/nginx/html"
+                  - "/srv/{{ compositional_nginx_storage }}/nginx_logs:/var/log/nginx/services"
                   - "{{ compositional_nginx_cert_volume }}"
               networks:
                   - frontend
