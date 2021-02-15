@@ -146,14 +146,6 @@
       register: compositional_portal_output
       no_log: "{{ compositional_no_log }}"
 
-- name: (portal) The portal cron job for health checks
-  cron:
-    name: "Portal Health Check"
-    minute: "*/10"
-    hour: "*"
-    day: "*"
-    job: "/usr/bin/docker exec portal /app/bin/seeds/health_check.sh"
-
 - name: (portal) The portal cron job to update the database with daily data
   cron:
     name: "Portal Full Backup"
