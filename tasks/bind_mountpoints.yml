@@ -6,16 +6,13 @@
     var: compositional_proxy_bind_mountpoints
 
 - name: (bind_mountpoints) Get mountpoint of bind_mountpoint on host filesystem
-  shell: df {{ item['directory'] }} | sed -e 1d | awk '{ print $1 }'
+  shell: set -o pipefail && df {{ item['directory'] }} | sed -e 1d | awk '{ print $1 }'
   loop: "{{ compositional_proxy_bind_mountpoints }}"
   register: host_filesystem_mountpoints
 
-- debug:
-    var: host_filesystem_mountpoints
-
 - name: (bind_mountpoints) Get filesystem mountpoints device numbers
   # The trailing space is intentional
-  shell: cat /proc/self/mountinfo | grep '{{ item }} ' | awk '{print $3}'
+  shell: set -o pipefail && cat /proc/self/mountinfo | grep '{{ item }} ' | awk '{print $3}'
   loop: "{{ host_filesystem_mountpoints['results'] | map(attribute='stdout') | list | unique }}"
   register: host_filesystem_mountpoints_numbers
 
