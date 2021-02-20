@@ -43,8 +43,8 @@
           - 404
       register: create_snapshot_status
       until: create_snapshot_status['json']['action']['status'] in ['completed', 'errored']
-      # Let's try 30 minutes. I don't have a good estimate of how long it will realistically take
-      retries: 60
+      # Let's try upping it to an hour. CE.ourcompose.com is taking over 30 mins.
+      retries: 120
       delay: 30
 
     - name: Snapshot couldn't be created, so fail
