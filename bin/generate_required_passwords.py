@@ -36,7 +36,7 @@ def add_new_passwords(args, local_repo, services, comp_vars):
                 vault = ansible_vault.Vault(args['vaultpass'])
                 vault_content = vault.load(open(vault_file_path).read())
                 vault_content["vault_{}".format(password_var)] = new_pass
-                vault_string = vault.dump(vault_content).decode()
+                vault_string = vault.dump(vault_content)
                 with open(vault_file_path, 'w') as vault_file:
                     vault_file.write(vault_string)
 

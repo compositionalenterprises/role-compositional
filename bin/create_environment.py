@@ -40,7 +40,7 @@ def create_vaulted_passwords(local_repo, service, vault_pass):
             vault = ansible_vault.Vault(vault_pass)
             vault_content = vault.load(open(vault_file_path).read())
             vault_content["vault_{}".format(password_var)] = new_pass
-            vault_string = vault.dump(vault_content).decode()
+            vault_string = vault.dump(vault_content)
         else:
             # Create the vault file entirely from scratch
             create_vault_command = [

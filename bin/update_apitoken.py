@@ -73,7 +73,7 @@ def add_vaulted_apitoken(args, vars_dir, apitoken):
     vault = ansible_vault.Vault(args['vaultpass'])
     vault_content = vault.load(open(vault_file_path).read())
     vault_content['vault_ourcompose_rundeck_apitoken'] = apitoken
-    vault_string = vault.dump(vault_content).decode()
+    vault_string = vault.dump(vault_content)
     # Write the vault file back out
     with open(vault_file_path, 'w') as vault_file:
         vault_file.write(vault_string)
