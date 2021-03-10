@@ -1,5 +1,5 @@
 #!/bin/bash
-entries=$(docker logs proxy 2>/dev/null | grep 'jekyll.*mp3' | grep 'GET' | cut -d ' ' -f 1,4,7,12-)
+entries=$(grep 'jekyll.*mp3' /srv/local/nginx_logs/jekyll_assets_access.log | grep 'GET' | cut -d ' ' -f 1,4,7,12-)
 
 while IFS= read -r entry; do
         episode="$(echo ${entry} | cut -d ' ' -f 3 | rev | cut -d '/' -f 1 | rev | cut -d '.' -f 1)"
