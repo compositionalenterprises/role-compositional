@@ -136,7 +136,8 @@
           php occ user:add
             --password-from-env
             --display-name='{{ environment_admin }}'
-            --group='users,admin'
+            --group='users'
+            --group='admin'
             {{ environment_admin }}
           \"
         "
