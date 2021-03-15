@@ -80,12 +80,40 @@
     - name: Establish an ssh connection
       wait_for_connection:
 
+    - name: Install with-lock-ex package
+      apt:
+        name: chiark-utils-bin
+        state: latest
+        update_cache: True
+        autoremove: True
+      register: restore_install_with_lock_first
+      # Here we're also saying to continue on if we're facing a 'could not get lock'
+      # error, since we can handle that later.
+      failed_when:
+        - restore_install_with_lock_first['msg'] is defined
+        - not restore_install_with_lock_first['msg'] | regex_search('Failed to lock apt|Could not get lock')
+
+    - name: Install with-lock-ex package
+      apt:
+        name: chiark-utils-bin
+        state: latest
+        update_cache: True
+        autoremove: True
+      register: restore_install_with_lock_second
+      retries: 60
+      delay: 5
+      until:
+        - restore_install_with_lock_second['msg'] is not defined
+      when:
+        - restore_install_with_lock_first['msg'] is defined
+        - restore_install_with_lock_first['msg'] | regex_search('Failed to lock apt|Could not get lock')
+
 - name: Implement block storage if necessary
   import_playbook: 'create_block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 
 - name: Install services before data restoration
-  import_playbook: 'install_services.yml'
+  import_playbook: 'install_skeleton.yml'
 
 - name: Restore the filesystem-level backups
   import_playbook: 'restore_files.yml'
