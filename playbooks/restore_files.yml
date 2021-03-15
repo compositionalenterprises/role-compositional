@@ -6,6 +6,13 @@
   vars_files:
     - ../environment/group_vars/all/all.yml
   tasks:
+    - name: Keep trying to get the filelock until we can
+      register: filelock
+      shell: "with-lock-ex -f /var/lib/dpkg/lock-frontend sleep 1"
+      until: filelock['rc'] == 0
+      retries: 60
+      delay: 5
+
     - name: Install jq
       apt:
         name: jq

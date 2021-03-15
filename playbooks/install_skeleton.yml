@@ -1,5 +1,5 @@
 ---
-- name: Roles in Common
+- name: Install Skeleton
   hosts: all
   become: yes
   vars_files:
@@ -11,12 +11,19 @@
     certbot_auto_renew_options: "--quiet --no-self-upgrade --pre-hook='docker stop proxy' --post-hook='docker start proxy'"
     certbot_admin_email: "{{ environment_admin }}@{{ environment_domain }}"
     certbot_create_if_missing: True
-    certbot_install_from_source: True
+    certbot_install_from_source: False
     certbot_create_standalone_stop_services:
       - 'docker'
     certbot_certs:
       - domains: "{{ [environment_domain] + compositional_domain_redirects | default({}) | map(attribute='domain') | list }}"
   pre_tasks:
+    - name: Keep trying to get the filelock until we can
+      register: filelock
+      shell: "with-lock-ex -f /var/lib/dpkg/lock-frontend sleep 1"
+      until: filelock['rc'] == 0
+      retries: 60
+      delay: 5
+
     - name: Update all packages on the system
       apt:
         name: '*'

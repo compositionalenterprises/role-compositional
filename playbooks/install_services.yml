@@ -4,7 +4,7 @@
 #   ansible-playbook -i environment/hosts.yml playbooks/site.yml
 #
 ---
-- name: Roles in Common
+- name: Install Services
   hosts: all
   become: yes
   vars_files:
@@ -22,6 +22,13 @@
     certbot_certs:
       - domains: "{{ [environment_domain] + compositional_domain_redirects | default({}) | map(attribute='domain') | list }}"
   pre_tasks:
+    - name: Keep trying to get the filelock until we can
+      register: filelock
+      shell: "with-lock-ex -f /var/lib/dpkg/lock-frontend sleep 1"
+      until: filelock['rc'] == 0
+      retries: 60
+      delay: 5
+
     - name: Update all packages on the system
       apt:
         name: '*'
