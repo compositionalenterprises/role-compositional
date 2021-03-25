@@ -67,11 +67,6 @@
                 DEBUG: 'true'
                 LOG_DRIVER: 'file'
                 LOG_FILE: '/var/www/app/data/debug.log'
-              healthcheck:
-                test: "{{ compositional_kanboard_healthcheck }}"
-                interval: 5s
-                timeout: 30s
-                retries: 3
       networks:
           frontend:
               external: true
