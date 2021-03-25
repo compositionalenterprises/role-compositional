@@ -34,7 +34,7 @@
       version: '3.6'
       services:
           kanboard:
-              image: "kanboard/kanboard:{{ compositional_kanboard_version }}"
+              image: "smacz/kanboard:ac717"
               container_name: kanboard
               restart: always
               volumes:
