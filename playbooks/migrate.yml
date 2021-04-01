@@ -46,35 +46,6 @@
     - name: Establish an ssh connection
       wait_for_connection:
 
-    - name: Install with-lock-ex package
-      apt:
-        name: chiark-utils-bin
-        state: latest
-        update_cache: True
-        autoremove: True
-      register: migrate_install_with_lock_first
-      # Here we're also saying to continue on if we're facing a 'could not get lock'
-      # error, since we can handle that later.
-      failed_when:
-        - migrate_install_with_lock_first['msg'] is defined
-        - not migrate_install_with_lock_first['msg'] | regex_search('Failed to lock apt|Could not get lock')
-
-    - name: Install with-lock-ex package
-      apt:
-        name: chiark-utils-bin
-        state: latest
-        update_cache: True
-        autoremove: True
-      register: migrate_install_with_lock_second
-      retries: 60
-      delay: 5
-      until:
-        - migrate_install_with_lock_second['msg'] is not defined
-      when:
-        - migrate_install_with_lock_first['msg'] is defined
-        - migrate_install_with_lock_first['msg'] | regex_search('Failed to lock apt|Could not get lock')
-
-
 - import_playbook: 'create_block_storage.yml'
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
 

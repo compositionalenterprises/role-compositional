@@ -51,35 +51,6 @@
       set_fact:
         compositional_portal_initial_install: '1'
 
-    - name: Install with-lock-ex package
-      apt:
-        name: chiark-utils-bin
-        state: latest
-        update_cache: True
-        autoremove: True
-      register: deploy_install_with_lock_first
-      # Here we're also saying to continue on if we're facing a 'could not get lock'
-      # error, since we can handle that later.
-      failed_when:
-        - deploy_install_with_lock_first['msg'] is defined
-        - not deploy_install_with_lock_first['msg'] | regex_search('Failed to lock apt|Could not get lock')
-
-    - name: Install with-lock-ex package
-      apt:
-        name: chiark-utils-bin
-        state: latest
-        update_cache: True
-        autoremove: True
-      register: deploy_install_with_lock_second
-      retries: 60
-      delay: 5
-      until:
-        - deploy_install_with_lock_second['msg'] is not defined
-      when:
-        - deploy_install_with_lock_first['msg'] is defined
-        - deploy_install_with_lock_first['msg'] | regex_search('Failed to lock apt|Could not get lock')
-
-
 - name: Block Storage
   import_playbook: create_block_storage.yml
   when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
