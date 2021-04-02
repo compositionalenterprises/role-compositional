@@ -17,16 +17,16 @@
       # The second part of the clause after the `or` here is saying:
       #   If the 'msg' is defined (rc != 0), we'll consider the retries complete
       #   if we are unable to find 'Failed...|Could...' in that 'msg'.
-      until: pkg_install['msg'] is not defined or (
-        pkg_install['msg'] is defined and
-        not pkg_install['msg'] | regex_search('Failed to lock apt|Could not get lock'))
+      until: not pkg_install['failed'] or (
+        pkg_install['failed'] and
+        not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock'))
       # Finally, we fail if we exit those retries with a 'msg' that does not include
       # the 'Failed...|Changed...' text. Basically, we fail if we are unable to find
       # the acceptable failure reason, and there is some other reason in the 'msg' why
       # we failed. We should troubleshoot that failure manually.
       failed_when:
-        - pkg_install['msg'] is defined
-        - not pkg_install['msg'] | regex_search('Failed to lock apt|Could not get lock')
+        - pkg_install['failed']
+        - not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock')
 
     - name: Get all of the bucket names
       shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep {{ environment_domain | replace('.', '-') }}"
