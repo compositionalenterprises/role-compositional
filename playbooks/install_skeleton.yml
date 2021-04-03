@@ -28,7 +28,7 @@
       # Here we're also saying to retry on if we're facing a 'could not get lock'.
       # See: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#examples
       until: pkg_install is success or (
-        not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock')
+        not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock'))
 
     #
     # TODO: LEGACY
