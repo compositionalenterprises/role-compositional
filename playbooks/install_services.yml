@@ -31,19 +31,9 @@
       retries: 60
       delay: 5
       # Here we're also saying to retry on if we're facing a 'could not get lock'.
-      # The second part of the clause after the `or` here is saying:
-      #   If the 'msg' is defined (rc != 0), we'll consider the retries complete
-      #   if we are unable to find 'Failed...|Could...' in that 'msg'.
-      until: not pkg_install['failed'] or (
-        pkg_install['failed'] and
-        not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock'))
-      # Finally, we fail if we exit those retries with a 'msg' that does not include
-      # the 'Failed...|Changed...' text. Basically, we fail if we are unable to find
-      # the acceptable failure reason, and there is some other reason in the 'msg' why
-      # we failed. We should troubleshoot that failure manually.
-      failed_when:
-        - pkg_install['failed']
-        - not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock')
+      # See: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#examples
+      until: pkg_install is success or (
+        not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock')
 
     #
     # TODO: LEGACY
