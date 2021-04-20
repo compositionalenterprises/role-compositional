@@ -97,21 +97,69 @@ if [[ -z "${playbranch}" ]]; then
 fi
 
 # Clone into the unique job exec id for this run
-git clone --branch ${playbranch} --single-branch https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
+git clone --branch ${playbranch} --single-branch \
+        https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
 cd "${jobuuid}"
 
+# General setup and refactor setting the vault pass before the final if statement
 sed -i "s/version: master/version: ${branch}/" 'requirements.yml'
+echo "${playvaultpass}" > .vault_pass
 
 if [[ -z "${envvaultpass}" ]]; then
         >&2 echo "No Environment Vault Password Specified, Skipping Environment Clone"
 else
+        #
         # Clone the environment down giving the domain we're working on
         # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
         # We also want to insert in the vault pass at this time too.
+        #
         environment_domain=$(sed 's/\./-/g' <<<"${domain}")
-        >&2 echo "git clone ${environment_domain} git@gitlab.com:compositionalenterprises/environment.git environment"
-        git clone --depth 1 --single-branch --branch ${environment_domain} git@gitlab.com:compositionalenterprises/environment
+        >&2 echo "git clone ${environment_domain} \
+                git@gitlab.com:compositionalenterprises/environment.git environment"
+        git clone --depth 1 --single-branch --branch ${environment_domain} \
+                git@gitlab.com:compositionalenterprises/environment
         # TODO: Make this a URL call somewhere in the future.
         echo "${envvaultpass}" > environment/.vault_pass
+
+        #
+        # Here we are overridding/setting the branch that we pass in to Portal if we get it
+        # passed from Rundeck
+        #
+        # We want to override if:
+        #       - Rundeck branch != branch that is the environment branch, as long as that
+        #         passed-in Rundeck branch != master, since master would be the default everywhere
+        #         so at that point, why bother?
+        #
+        # We do NOT to override if:
+        #       - The environment does not have compositional_portal_role_branch defined. This
+        #         would automatically default to master. AND... if the Rundeck branch passed in
+        #         is master, it just skips the override, so the default (master) kicks in.
+        #       - The Rundeck branch == 'master', in which case, we'll just let the default kick
+        #         in, and let it run its course. This is _even_ when what is defined in the env
+        #         is different from what is passed in. Since passing in 'master' from Rundeck is
+        #         the default, we want to set the illusion that we default to the environment, even
+        #         though what is passed in is 'master'. And FWIW, we should never be passing in
+        #         'master' in production environments. So worse case scenario, we set up a dev env
+        #         to default to a specific branch in the env, and then run comp role and pass it
+        #         'master' from Rundeck, and expect it to take 'master'. Since this is a stupid
+        #         mistake to make, we won't take it into account here.
+        #
+        # This _does_ mean that we have to determine whether the environment contains that variable
+        if ! grep 'compositional_portal_role_branch' \
+                        ./environment/group_vars/compositional/all.yml; then
+                # If it doesn't, then let's pre-emptivly just put it in there and exit
+                >&2 echo "Setting '${branch}' as role branch for ${domain}"
+                echo "compositional_portal_role_branch: ${branch}" >> \
+                        ./environment/group_vars/compositional/all.yml
+        elif [[ ! ${branch} != 'master' && \
+                ${branch} != $(grep 'compositional_portal_role_branch' \
+                                        ./environment/group_vars/compositional/all.yml | \
+                                cut -d ' ' -f 2) ]]; then
+                >&2 echo "Temporarily using '${branch}' as role branch for ${domain}"
+                sed -i "s/compositional_portal_role_branch:.*/compositional_portal_role_branch: ${branch}/" \
+                        './environment/group_vars/compositional/all.yml'
+        else
+                >&2 echo "I can't figure out how you ended up here. Please burn your computer now"
+                exit 666
+        fi
 fi
-echo "${playvaultpass}" > .vault_pass
