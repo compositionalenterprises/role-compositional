@@ -151,7 +151,7 @@ else
                 >&2 echo "Setting '${branch}' as role branch for ${domain}"
                 echo "compositional_portal_role_branch: ${branch}" >> \
                         ./environment/group_vars/compositional/all.yml
-        elif [[ ! ${branch} != 'master' && \
+        elif [[ ${branch} != 'master' && \
                 ${branch} != $(grep 'compositional_portal_role_branch' \
                                         ./environment/group_vars/compositional/all.yml | \
                                 cut -d ' ' -f 2) ]]; then
@@ -159,7 +159,8 @@ else
                 sed -i "s/compositional_portal_role_branch:.*/compositional_portal_role_branch: ${branch}/" \
                         './environment/group_vars/compositional/all.yml'
         else
-                >&2 echo "I can't figure out how you ended up here. Please burn your computer now"
-                exit 666
+                >&2 echo "Leaving compositional_portal_role_branch as: \
+                        $(grep 'compositional_portal_role_branch' \
+                                ./environment/group_vars/compositional/all.yml)"
         fi
 fi
