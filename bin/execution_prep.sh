@@ -151,6 +151,11 @@ else
                 >&2 echo "Setting '${branch}' as role branch for ${domain}"
                 echo "compositional_portal_role_branch: ${branch}" >> \
                         ./environment/group_vars/compositional/all.yml
+        # Here we are actually overriding it temporarily. This is in the case when Rundeck passed
+        # in a branch that was other than master, but did not match the one that was set in the
+        # environment for this domain. We won't change the actual environment, since we wouldn't
+        # be pushing the repo back up in this situation (unless it is a migration). So we will
+        # consider this to be a temporary override.
         elif [[ ${branch} != 'master' && \
                 ${branch} != $(grep 'compositional_portal_role_branch' \
                                         ./environment/group_vars/compositional/all.yml | \
@@ -158,6 +163,9 @@ else
                 >&2 echo "Temporarily using '${branch}' as role branch for ${domain}"
                 sed -i "s/compositional_portal_role_branch:.*/compositional_portal_role_branch: ${branch}/" \
                         './environment/group_vars/compositional/all.yml'
+        # If we've got here, then we've been able to find the role branch variable. We've also
+        # determined that the passed-in branch is either master, or the exact same as what is
+        # defined in the environment, so we just leave well-enough alone.
         else
                 >&2 echo "Leaving compositional_portal_role_branch as: \
                         $(grep 'compositional_portal_role_branch' \
