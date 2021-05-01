@@ -18,6 +18,17 @@
     executable: '/bin/bash'
   no_log: "{{ compositional_no_log }}"
 
+- name: (bookstack) Ensure bookstack volume directories exist and have correct ownership
+  file:
+    path: "/srv/{{ compositional_bookstack_storage }}/bookstack_{{ item }}"
+    owner: 33
+    group: 33
+    recurse: True
+    state: directory
+  loop:
+    - 'uploads'
+    - 'storage'
+
 - name: (bookstack) The latest bookstack service is built and {{ compositional_bookstack_state }}
   docker_compose:
     project_name: bookstack
