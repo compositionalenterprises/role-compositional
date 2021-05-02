@@ -54,7 +54,7 @@
                 RUNDECK_GRAILS_URL: "https://{{ environment_domain }}/rundeck"
                 RUNDECK_SERVER_FORWARDED: 'true'
                 RUNDECK_SERVER_CONTEXTPATH: '/rundeck'
-                RUNDECK_DATABASE_DRIVER: 'com.mariadb.jdbc.Driver'
+                RUNDECK_DATABASE_DRIVER: 'org.mariadb.jdbc.Driver'
                 RUNDECK_DATABASE_USERNAME: 'rundeck'
                 RUNDECK_DATABASE_PASSWORD: "{{ compositional_rundeck_backend_password }}"
                 RUNDECK_DATABASE_URL: 'jdbc:mysql://database/rundeck?autoReconnect=true&useSSL=false'
