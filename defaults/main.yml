@@ -75,7 +75,7 @@ compositional_nginx_healthcheck: |
 compositional_mariadb_pull: 'yes'
 compositional_mariadb_state: 'present'
 compositional_mariadb_restarted: yes
-compositional_mariadb_version: '10.4'
+compositional_mariadb_version: '10.5'
 compositional_mariadb_storage: 'local'
 compositional_mariadb_healthcheck: |
   mysql -uroot -p{{ compositional_database_root_password }} -e 'SHOW DATABASES;' \
@@ -87,7 +87,7 @@ compositional_mariadb_healthcheck: |
 compositional_kanboard_pull: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
-compositional_kanboard_version: 'v1.2.17'
+compositional_kanboard_version: 'v1.2.18'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_admin_password: 'testpassword'
 compositional_kanboard_backend_password: 'testpassword'
@@ -130,7 +130,7 @@ compositional_nextcloud_healthcheck: |
 compositional_wordpress_pull: yes
 compositional_wordpress_state: present
 compositional_wordpress_restarted: yes
-compositional_wordpress_version: '5.5'
+compositional_wordpress_version: '5.6'
 compositional_wordpress_storage: 'local'
 compositional_wordpress_title: 'Wordpress Blog'
 compositional_wordpress_admin_password: 'testpassword'
@@ -149,7 +149,7 @@ compositional_wordpress_healthcheck: |
 compositional_bitwarden_pull: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
-compositional_bitwarden_version: '1.18.0'
+compositional_bitwarden_version: '1.20.0'
 compositional_bitwarden_storage: 'local'
 compositional_bitwarden_admin_password: 'testpassword'
 compositional_bitwarden_admin_token: 'testpassword'
@@ -166,7 +166,7 @@ compositional_bitwarden_bind_mountpoints:
 compositional_firefly_pull: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: yes
-compositional_firefly_version: 'version-5.4.5'
+compositional_firefly_version: 'version-5.4.6'
 compositional_firefly_storage: 'local'
 compositional_firefly_admin_password: 'testpassword1234'
 compositional_firefly_backend_password: 'testpassword'
@@ -194,7 +194,7 @@ compositional_firefly_healthcheck: |
 compositional_jekyll_pull: yes
 compositional_jekyll_state: present
 compositional_jekyll_restarted: yes
-compositional_jekyll_version: '4.0.1'
+compositional_jekyll_version: '4.1.0'
 compositional_jekyll_storage: 'local'
 compositional_jekyll_port: '8080'
 compositional_jekyll_git_url: 'https://github.com/volny/creative-theme-jekyll.git'
@@ -241,7 +241,7 @@ compositional_jekyll_healthcheck: |
 compositional_rundeck_pull: yes
 compositional_rundeck_state: present
 compositional_rundeck_restarted: yes
-compositional_rundeck_version: '3.2.9'
+compositional_rundeck_version: '3.3.9'
 compositional_rundeck_storage: 'local'
 compositional_rundeck_admin_password: 'testpassword'
 compositional_rundeck_backend_password: 'testpassword'
@@ -266,7 +266,7 @@ compositional_rundeck_healthcheck: |
 compositional_bookstack_pull: yes
 compositional_bookstack_state: present
 compositional_bookstack_restarted: yes
-compositional_bookstack_version: '0.29.3'
+compositional_bookstack_version: '0.30'
 compositional_bookstack_storage: 'local'
 compositional_bookstack_backend_password: 'testpassword'
 compositional_bookstack_admin_password: 'testpassword'
@@ -316,6 +316,7 @@ compositional_portal_role_branch: 'master'
 compositional_portal_backend_password: 'testpassword'
 compositional_portal_production_key: 'cb569b8ea39a7dada216dffaee8f7ec3'
 compositional_portal_production_yml_enc: 'mMb7knWzem8t5jXbs66LiTh+MuR4VhwttCJcshES87zG37kDxQ6tqKE5FiW3BW70orag1vVTxfL6kxnd665c/P0L9/ImWFKtbPNBbomsy/CVyFbQo4VkWC0SOi1FzKNFKkmLPdjcqFt0A37BYQjXdTNk+7x9IGyTI2tZg4h2p6qqGXB5NBJYIWoXEmCTnO9H05HxMoCqhTQCoCZeKeXKVIppweTsT80LIIVM6VJIomaSItp/XzMrmvaKek466hw9koR5z7dinzAtJnnsrBzbfF2+yAtryp8jpi+gvpll--qAM4pQghNMegIdn5--uKGo/l6lbwxIORk+raRVOw=='
+compositional_portal_ourcomposebot_ro_key: ''
 compositional_portal_admin_password: 'testpassword'
 compositional_portal_org_name: "{{ environment_domain.split('.')[0].upper() }}"
 compositional_portal_admin_email: "{{ environment_admin }}@{{ environment_domain }}"

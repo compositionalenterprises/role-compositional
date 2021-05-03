@@ -79,6 +79,7 @@
                     ENVIRONMENT_VAULT_PASSWORD: "{{ lookup('file', '../environment/.vault_pass') }}"
                     INITIAL_INSTALL: "{{ compositional_portal_initial_install }}"
                     ROLE_BRANCH: "{{ compositional_portal_role_branch }}"
+                    OURCOMPOSEBOT_RO_KEY: "{{ compositional_portal_ourcomposebot_ro_key }}"
                   healthcheck:
                     test: "{{ compositional_portal_healthcheck }}"
                     interval: 5s

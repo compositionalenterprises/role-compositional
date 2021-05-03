@@ -97,3 +97,10 @@
         --skip-email;
       \"
     "
+
+- name: (wordpress) Make sure dataqbase is up-to-date
+  shell: "
+    docker exec -u 33 -i wordpress bash -c \"
+      php wp-cli.phar core update-db;
+      \"
+    "
