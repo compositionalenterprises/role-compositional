@@ -6,6 +6,11 @@ location /nextcloud/ {
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_connect_timeout 1d;
+    proxy_send_timeout 1d;
+    proxy_read_timeout 1d;
+    send_timeout 1d;
+    client_max_body_size 0;
     add_header Front-End-Https on;
     proxy_pass   http://nextcloud/;
 }
