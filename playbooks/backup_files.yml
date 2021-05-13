@@ -42,7 +42,7 @@
       # Here we're adding the glob regex to match all directories except for backups to ignore
       # That means that we're not saving any of the mysql database's underlying filesystem except
       # for the backups directory
-      shell: "tar cvzf - /srv/local/database_mysql/backups* --exclude '/srv/local/database_mysql*' /srv | /usr/local/bin/mc pipe backups/ocbackups/{{ do_object_name }}.tar.gz"
+      shell: "tar cvzf - /srv/local/database_mysql/backups* --exclude '/srv/local/database_mysql*' /srv | /usr/local/bin/mc pipe --attr key=value backups/ocbackups/{{ do_object_name }}.tar.gz"
       when: (
         archive_backups_destinations['keep']['son'] is not defined
         or archive_backups_destinations['keep']['son'].startswith(do_object_name)
