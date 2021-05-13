@@ -1,4 +1,4 @@
---
+---
 - import_playbook: 'minio_setup.yml'
 
 - name: Archive Backups
