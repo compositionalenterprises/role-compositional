@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 set -e
 
 function usage() {
@@ -98,10 +98,7 @@ fi
 
 # Clone into the unique job exec id for this run
 git clone --branch ${playbranch} --single-branch \
-        https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}" || \
-        sleep 30 && \
-        git clone --branch ${playbranch} --single-branch \
-                https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
+        https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
 cd "${jobuuid}"
 
 # General setup and refactor setting the vault pass before the final if statement
@@ -120,7 +117,14 @@ else
         >&2 echo "git clone ${environment_domain} \
                 git@gitlab.com:compositionalenterprises/environment.git environment"
         git clone --depth 1 --single-branch --branch ${environment_domain} \
-                git@gitlab.com:compositionalenterprises/environment
+                git@gitlab.com:compositionalenterprises/environment || \
+                env_clone_failed=1
+
+        if [[ ${env_clone_failed:0} == 1 ]]; then
+                >&2 echo "Could not clone environment repo!!! Trying again..."
+                git clone --depth 1 --single-branch --branch ${environment_domain} \
+                        git@gitlab.com:compositionalenterprises/environment
+        fi
         # TODO: Make this a URL call somewhere in the future.
         echo "${envvaultpass}" > environment/.vault_pass
 
