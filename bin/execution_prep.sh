@@ -98,7 +98,10 @@ fi
 
 # Clone into the unique job exec id for this run
 git clone --branch ${playbranch} --single-branch \
-        https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
+        https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}" || \
+        sleep 30 && \
+        git clone --branch ${playbranch} --single-branch \
+                https://gitlab.com/compositionalenterprises/play-compositional.git "${jobuuid}"
 cd "${jobuuid}"
 
 # General setup and refactor setting the vault pass before the final if statement
