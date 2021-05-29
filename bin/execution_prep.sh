@@ -113,18 +113,21 @@ else
         # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
         # We also want to insert in the vault pass at this time too.
         #
+        # It's been failing lately, so we're putting it in this "until" loop so that we keep trying
+        # and sleeping until we're able to successfully clone it.
+        #
         environment_domain=$(sed 's/\./-/g' <<<"${domain}")
-        >&2 echo "git clone ${environment_domain} \
-                git@gitlab.com:compositionalenterprises/environment.git environment"
-        git clone --depth 1 --single-branch --branch ${environment_domain} \
-                git@gitlab.com:compositionalenterprises/environment || \
-                env_clone_failed=1
-
-        if [[ ${env_clone_failed:0} == 1 ]]; then
-                >&2 echo "Could not clone environment repo!!! Trying again..."
+        until [[ ${env_clone_result:1} != 1 ]]; do
                 git clone --depth 1 --single-branch --branch ${environment_domain} \
-                        git@gitlab.com:compositionalenterprises/environment
-        fi
+                                git@gitlab.com:compositionalenterprises/environment && \
+                        env_clone_result=0 || env_clone_result=1
+
+                if [[ ${env_clone_result:1} == 1 ]]; then
+                        >&2 echo "Could not clone environment repo!!! Taking a quick nap..."
+                        sleep $[ ( $RANDOM % 20 )  + 10 ]s
+                        >&2 echo "Trying to clone the environment repo again..."
+                fi
+        done
         # TODO: Make this a URL call somewhere in the future.
         echo "${envvaultpass}" > environment/.vault_pass
 
