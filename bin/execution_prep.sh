@@ -118,7 +118,7 @@ else
         # and sleeping until we're able to successfully clone it.
         #
         environment_domain=$(sed 's/\./-/g' <<<"${domain}")
-        until [[ ${env_clone_result:1} != 1 ]]; do
+        until [[ ${env_clone_result:=1} != 1 ]]; do
                 >&2 echo "Trying to clone the environment..."
                 git clone --depth 1 --single-branch --branch ${environment_domain} \
                                 git@gitlab.com:compositionalenterprises/environment && \
