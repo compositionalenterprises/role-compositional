@@ -124,7 +124,7 @@ else
                                 git@gitlab.com:compositionalenterprises/environment && \
                         env_clone_result=0 || env_clone_result=1
 
-                if [[ ${env_clone_result:1} == 1 ]]; then
+                if [[ ${env_clone_result:=1} == 1 ]]; then
                         >&2 echo "Could not clone environment repo!!! Taking a quick nap..."
                         sleep $[ ( $RANDOM % 20 )  + 10 ]s
                         >&2 echo "Trying to clone the environment repo again..."
