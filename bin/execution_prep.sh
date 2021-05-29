@@ -106,8 +106,9 @@ sed -i "s/version: master/version: ${branch}/" 'requirements.yml'
 echo "${playvaultpass}" > .vault_pass
 
 if [[ -z "${envvaultpass}" ]]; then
-        >&2 echo "No Environment Vault Password Specified, Skipping Environment Clone"
+        >&2 echo "No Environment Vault Password Specified, Skipping Environment Clone."
 else
+        >&2 echo "Cloning the environment repo..."
         #
         # Clone the environment down giving the domain we're working on
         # The domain should be coming in looking like `client.ourcompose.com` or `andrewcz.com`
@@ -118,6 +119,7 @@ else
         #
         environment_domain=$(sed 's/\./-/g' <<<"${domain}")
         until [[ ${env_clone_result:1} != 1 ]]; do
+                >&2 echo "Trying to clone the environment..."
                 git clone --depth 1 --single-branch --branch ${environment_domain} \
                                 git@gitlab.com:compositionalenterprises/environment && \
                         env_clone_result=0 || env_clone_result=1
