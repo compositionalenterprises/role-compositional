@@ -4,6 +4,7 @@
 import re
 import csv
 import sys
+import time
 import yaml
 import common
 import shutil
@@ -260,8 +261,12 @@ def get_latest_tag(registry):
         while request.json()['next']:
             page_count += 1
             request = requests.get(url.format(registry['path'], page_count))
+            if 'detail' in request.json().keys():
+                common.eprint("Exceeded the rate limit. Sleeping...")
+                time.sleep(30)
+                request = requests.get(url.format(registry['path'], page_count))
             tags.extend(request.json()['results'])
-    except KeyError:
+    except KeyError as e:
         common.eprint("Could not find registry.")
         return False
 
