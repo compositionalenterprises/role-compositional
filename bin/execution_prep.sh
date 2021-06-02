@@ -126,7 +126,7 @@ else
 
                 if [[ ${env_clone_result:=1} == 1 ]]; then
                         >&2 echo "Could not clone environment repo!!! Taking a quick nap..."
-                        sleep $[ ( $RANDOM % 20 )  + 10 ]s
+                        sleep $[ ( $RANDOM % 20 )  + 120 ]s
                         >&2 echo "Trying to clone the environment repo again..."
                 fi
         done
