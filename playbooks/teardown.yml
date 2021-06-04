@@ -1,0 +1,91 @@
+---
+- name: Set var to not delete backups by default
+  vars_files:
+    - ../roles/compositional/defaults/main.yml
+    - ../environment/group_vars/all/all.yml
+    - ../environment/group_vars/compositional/all.yml
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    teardown_delete_backups_prompt: False
+
+  pre_tasks:
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+        teardown_delete_backups: "{{ teardown_delete_backups_prompt }}"
+
+- name: Delete the snapshot for this droplet
+  import_playbook: 'delete_snapshot.yml'
+
+- name: Delete the filesystem backups for this droplet
+  import_playbook: 'delete_backups.yml'
+  when: hostvars['localhost']['teardown_delete_backups'] | bool
+
+- name: Remove from DNS
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Remove DNS entry
+      # Yes, these lines should end with trailing whitespace
+      command: >
+        ../bin/cloudns.py 
+        --apiuser "{{ cloudns_api_user }}" 
+        --apipass "{{ cloudns_api_pass }}" 
+        --fqdn "{{ environment_domain }}" 
+        --type 'delete'
+      no_log: "{{ compositional_no_log }}"
+      delegate_to: localhost
+
+- name: Remove the floating IP
+  import_playbook: 'delete_ip.yml'
+
+- name: Unmount and delete the block storage
+  import_playbook: 'delete_block_storage.yml'
+
+- name: Delete the droplet itself
+  import_playbook: 'delete_droplet.yml'
+
+- name: Remove the droplet's IP address from the hosts file
+  hosts: localhost
+  connection: local
+  gather_facts: True
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Register realpath of hosts.yml file
+      local_action:
+        module: shell
+        cmd: realpath ../environment/hosts.yml
+      register: hosts_realpath
+
+    - name: Replace the old server's IP with the new server's IP in the hosts.yml file
+      lineinfile:
+        path: "{{ hosts_realpath['stdout'].strip() }}"
+        regexp: '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
+        state: absent
+      register: remove_host
+
+    - name: Change git upstream
+      block:
+        - name: Add the hosts.yml file with the IP address absent
+          local_action:
+            module: shell
+            cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git add hosts.yml
+            chdir: ../environment/
+
+        - name: Commit the hosts.yml file with the IP address absent
+          local_action:
+            module: shell
+            cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Remove droplet IP for teardown on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
+            chdir: ../environment/
+
+        - name: Push that latest commit
+          local_action:
+            module: shell
+            cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
+            chdir: ../environment/
+
+      when: remove_host.changed

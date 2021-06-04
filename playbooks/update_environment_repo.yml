@@ -1,0 +1,59 @@
+---
+- hosts: all
+  vars_files:
+    - ../roles/compositional/defaults/main.yml
+    - ../environment/group_vars/all/all.yml
+    - ../environment/group_vars/compositional/all.yml
+  tasks:
+    - name: Run git commands to set up ourcomposebot user in the environment repo directory
+      git_config:
+        name: "user.{{ item['param'] }}"
+        repo: "/srv/{{ compositional_portal_storage }}/portal_storage/ansible/environment/"
+        scope: local
+        value: "{{ item['value'] }}"
+      loop:
+        - {'param': 'email', 'value': 'ourcomposebot@ourcompose.com'}
+        - {'param': 'name', 'value': 'ourcomposebot'}
+
+    - name: Test if there are any changes to commit
+      command: git status
+      args:
+        chdir: "/srv/{{ compositional_portal_storage }}/portal_storage/ansible/environment/"
+      register: git_status_result
+
+    - name: Push a new commit if there are any changes to be saved
+      when: "'working tree clean' not in git_status_result['stdout']"
+      block:
+        - name: The SSH key for the ourcomposebot user is placed
+          copy:
+            content: "{{ ourcompose_ourcomposebot_ssh_key }}"
+            dest: '/tmp/id_ed25519.ourcomposebot'
+            mode: '0400'
+
+        - name: Copy down any new changes and attempt to re-apply changes made
+          shell: git stash && GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i /tmp/id_ed25519.ourcomposebot' git pull && git stash pop
+          args:
+            chdir: "/srv/{{ compositional_portal_storage }}/portal_storage/ansible/environment/"
+          retries: 15
+          delay: 15
+          register: git_result
+          until: git_result['rc'] == 0
+
+        - name: Make a new commit after pulling down any new changes
+          command: git commit -am "Update environment from local portal instance on on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}"
+          args:
+            chdir: "/srv/{{ compositional_portal_storage }}/portal_storage/ansible/environment/"
+
+        - name: Push the new commit
+          shell: GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i /tmp/id_ed25519.ourcomposebot' git push
+          args:
+            chdir: "/srv/{{ compositional_portal_storage }}/portal_storage/ansible/environment/"
+          retries: 15
+          delay: 15
+          register: git_result
+          until: git_result['rc'] == 0
+
+        - name: The SSH key for the ourcomposebot user is removed
+          file:
+            dest: '/tmp/id_ed25519.ourcomposebot'
+            state: absent
