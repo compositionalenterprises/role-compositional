@@ -1,0 +1,53 @@
+---
+- import_playbook: 'minio_setup.yml'
+
+- name: Archive Backups
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Install jq
+      apt:
+        name: jq
+        state: latest
+        update_cache: True
+      register: pkg_install
+      retries: 60
+      delay: 5
+      # Here we're also saying to retry on if we're facing a 'could not get lock'.
+      # See: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html#examples
+      until: pkg_install is success or (
+        not pkg_install['msg'] | d() | regex_search('Failed to lock apt|Could not get lock'))
+
+    - name: Get all of the bucket names
+      shell: "/usr/local/bin/mc --json ls backups/ocbackups | jq '.key' | tr -d '\"' | grep -e '^{{ environment_domain | replace('.', '-') }}'"
+      register: archive_backups_domain_archives
+      # We aren't going to have this fail since the very first time there will be no results to grep,
+      # which would otherwise lead to a non-zero return code.
+      failed_when: False
+
+    - name: Determine if we need a new one
+      local_action:
+        module: command
+        cmd: ./archive_backups.py --backups "{{ archive_backups_domain_archives['stdout_lines'] | join(',') }}" --newbackup "{{ do_object_name }}" --interval "{{ archive_backups_interval }}"
+      args:
+        chdir: ../bin/
+      register: archive_backups_results
+
+    - name: Save the results as a dictionary to use
+      set_fact:
+        archive_backups_destinations: "{{ archive_backups_results['stdout'] | from_json }}"
+
+    - name: Save new backup if needed
+      # Here we're adding the glob regex to match all directories except for backups to ignore
+      # That means that we're not saving any of the mysql database's underlying filesystem except
+      # for the backups directory
+      shell: "tar cvzf - /srv/local/database_mysql/backups* --exclude '/srv/local/database_mysql*' /srv | /usr/local/bin/mc pipe --attr key=value backups/ocbackups/{{ do_object_name }}.tar.gz"
+      when: (
+        archive_backups_destinations['keep']['son'] is not defined
+        or archive_backups_destinations['keep']['son'].startswith(do_object_name)
+        )
+
+    - name: Delete any images that need deleting
+      command: "mc rm backups/ocbackups/{{ item }}"
+      loop: "{{ archive_backups_destinations['delete'] }}"

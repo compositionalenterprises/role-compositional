@@ -1,0 +1,92 @@
+---
+- name: Deploy new block storage volume
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  hosts: localhost
+  connection: local
+
+  pre_tasks:
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+
+    - name: Prompt for the droplet ID
+      block:
+        - pause:
+            prompt: "Enter the Droplet's ID"
+            echo: no
+          register: droplet_id_prompt
+
+        - set_fact:
+            droplet_id: "{{ droplet_id_prompt['user_input'] }}"
+
+      when: not hostvars['localhost']['my_droplet']['data']['droplet']['id']
+
+    - name: Register the droplet ID
+      set_fact:
+        droplet_id: "{{ hostvars['localhost']['my_droplet']['data']['droplet']['id'] }}"
+      when: hostvars['localhost']['my_droplet'] is defined
+
+  tasks:
+    - name: Add block volume if we have remote filesystems
+      block:
+        - name: Create a new block volume
+          digital_ocean_block_storage:
+            state: present
+            command: create
+            volume_name: "{{ do_object_name }}"
+            api_token: "{{ do_oauth_token }}"
+            region: 'nyc3'
+            block_size: "{{ do_block_storage_size }}"
+
+        - name: Attach new block volume to new droplet
+          digital_ocean_block_storage:
+            state: present
+            command: attach
+            api_token: "{{ do_oauth_token }}"
+            volume_name: "{{ do_object_name }}"
+            region: 'nyc3'
+            droplet_id: "{{ droplet_id }}"
+
+      when: "'remote' in storage_vars_list.split(',')"
+
+- name: Mount new volume onto droplet
+  gather_facts: False
+  hosts: all
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  pre_tasks:
+    - name: Wait for connections to become available
+      wait_for_connection:
+        timeout: 60
+
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+
+  tasks:
+    - name: Only execute when there is a separate filesystem
+      block:
+        - name: Create the directory to mount the remote filesystem on
+          file:
+            path: '/srv/remote'
+            recurse: yes
+            state: directory
+
+        - name: Get the device name of the unmounted device
+          shell: lsblk | grep -v "$(mount | cut -d ' ' -f 1 | sort -u | grep '/dev' | cut -d '/' -f 3 | tr -d '[[:digit:]]' | sort -u)" | grep -v "NAME" | cut -d " " -f 1
+          register: umounted_device
+
+        - name: Format the filesystem for the external block device
+          filesystem:
+            dev: "/dev/{{ umounted_device['stdout'] }}"
+            fstype: 'ext4'
+
+        - name: Mount the directory
+          mount:
+            state: mounted
+            src: "/dev/{{ umounted_device['stdout'] }}"
+            path: '/srv/remote'
+            fstype: 'ext4'
+
+      when: "'remote' in storage_vars_list.split(',')"

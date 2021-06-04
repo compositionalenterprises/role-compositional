@@ -1,0 +1,32 @@
+---
+- name: 
+  hosts: localhost
+  connection: local
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+
+  tasks:
+    - name: Return a list of droplet snapshots
+      uri:
+        url: 'https://api.digitalocean.com/v2/snapshots?resource_type=droplet'
+        body_format: 'json'
+        headers:
+          Authorization: "Bearer {{ do_oauth_token }}"
+      register: droplet_snapshots
+
+    - debug:
+        var: droplet_snapshots
+        verbosity: 2
+
+    - name: Get the values for the oldest snapshot
+      set_fact:
+        snapshot_count: "{{
+            droplet_snapshots['json']['snapshots']
+            | selectattr('name', 'match', environment_domain | replace('.', '-'))
+            | list
+          }}"
+
+
+- import_playbook: 'create_snapshot.yml'
+- import_playbook: 'delete_snapshot.yml'
+  when: snapshot_count | length >= 1
