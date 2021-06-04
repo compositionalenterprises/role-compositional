@@ -1,0 +1,11 @@
+---
+- src: nickjj.docker
+  name: docker
+- src: git@gitlab.com:compositionalenterprises/role-compositional
+  scm: git
+  version: master
+  name: compositional
+- src: geerlingguy.certbot
+  name: certbot
+- src: oefenweb.swapfile
+  name: swapfile

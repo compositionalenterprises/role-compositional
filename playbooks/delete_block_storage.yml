@@ -1,0 +1,45 @@
+---
+- name: Delete droplet's block storage volume
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  hosts: all
+  tasks:
+    - name: Find the droplet ID for this domain
+      uri:
+        url: 'http://169.254.169.254/metadata/v1/id'
+      register: droplet_id
+
+    - name: Return a list of block storage
+      uri:
+        url: 'https://api.digitalocean.com/v2/volumes'
+        body_format: 'json'
+        headers:
+          Authorization: "Bearer {{ do_oauth_token }}"
+      register: do_volumes
+
+    - debug:
+        var: do_volumes
+        verbosity: 2
+
+    - name: Set the value for the block storage devices to remove
+      set_fact:
+        do_droplet_volumes: "{{
+          do_volumes['json']['volumes']
+          | selectattr('droplet_ids', 'contains', droplet_id)
+          | map(attribute='name')
+          | list
+          }}"
+
+    - name: Unmount the filesystem
+      mount:
+        state: absent
+        path: '/srv/remote'
+
+    - name: Remove the storage
+      digital_ocean_block_storage:
+        state: absent
+        command: create
+        api_token: "{{ do_oauth_token }}"
+        region: 'nyc3'
+        volume_name: "{{ item }}"
+      loop: "{{ do_droplet_volumes }}"

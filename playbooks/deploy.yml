@@ -1,0 +1,99 @@
+- name: Fact Gathering
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  pre_tasks:
+    - name: Gather the values for all of the storage variables
+      set_fact:
+        storage_vars_list:  "{% for i in lookup('varnames', '^compositional_.+_storage', wantlist=True) %}{{ lookup('vars', i) }},{% endfor %}"
+
+- name: Deploy Droplet
+  import_playbook: create_droplet.yml
+
+- name: Inventory Management
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Add newly-created droplet to new compositional host
+      add_host:
+        hostname: "{{ hostvars['localhost']['my_droplet']['data']['ip_address'] }}"
+        groups:
+          - 'new'
+          - 'compositional'
+
+- name: Establish Connection
+  gather_facts: False
+  hosts: compositional
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Add Droplet to DNS while it finishes spinning up
+       # Yes, these lines should end with trailing whitespace
+      command: >
+        ../bin/cloudns.py 
+        --apiuser "{{ cloudns_api_user }}" 
+        --apipass "{{ cloudns_api_pass }}" 
+        --address "{{ hostvars['localhost']['new_floating_ip']['data']['floating_ip']['ip'] }}" 
+        --fqdn "{{ item }}" 
+        --type 'add'
+      loop: "{{ [environment_domain] + compositional_domain_redirects | default({}) | map(attribute='domain') | list }}"
+      delegate_to: localhost
+
+    - name: Establish an ssh connection
+      wait_for_connection:
+
+    - name: Set the Portal INITIAL_INSTALL flag
+      set_fact:
+        compositional_portal_initial_install: '1'
+
+- name: Block Storage
+  import_playbook: create_block_storage.yml
+  when: "'remote' in hostvars['localhost']['storage_vars_list'].split(',')"
+
+- name: Infrastructure Services
+  import_playbook: install_services.yml
+
+- name: Update the hosts file with the new droplet's address
+  hosts: localhost
+  connection: local
+  gather_facts: True
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  tasks:
+    - name: Register realpath of hosts.yml file
+      local_action:
+        module: shell
+        cmd: realpath ../environment/hosts.yml
+      register: hosts_realpath
+
+    - name: Replace the old server's IP with the new server's IP in the hosts.yml file
+      local_action:
+        module: shell
+        cmd: ../bin/replace_host.py -i "{{ groups['new'][0] }}" -f "{{ hosts_realpath['stdout'].strip() }}"
+
+    - name: Add the hosts.yml file with the new host present
+      local_action:
+        module: shell
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git add hosts.yml
+        chdir: ../environment/
+
+    - name: Commit the hosts.yml file with the new host present
+      local_action:
+        module: shell
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git commit -m "Updated to new inventory host {{ groups['new'][0] }} on {{ ansible_date_time['date'] }}-{{ ansible_date_time['hour'] }}-{{ ansible_date_time['minute'] }}" hosts.yml
+        chdir: ../environment/
+
+    - name: Push that latest commit
+      local_action:
+        module: shell
+        cmd: git --git-dir={{ '/'.join(hosts_realpath['stdout'].split('/')[:-1]) }}/.git push
+        chdir: ../environment/
+
+- name: Create User Admin accounts
+  import_playbook: create_user_admin.yml
+  when: environment_admin_pass is defined

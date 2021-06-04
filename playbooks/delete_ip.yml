@@ -1,0 +1,38 @@
+---
+- name: Delete Floating IP
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Get the facts about the floating IPs
+      digital_ocean_floating_ip_facts:
+        oauth_token: "{{ do_oauth_token }}"
+        timeout: 300
+      register: floating_ips
+
+    - name: Run get droplets info script
+      script: ../bin/get_droplets_of_same_domain.py --token {{ do_oauth_token }}
+      register: my_droplets
+
+    - name: Register the oldest droplet of the domain
+      set_fact:
+        # Here we are taking the formatted list:
+        #
+        #   ['servername1 id', 'servername2 id', 'servername3 id']
+        #
+        # and searching for our environment_domain (formatted with dashes
+        # instead of periods) in its hostname. Then we are converting those
+        # results into a list, and sorting them so that the timestamps make
+        # them organize from oldest to newest. Then, we get the first (aka
+        # oldest) and last (aka newest) result.
+        oldest_droplet: "{{ my_droplets['stdout_lines'] | select('match', environment_domain | replace('.', '-')) | list | sort | first }}"
+
+    - name: Delete the floating IP from the oldest domain droplet
+      digital_ocean_floating_ip:
+        ip: "{{ item['ip'] }}"
+        state: absent
+        oauth_token: "{{ do_oauth_token }}"
+      # Because of course it's a fucking int
+      when: item['droplet']['id'] | default(0) == oldest_droplet.split()[-1] | int
+      loop: "{{ floating_ips['floating_ips'] }}"

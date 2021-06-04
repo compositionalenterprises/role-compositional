@@ -1,2 +1,8 @@
 *.swp
 *.swo
+environment
+.fact_caches/
+.retry_files/
+site-data/
+.vault_pass
+__pycache__/

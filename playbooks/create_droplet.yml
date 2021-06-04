@@ -1,0 +1,65 @@
+#
+# This playbook deploys a DigitalOcean droplet
+#
+#   ansible-playbook -i environment/hosts.yml playbooks/site.yml
+#
+---
+- name: DO VM Setup
+  hosts: localhost
+  connection: local
+  vars_files:
+    - ../environment/group_vars/all/all.yml
+
+  pre_tasks:
+    - name: Get SSH key facts
+      digital_ocean_sshkey_facts:
+        oauth_token: "{{ do_oauth_token }}"
+      register: ssh_key_facts
+
+  tasks:
+    - name: create a new droplet
+      digital_ocean_droplet:
+        state: present
+        name: "{{ do_object_name }}"
+        size: "{{ do_droplet_size }}"
+        oauth_token: "{{ do_oauth_token }}"
+        region: 'nyc3'
+        image: "{{ do_droplet_image }}"
+        ssh_keys: "{{ ssh_key_facts['ansible_facts']['ssh_keys'] | map(attribute='id') | list }}"
+        private_networking: True
+        monitoring: yes
+        wait_timeout: 600
+      register: my_droplet
+
+    - name: Get the facts about the floating IPs
+      digital_ocean_floating_ip_facts:
+        oauth_token: "{{ do_oauth_token }}"
+        timeout: 300
+      register: floating_ips
+
+    - name: Run get droplets info script
+      script: ../bin/get_droplets_of_same_domain.py --token {{ do_oauth_token }}
+      register: my_droplets
+
+    - name: Register the list of droplet IDs for that domain
+      set_fact:
+        # Here we are taking the formatted list:
+        #
+        #   ['servername1 id', 'servername2 id', 'servername3 id']
+        #
+        # and searching for our environment_domain (formatted with dashes
+        # instead of periods) in its hostname. Then we are converting those
+        # results into a list of those IDs.
+        all_droplets: "{{ my_droplets['stdout_lines'] | select('match', environment_domain | replace('.', '-') + '.*') | list | map('regex_replace', '^(.*) ', '') | list }}"
+
+    - name: Create a new floating IP for this domain if there is not one already
+      digital_ocean_floating_ip:
+        droplet_id: "{{ my_droplet['data']['droplet']['id'] }}"
+        state: present
+        oauth_token: "{{ do_oauth_token }}"
+      # When nothing in the all_droplets list is in the list of droplet ID's with a floating IP
+      # The result of `intersect()` is a list, so we're checking the length of that resulting list
+      # Also, we're maping the `all_droplets` list to ints since they are strings and the id attr of
+      # a droplet is an int; one of them has got to budge...
+      when: all_droplets | map('int') | list | intersect(floating_ips['floating_ips'] | map(attribute='droplet') | list | selectattr('id', 'defined') | map(attribute='id') | list) | length == 0
+      register: new_floating_ip
