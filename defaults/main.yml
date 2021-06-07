@@ -310,7 +310,7 @@ compositional_commandcenter_healthcheck: |
 compositional_portal_pull: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
-compositional_portal_version: '1.6.0'
+compositional_portal_version: '1.8.0'
 compositional_portal_storage: 'local'
 compositional_portal_role_branch: 'master'
 compositional_portal_backend_password: 'testpassword'
