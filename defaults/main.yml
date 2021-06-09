@@ -166,7 +166,7 @@ compositional_bitwarden_bind_mountpoints:
 compositional_firefly_pull: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: yes
-compositional_firefly_version: 'version-5.4.6'
+compositional_firefly_version: 'version-5.5.12'
 compositional_firefly_storage: 'local'
 compositional_firefly_admin_password: 'testpassword1234'
 compositional_firefly_backend_password: 'testpassword'
