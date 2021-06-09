@@ -140,7 +140,7 @@ compositional_wordpress_mysql_script: |
   CREATE DATABASE IF NOT EXISTS wordpress;
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%';
 compositional_wordpress_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/wordpress \
+  curl -sSL --fail --insecure proxy/wordpress \
   || exit 1
 
 #
@@ -183,8 +183,8 @@ compositional_firefly_mysql_script: |
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
 compositional_firefly_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/firefly \
-  && curl -sSL --fail {{ environment_domain }}/firefly/$$(curl -sSL --fail {{ environment_domain }}/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
+  curl -sSL --fail --insecure proxy/firefly \
+  && curl -sSL --fail --insecure proxy/firefly/$$(curl -sSL --fail --insecure proxy/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
   || exit 1
 
 #
@@ -218,10 +218,10 @@ compositional_jekyll_extra_commands: |
 # path to the resource is given in the link. We exclude periods though, so it's only the last part
 # minus the period.
 compositional_jekyll_healthcheck: |
-  wget --quiet --no-verbose --tries=1 --spider "{{ environment_domain }}/jekyll" \
+  wget --quiet --no-verbose --tries=1 --spider "proxy/jekyll" \
   {% if compositional_jekyll_bind_mountpoints | length > 0 %} \
     && set -o pipefail \
-    && path=$$(wget --quiet {{ environment_domain }}/jekyll -O - |\
+    && path=$$(wget --quiet --no-check-certificates proxy/jekyll -O - |\
             grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
             grep -v '^image/*' |\
             grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['location'].split('/')[2:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
@@ -231,7 +231,7 @@ compositional_jekyll_healthcheck: |
     && path=$$(echo ${path} | sed 's#/jekyll##') \
     && prefix='/jekyll/' \
     && path=$$prefix$$path \
-    && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/$${path} \
+    && wget --quiet --no-verbose --tries=1 --spider --no-check-certificates proxy/$${path} \
   {% endif %} \
   || exit 1
 
@@ -256,8 +256,8 @@ compositional_rundeck_additional_setup: |
   echo "Hello, World!"
   echo "Command number 2"
 compositional_rundeck_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/rundeck \
-  && curl -sSL --fail {{ environment_domain }}$$(curl -sSL --fail {{ environment_domain }}/rundeck | grep -o '/rundeck/assets/bootstrap.min.*css') \
+  curl -sSL --fail --insecure proxy/rundeck \
+  && curl -sSL --fail proxy$$(curl -sSL --fail --insecure proxy/rundeck | grep -o '/rundeck/assets/bootstrap.min.*css') \
   || exit 1
 
 #
@@ -278,8 +278,8 @@ compositional_bookstack_mysql_script: |
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
 compositional_bookstack_healthcheck: |
-  curl -sSL --fail "{{ environment_domain }}/bookstack" && \
-  curl -sSL --fail -o - "{{ environment_domain }}/bookstack/logo.png" &>/dev/null || \
+  curl -sSL --fail --insecure "proxy/bookstack" && \
+  curl -sSL --fail -o - "proxy/bookstack/logo.png" &>/dev/null || \
   exit 1
 
 #
@@ -334,6 +334,6 @@ compositional_portal_mysql_script: |
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
 compositional_portal_healthcheck: |
-  wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/portal \
-  && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}$$(wget --quiet --no-verbose --tries=1 {{ environment_domain }}/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  wget --quiet --no-verbose --tries=1 --spider localhost:3000/portal \
+  && wget --quiet --no-verbose --tries=1 --spider proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
   || exit 1
