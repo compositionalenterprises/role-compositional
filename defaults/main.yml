@@ -300,8 +300,8 @@ compositional_commandcenter_mysql_script: |
   CREATE DATABASE IF NOT EXISTS commandcenter;
   GRANT ALL PRIVILEGES ON commandcenter.* TO 'commandcenter'@'%' IDENTIFIED BY '{{ compositional_commandcenter_backend_password }}';
 compositional_commandcenter_healthcheck: |
-  wget --quiet --no-verbose --tries=1 --spider localhost/commandcenter \
-  && wget --quiet --no-verbose --tries=1 --spider proxy$$(wget --quiet --no-verbose --tries=1 localhost/commandcenter -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  wget --quiet --no-verbose --tries=1 --spider localhost:3000/commandcenter \
+  && wget --quiet --no-verbose --tries=1 --spider proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/commandcenter -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
   || exit 1
 
 #
