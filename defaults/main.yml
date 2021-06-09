@@ -98,8 +98,8 @@ compositional_kanboard_mysql_script: |
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%';
 compositional_kanboard_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/kanboard \
-  && curl -sSL --fail {{ environment_domain }}//kanboard/assets/img/favicon.png \
+  curl -sSL --fail localhost/kanboard \
+  && curl -L --fail --insecure proxy/kanboard/assets/img/favicon.png \
   || exit 1
 
 
@@ -121,7 +121,7 @@ compositional_nextcloud_admin_user: 'admin'
 compositional_nextcloud_admin_password: 'testpassword'
 compositional_nextcloud_legacy_dbtableprefix: False
 compositional_nextcloud_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/nextcloud/status.php \
+  curl -sSL --fail localhost/status.php \
   || exit 1
 
 #
