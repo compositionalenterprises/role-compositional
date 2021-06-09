@@ -257,7 +257,7 @@ compositional_rundeck_additional_setup: |
   echo "Command number 2"
 compositional_rundeck_healthcheck: |
   curl -sSL --fail --insecure proxy/rundeck \
-  && curl -sSL --fail proxy$$(curl -sSL --fail --insecure proxy/rundeck | grep -o '/rundeck/assets/bootstrap.min.*css') \
+  && curl -sSL --fail proxy$$(curl -sSL --fail --insecure proxy/rundeck | grep -oe '/rundeck/assets/static/css/components/theme-[a-f0-9]\+\.css') \
   || exit 1
 
 #
