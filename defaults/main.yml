@@ -218,10 +218,10 @@ compositional_jekyll_extra_commands: |
 # path to the resource is given in the link. We exclude periods though, so it's only the last part
 # minus the period.
 compositional_jekyll_healthcheck: |
-  wget --quiet --no-verbose --tries=1 --spider "proxy/jekyll" \
+  wget --quiet --no-verbose --tries=1 --spider localhost:8080/jekyll/ \
   {% if compositional_jekyll_bind_mountpoints | length > 0 %} \
     && set -o pipefail \
-    && path=$$(wget --quiet --no-check-certificate proxy/jekyll -O - |\
+    && path=$$(wget --quiet --no-check-certificate localhost:8080/jekyll/ -O - |\
             grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
             grep -v '^image/*' |\
             grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['location'].split('/')[2:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
@@ -256,8 +256,8 @@ compositional_rundeck_additional_setup: |
   echo "Hello, World!"
   echo "Command number 2"
 compositional_rundeck_healthcheck: |
-  curl -sSL --fail --insecure localhost:4440/rundeck \
-  && curl -sSL --fail proxy$$(curl -sSL --fail --insecure localhost:4440/rundeck | grep -oe '/rundeck/assets/static/css/components/theme-[a-f0-9]\+\.css') \
+  curl -sSL --fail localhost:4440/rundeck \
+  && curl -sSL --fail --insecure proxy$$(curl -sSL --fail localhost:4440/rundeck | grep -oe '/rundeck/assets/static/css/components/theme-[a-f0-9]\+\.css') \
   || exit 1
 
 #
