@@ -183,8 +183,8 @@ compositional_firefly_mysql_script: |
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
 compositional_firefly_healthcheck: |
-  curl -sSL --fail --insecure proxy/firefly \
-  && curl -sSL --fail --insecure proxy/firefly/$$(curl -sSL --fail --insecure proxy/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
+  curl -sSL --fail --insecure localhost:8080/firefly \
+  && curl -sSL --fail --insecure proxy/firefly/$$(curl -sSL --fail --insecure localhost:8000/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
   || exit 1
 
 #
@@ -256,8 +256,8 @@ compositional_rundeck_additional_setup: |
   echo "Hello, World!"
   echo "Command number 2"
 compositional_rundeck_healthcheck: |
-  curl -sSL --fail --insecure proxy/rundeck \
-  && curl -sSL --fail proxy$$(curl -sSL --fail --insecure proxy/rundeck | grep -oe '/rundeck/assets/static/css/components/theme-[a-f0-9]\+\.css') \
+  curl -sSL --fail --insecure localhost:4440/rundeck \
+  && curl -sSL --fail proxy$$(curl -sSL --fail --insecure localhost:4440/rundeck | grep -oe '/rundeck/assets/static/css/components/theme-[a-f0-9]\+\.css') \
   || exit 1
 
 #
@@ -278,7 +278,7 @@ compositional_bookstack_mysql_script: |
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
 compositional_bookstack_healthcheck: |
-  curl -sSL --fail --insecure "proxy/bookstack" && \
+  curl -sSL --fail --insecure localhost:8080 && \
   curl -sSL --fail -o - "proxy/bookstack/logo.png" &>/dev/null || \
   exit 1
 
@@ -335,5 +335,5 @@ compositional_portal_mysql_script: |
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
 compositional_portal_healthcheck: |
   wget --quiet --no-verbose --tries=1 --spider localhost:3000/portal \
-  && wget --quiet --no-verbose --tries=1 --spider proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  && wget --quiet --no-verbose --tries=1 --spider --no-check-certificates proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
   || exit 1
