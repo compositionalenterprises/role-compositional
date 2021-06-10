@@ -221,7 +221,7 @@ compositional_jekyll_healthcheck: |
   wget --quiet --no-verbose --tries=1 --spider "proxy/jekyll" \
   {% if compositional_jekyll_bind_mountpoints | length > 0 %} \
     && set -o pipefail \
-    && path=$$(wget --quiet --no-check-certificates proxy/jekyll -O - |\
+    && path=$$(wget --quiet --no-check-certificate proxy/jekyll -O - |\
             grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
             grep -v '^image/*' |\
             grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['location'].split('/')[2:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
@@ -231,7 +231,7 @@ compositional_jekyll_healthcheck: |
     && path=$$(echo ${path} | sed 's#/jekyll##') \
     && prefix='/jekyll/' \
     && path=$$prefix$$path \
-    && wget --quiet --no-verbose --tries=1 --spider --no-check-certificates proxy/$${path} \
+    && wget --quiet --no-verbose --tries=1 --spider --no-check-certificate proxy/$${path} \
   {% endif %} \
   || exit 1
 
@@ -335,5 +335,5 @@ compositional_portal_mysql_script: |
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
 compositional_portal_healthcheck: |
   wget --quiet --no-verbose --tries=1 --spider localhost:3000/portal \
-  && wget --quiet --no-verbose --tries=1 --spider --no-check-certificates proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  && wget --quiet --no-verbose --tries=1 --spider --no-check-certificate proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
   || exit 1
