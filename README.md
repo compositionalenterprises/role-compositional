@@ -1,4 +1,4 @@
-# Compositional Role
+# Ansible Collection - compositionalenterprises.ourcompose
 
 ![OurCompose Productivity Suite](https://gitlab.com/compositionalenterprises/jekyll-ourcomposecast/-/raw/master/assets/logos/banner_logo.jpg)
 
