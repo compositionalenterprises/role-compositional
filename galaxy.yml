@@ -8,7 +8,7 @@ namespace: compositionalenterprises
 name: ourcompose
 
 # The version of the collection. Must be compatible with semantic versioning
-version: 2.7.4
+version: 2.7.6
 
 # The path to the Markdown (.md) readme file. This path is relative to the root of the collection
 readme: README.md
