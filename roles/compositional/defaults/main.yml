@@ -124,8 +124,8 @@ compositional_nextcloud_healthcheck: |
   curl -sSL --fail localhost/status.php \
   || exit 1
 compositional_nextcloud_bind_mountpoints:
-  - {location: '/nextcloud/core/', directory: '/var/www/html/core'}
-  - {location: '/nextcloud/apps/', directory: '/var/www/html/apps'}
+  - {location: '/nextcloud/core/', directory: '/usr/src/nextcloud/core'}
+  - {location: '/nextcloud/apps/', directory: '/usr/src/nextcloud/apps'}
 
 #
 # Wordpress
