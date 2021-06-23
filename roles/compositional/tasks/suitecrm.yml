@@ -56,68 +56,68 @@
   notify: 'Restart Frontend'
   no_log: "{{ compositional_no_log }}"
 
-- name: (suitecrm) Symlink suitecrm directory as a subdirectory
-  shell: docker exec -i suitecrm bash -c "ln -snfT /var/www/html/public/ /var/www/html/public/suitecrm"
+    #- name: (suitecrm) Symlink suitecrm directory as a subdirectory
+    #  shell: docker exec -i suitecrm bash -c "ln -snfT /var/www/html/public/ /var/www/html/public/suitecrm"
 
-#
-# Bind Mountpoints
-#
-- name: (suitecrm) Find source filesystem directory
-  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} suitecrm | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
-  args:
-    executable: /bin/bash
-  when: not item['directory'].startswith('/srv')
-  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
-  register: compositional_suitecrm_src_dirs
-
-- name: (suitecrm) Register suitecrm non-volume bind-mountpoints for proxy
-  set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
-  when: not item['item']['directory'].startswith('/srv')
-  loop: "{{ compositional_suitecrm_src_dirs['results'] }}"
-
-- name: (suitecrm) Register suitecrm volume bind-mountpoints for proxy
-  set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
-  when: item['directory'].startswith('/srv')
-  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
-
-- name: (suitecrm) Reset the bind mountpoints in order to get Firefly-III healthy
-  include_tasks: ./bind_mountpoints.yml
-
-#
-# Create user admin
-#
-- name: (suitecrm) Firefly-III is healthy
-  shell: "
-    docker exec -i suitecrm bash -c \"
-      curl -sSL --fail http://localhost:8080/suitecrm
-    \"
-  "
-  register: compositional_suitecrm_health
-  until: compositional_suitecrm_health['rc'] == 0
-  retries: 24
-  delay: 5
-
-- name: (suitecrm) Get the url
-  uri:
-    url: https://{{ environment_domain }}/suitecrm/register
-    method: GET
-    return_content: True
-  register: compositional_suitecrm_login
-
-- name: (suitecrm) Post to the URL
-  uri:
-    url: https://{{ environment_domain }}/suitecrm/register
-    method: POST
-    body_format: form-urlencoded
-    headers:
-      Cookie: "{{ compositional_suitecrm_login['cookies_string'] }}"
-    body:
-      email: admin@{{ environment_domain }}
-      password: "{{ compositional_suitecrm_admin_password }}"
-      password_confirmation: "{{ compositional_suitecrm_admin_password }}"
-      _token: "{{ compositional_suitecrm_login['content'].split('\n') | select('search', '_token') | first | regex_replace('.*name=\"_token\" value=\"([A-Za-z0-9]+).*$', '\\1') }}"
-    status_code: 302
-  when: "'Sorry, an error occurred.' not in compositional_suitecrm_login['content']"
-
+    ##
+    ## Bind Mountpoints
+    ##
+    #- name: (suitecrm) Find source filesystem directory
+    #  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} suitecrm | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+    #  args:
+    #    executable: /bin/bash
+    #  when: not item['directory'].startswith('/srv')
+    #  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
+    #  register: compositional_suitecrm_src_dirs
+    #
+    #- name: (suitecrm) Register suitecrm non-volume bind-mountpoints for proxy
+    #  set_fact:
+    #    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+    #  when: not item['item']['directory'].startswith('/srv')
+    #  loop: "{{ compositional_suitecrm_src_dirs['results'] }}"
+    #
+    #- name: (suitecrm) Register suitecrm volume bind-mountpoints for proxy
+    #  set_fact:
+    #    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+    #  when: item['directory'].startswith('/srv')
+    #  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
+    #
+    #- name: (suitecrm) Reset the bind mountpoints in order to get Firefly-III healthy
+    #  include_tasks: ./bind_mountpoints.yml
+    #
+    ##
+    ## Create user admin
+    ##
+    #- name: (suitecrm) Firefly-III is healthy
+    #  shell: "
+    #    docker exec -i suitecrm bash -c \"
+    #      curl -sSL --fail http://localhost:8080/suitecrm
+    #    \"
+    #  "
+    #  register: compositional_suitecrm_health
+    #  until: compositional_suitecrm_health['rc'] == 0
+    #  retries: 24
+    #  delay: 5
+    #
+    #- name: (suitecrm) Get the url
+    #  uri:
+    #    url: https://{{ environment_domain }}/suitecrm/register
+    #    method: GET
+    #    return_content: True
+    #  register: compositional_suitecrm_login
+    #
+    #- name: (suitecrm) Post to the URL
+    #  uri:
+    #    url: https://{{ environment_domain }}/suitecrm/register
+    #    method: POST
+    #    body_format: form-urlencoded
+    #    headers:
+    #      Cookie: "{{ compositional_suitecrm_login['cookies_string'] }}"
+    #    body:
+    #      email: admin@{{ environment_domain }}
+    #      password: "{{ compositional_suitecrm_admin_password }}"
+    #      password_confirmation: "{{ compositional_suitecrm_admin_password }}"
+    #      _token: "{{ compositional_suitecrm_login['content'].split('\n') | select('search', '_token') | first | regex_replace('.*name=\"_token\" value=\"([A-Za-z0-9]+).*$', '\\1') }}"
+    #    status_code: 302
+    #  when: "'Sorry, an error occurred.' not in compositional_suitecrm_login['content']"
+    #
