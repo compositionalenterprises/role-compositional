@@ -2,13 +2,13 @@
 # tasks file for role-compositional
 
 - name: Ensure that the local and remote directories are configured
-file:
-  path: "/srv/{{ item }}"
-  recurse: yes
-  state: directory
-loop:
-  - 'local'
-  - 'remote'
+  file:
+    path: "/srv/{{ item }}"
+    recurse: yes
+    state: directory
+  loop:
+    - 'local'
+    - 'remote'
 
 - name: Set up PATH environment in the crontab
   cron:
