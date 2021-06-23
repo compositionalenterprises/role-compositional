@@ -33,12 +33,13 @@
             - frontend
             - backend
           environment:
-            APP_URL: "https://{{ environment_domain }}"
+            SUITECRM_HOST: '{{ environment_domain }}'
             SUITECRM_DATABASE_HOST: "database"
             SUITECRM_DATABASE_NAME: 'suitecrm'
             SUITECRM_DATABASE_USER: 'suitecrm'
             SUITECRM_DATABASE_PASSWORD: "{{ compositional_suitecrm_backend_password }}"
             MYSQL_PASSWORD: "{{ compositional_suitecrm_backend_password }}"
+            SUITECRM_ENABLE_HTTPS: yes
           healthcheck:
             test: "{{ compositional_suitecrm_healthcheck }}"
             interval: 5s

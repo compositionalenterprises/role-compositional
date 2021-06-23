@@ -340,7 +340,7 @@ compositional_portal_healthcheck: |
   || exit 1
 
 #
-# Firefly
+# SuiteCRM
 #
 compositional_suitecrm_pull: yes
 compositional_suitecrm_state: present
