@@ -1,0 +1,123 @@
+- name: (suitecrm) Nginx conf is deployed
+  template:
+    src: "nginx_suitecrm.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/suitecrm.conf"
+  notify: 'Restart Frontend'
+
+- name: (suitecrm) The database service is up and initialized
+  # We're running a while loop to check to ensure that the mysql database has
+  # initialized:
+  #   https://stackoverflow.com/questions/25503412/how-do-i-know-when-my-docker-mysql-container-is-up-and-mysql-is-ready-for-taking
+  shell: 'docker exec -i database bash -c "while mysql -uroot -p{{ compositional_database_root_password }} -e \"SHOW DATABASES;\" 2>&1 | grep -e \"ERROR 2002\|ERROR 1045\"; do sleep 1; done; echo \"SHOW DATABASES SUCCEEDED\""'
+  no_log: "{{ compositional_no_log }}"
+
+- name: (suitecrm) Set up the MySQL database
+  shell: docker exec -i database mysql -uroot -p{{ compositional_database_root_password }} <<< "{{ compositional_suitecrm_mysql_script }}"
+  args:
+    executable: '/bin/bash'
+  no_log: "{{ compositional_no_log }}"
+
+- name: (suitecrm) The latest suitecrm service is built and {{ compositional_suitecrm_state }}
+  docker_compose:
+    project_name: suitecrm
+    definition:
+      version: '3.6'
+      services:
+        suitecrm:
+          image: "bitnami/suitecrm:{{ compositional_suitecrm_version }}"
+          container_name: suitecrm
+          restart: always
+          volumes:
+            - "/srv/{{ compositional_suitecrm_storage }}/suitecrm_suitecrm:/bitnami/suitecrm"
+          networks:
+            - frontend
+            - backend
+          environment:
+            APP_URL: "https://{{ environment_domain }}"
+            SUITECRM_DATABASE_HOST: "database"
+            SUITECRM_DATABASE: 'suitecrm'
+            SUITECRM_DATABASE_USER: 'suitecrm'
+            SUITECRM_DATABASE_PASSWORD: "{{ compositional_suitecrm_backend_password }}"
+            MYSQL_PASSWORD: "{{ compositional_suitecrm_backend_password }}"
+          healthcheck:
+            test: "{{ compositional_suitecrm_healthcheck }}"
+            interval: 5s
+            timeout: 30s
+            retries: 3
+      networks:
+        frontend:
+          external: true
+        backend:
+          external: true
+    pull: "{{ compositional_suitecrm_pull }}"
+    state: "{{ compositional_suitecrm_state }}"
+    restarted: "{{ compositional_suitecrm_restarted }}"
+  register: compositional_suitecrm_output
+  notify: 'Restart Frontend'
+  no_log: "{{ compositional_no_log }}"
+
+- name: (suitecrm) Symlink suitecrm directory as a subdirectory
+  shell: docker exec -i suitecrm bash -c "ln -snfT /var/www/html/public/ /var/www/html/public/suitecrm"
+
+#
+# Bind Mountpoints
+#
+- name: (suitecrm) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} suitecrm | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  args:
+    executable: /bin/bash
+  when: not item['directory'].startswith('/srv')
+  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
+  register: compositional_suitecrm_src_dirs
+
+- name: (suitecrm) Register suitecrm non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_suitecrm_src_dirs['results'] }}"
+
+- name: (suitecrm) Register suitecrm volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
+
+- name: (suitecrm) Reset the bind mountpoints in order to get Firefly-III healthy
+  include_tasks: ./bind_mountpoints.yml
+
+#
+# Create user admin
+#
+- name: (suitecrm) Firefly-III is healthy
+  shell: "
+    docker exec -i suitecrm bash -c \"
+      curl -sSL --fail http://localhost:8080/suitecrm
+    \"
+  "
+  register: compositional_suitecrm_health
+  until: compositional_suitecrm_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+- name: (suitecrm) Get the url
+  uri:
+    url: https://{{ environment_domain }}/suitecrm/register
+    method: GET
+    return_content: True
+  register: compositional_suitecrm_login
+
+- name: (suitecrm) Post to the URL
+  uri:
+    url: https://{{ environment_domain }}/suitecrm/register
+    method: POST
+    body_format: form-urlencoded
+    headers:
+      Cookie: "{{ compositional_suitecrm_login['cookies_string'] }}"
+    body:
+      email: admin@{{ environment_domain }}
+      password: "{{ compositional_suitecrm_admin_password }}"
+      password_confirmation: "{{ compositional_suitecrm_admin_password }}"
+      _token: "{{ compositional_suitecrm_login['content'].split('\n') | select('search', '_token') | first | regex_replace('.*name=\"_token\" value=\"([A-Za-z0-9]+).*$', '\\1') }}"
+    status_code: 302
+  when: "'Sorry, an error occurred.' not in compositional_suitecrm_login['content']"
+
