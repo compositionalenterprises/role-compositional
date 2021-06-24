@@ -349,13 +349,8 @@ compositional_suitecrm_version: '7-debian-10'
 compositional_suitecrm_storage: 'local'
 compositional_suitecrm_admin_password: 'testpassword1234'
 compositional_suitecrm_backend_password: 'testpassword'
-# This value has to be exactly 32 characters, it is the encryption key for your database and sessions
-# compositional_suitecrm_bind_mountpoints:
-#   - {location: '/firefly/v1/css/', directory: '/var/www/html/public/v1/css'}
-#   - {location: '/firefly/v1/fonts/', directory: '/var/www/html/public/v1/fonts'}
-#   - {location: '/firefly/v1/images/', directory: '/var/www/html/public/v1/images'}
-#   - {location: '/firefly/v1/js/', directory: '/var/www/html/public/v1/js'}
-#   - {location: '/firefly/v1/lib/', directory: '/var/www/html/public/v1/lib'}
+compositional_suitecrm_bind_mountpoints:
+  - {location: '/suitecrm/cache/', directory: '/bitnami/suitecrm/cache'}
 compositional_suitecrm_mysql_script: |
   CREATE USER IF NOT EXISTS 'suitecrm'@'%' IDENTIFIED BY '{{ compositional_suitecrm_backend_password }}';
   CREATE DATABASE IF NOT EXISTS suitecrm;
