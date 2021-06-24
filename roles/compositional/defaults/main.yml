@@ -350,7 +350,7 @@ compositional_suitecrm_storage: 'local'
 compositional_suitecrm_admin_password: 'testpassword1234'
 compositional_suitecrm_backend_password: 'testpassword'
 compositional_suitecrm_bind_mountpoints:
-  - {location: '/suitecrm/cache/', directory: '/bitnami/suitecrm/cache'}
+  - {location: '/suitecrm/themes/', directory: '/opt/bitnami/suitecrm/themes'}
 compositional_suitecrm_mysql_script: |
   CREATE USER IF NOT EXISTS 'suitecrm'@'%' IDENTIFIED BY '{{ compositional_suitecrm_backend_password }}';
   CREATE DATABASE IF NOT EXISTS suitecrm;
