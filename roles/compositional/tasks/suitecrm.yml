@@ -60,31 +60,31 @@
 - name: (suitecrm) Symlink suitecrm directory as a subdirectory
   shell: docker exec -i suitecrm bash -c "ln -snfT /bitnami/suitecrm /bitnami/suitecrm/suitecrm"
 
-#
-# Bind Mountpoints
-#
-- name: (suitecrm) Find source filesystem directory
-  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} suitecrm | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
-  args:
-    executable: /bin/bash
-  when: not item['directory'].startswith('/srv')
-  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
-  register: compositional_suitecrm_src_dirs
-
-- name: (suitecrm) Register suitecrm non-volume bind-mountpoints for proxy
-  set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
-  when: not item['item']['directory'].startswith('/srv')
-  loop: "{{ compositional_suitecrm_src_dirs['results'] }}"
-
-- name: (suitecrm) Register suitecrm volume bind-mountpoints for proxy
-  set_fact:
-    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
-  when: item['directory'].startswith('/srv')
-  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
-
-- name: (suitecrm) Reset the bind mountpoints in order to get Firefly-III healthy
-  include_tasks: ./bind_mountpoints.yml
+  ##
+  ## Bind Mountpoints
+  ##
+  #- name: (suitecrm) Find source filesystem directory
+  #  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} suitecrm | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  #  args:
+  #    executable: /bin/bash
+  #  when: not item['directory'].startswith('/srv')
+  #  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
+  #  register: compositional_suitecrm_src_dirs
+  #
+  #- name: (suitecrm) Register suitecrm non-volume bind-mountpoints for proxy
+  #  set_fact:
+  #    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  #  when: not item['item']['directory'].startswith('/srv')
+  #  loop: "{{ compositional_suitecrm_src_dirs['results'] }}"
+  #
+  #- name: (suitecrm) Register suitecrm volume bind-mountpoints for proxy
+  #  set_fact:
+  #    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  #  when: item['directory'].startswith('/srv')
+  #  loop: "{{ compositional_suitecrm_bind_mountpoints }}"
+  #
+  #- name: (suitecrm) Reset the bind mountpoints in order to get Firefly-III healthy
+  #  include_tasks: ./bind_mountpoints.yml
 
     ##
     ## Create user admin
