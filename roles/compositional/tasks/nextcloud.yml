@@ -120,20 +120,28 @@
   notify: 'Restart Nextcloud'
 
 #
-# See https://github.com/Yetangitu/owncloud-apps/pull/108#issuecomment-429428310
-# and https://github.com/Yetangitu/owncloud-apps/issues/114
-# for an explanation of what's going on here
+# Bind Mountpoints
 #
-- name: (nextcloud) files_reader app is downloaded and extracted
-  unarchive:
-    src: 'https://github.com/manvalls/owncloud-apps/raw/master/dist/files_reader-1.2.3-patched-5-OC.tar.gz'
-    dest: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_custom_apps/"
-    remote_src: yes
-  notify: 'Restart Nextcloud'
 
-- name: (nextcloud) files_reader app has the max-version adjusted
-  lineinfile:
-    path: "/srv/{{ compositional_nextcloud_storage }}/nextcloud_custom_apps/files_reader/appinfo/info.xml"
-    regexp: '.*max-version="14.0"'
-    line: '        <nextcloud min-version="8.1" max-version="20.0"/>'
-  notify: 'Restart Nextcloud'
+- name: (nextcloud) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} nextcloud | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  args:
+    executable: /bin/bash
+  loop: "{{ compositional_nextcloud_bind_mountpoints }}"
+  when: not item['directory'].startswith('/srv')
+  register: compositional_nextcloud_src_dirs
+
+- name: (nextcloud) Register nextcloud non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_nextcloud_src_dirs['results'] }}"
+
+- name: (nextcloud) Register nextcloud volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_nextcloud_bind_mountpoints }}"
+
+- name: (nextcloud) Reset the bind mountpoints in order to get nextcloud healthy
+  include_tasks: ./bind_mountpoints.yml
