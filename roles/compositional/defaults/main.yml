@@ -8,7 +8,7 @@ compositional_frontend_service: 'nginx'
 compositional_backend_service: 'mariadb'
 compositional_database_root_password: 'testpassword'
 compositional_services:
-  - 'bitwarden'
+  - 'vaultwarden'
   - 'bookstack'
   - 'commandcenter'
   - 'firefly'
@@ -87,7 +87,7 @@ compositional_mariadb_healthcheck: |
 compositional_kanboard_pull: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
-compositional_kanboard_version: 'v1.2.18'
+compositional_kanboard_version: 'v1.2.19'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_admin_password: 'testpassword'
 compositional_kanboard_backend_password: 'testpassword'
@@ -147,21 +147,21 @@ compositional_wordpress_healthcheck: |
   || exit 1
 
 #
-# Bitwarden
+# Vaultwarden
 #
-compositional_bitwarden_pull: yes
-compositional_bitwarden_state: present
-compositional_bitwarden_restarted: yes
-compositional_bitwarden_version: '1.20.0'
-compositional_bitwarden_storage: 'local'
-compositional_bitwarden_admin_password: 'testpassword'
-compositional_bitwarden_admin_token: 'testpassword'
-compositional_bitwarden_bind_mountpoints:
-  - {location: '/bitwarden/app/', directory: '/web-vault/app'}
-  - {location: '/bitwarden/scripts/', directory: '/web-vault/scripts'}
-  - {location: '/bitwarden/images/', directory: '/web-vault/images'}
-  - {location: '/bitwarden/locales/', directory: '/web-vault/locales'}
-  - {location: '/bitwarden/fonts/', directory: '/web-vault/fonts'}
+compositional_vaultwarden_pull: yes
+compositional_vaultwarden_state: present
+compositional_vaultwarden_restarted: yes
+compositional_vaultwarden_version: '1.20.0'
+compositional_vaultwarden_storage: 'local'
+compositional_vaultwarden_admin_password: 'testpassword'
+compositional_vaultwarden_admin_token: 'testpassword'
+compositional_vaultwarden_bind_mountpoints:
+  - {location: '/vaultwarden/app/', directory: '/web-vault/app'}
+  - {location: '/vaultwarden/scripts/', directory: '/web-vault/scripts'}
+  - {location: '/vaultwarden/images/', directory: '/web-vault/images'}
+  - {location: '/vaultwarden/locales/', directory: '/web-vault/locales'}
+  - {location: '/vaultwarden/fonts/', directory: '/web-vault/fonts'}
 
 #
 # Firefly

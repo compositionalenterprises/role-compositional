@@ -56,7 +56,7 @@ compositional_database_root_password: 'testpassword'
 # You'll probably want to override this with a subset
 # of only the services that you want installed.
 compositional_services:
-  - 'bitwarden'
+  - 'vaultwarden'
   - 'bookstack'
   - 'commandcenter'
   - 'firefly'

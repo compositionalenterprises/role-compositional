@@ -1,0 +1,111 @@
+---
+- name: (vaultwarden) Nginx conf is deployed
+  template:
+    src: "nginx_vaultwarden.conf.j2"
+    dest: "/srv/{{ compositional_nginx_storage }}/nginx_conf.d/{{ environment_domain }}/vaultwarden.conf"
+  notify: 'Restart Frontend'
+
+- name: (vaultwarden) The old bitwarden data directory is migrated over to vaultwarden
+  shell: |
+    if [[ -d "/srv/{{ compositional_vaultwarden_storage}}/bitwarden_data" ]]; then \
+      if [[ ! -d "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data" ]]; then \
+        mkdir "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data";
+      fi;
+      mv "/srv/{{ compositional_vaultwarden_storage}}/bitwarden_data" "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data";
+    else
+      >%2 echo "No Bitwarden Data Directory"
+    fi;
+  register: compositional_vaultwarden_data_directory_migration
+  changed_when: "'No Bitwarden Data Directory' not in compositional_vaultwarden_data_directory_migration['stdout']"
+
+- name: (vaultwarden) The latest vaultwarden service is built and {{ compositional_vaultwarden_state }}
+  docker_compose:
+    project_name: vaultwarden
+    definition:
+      version: '3.6'
+      services:
+          vaultwarden:
+              image: "vaultwarden/server:{{ compositional_vaultwarden_version }}"
+              container_name: vaultwarden
+              restart: always
+              volumes:
+                  - "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data:/data/"
+
+              networks:
+                  - frontend
+
+              environment:
+                ADMIN_TOKEN: "{{ compositional_vaultwarden_admin_token }}"
+                LOG_LEVEL: "debug"
+
+      networks:
+          frontend:
+              external: true
+
+    pull: "{{ compositional_vaultwarden_pull }}"
+    state: "{{ compositional_vaultwarden_state }}"
+    restarted: "{{ compositional_vaultwarden_restarted }}"
+  register: compositional_vaultwarden_output
+
+#
+# Bind Mountpoints
+#
+
+- name: (vaultwarden) Find source filesystem directory
+  shell: for i in $(docker inspect --format {% raw %}{{.GraphDriver.Data.LowerDir}}{% endraw %} vaultwarden | tr ':' ' '); do if [[ -d ${i}{{ item['directory'] }} ]]; then echo ${i}; fi; done | head -n 1
+  args:
+    executable: /bin/bash
+  loop: "{{ compositional_vaultwarden_bind_mountpoints }}"
+  when: not item['directory'].startswith('/srv')
+  register: compositional_vaultwarden_src_dirs
+
+- name: (vaultwarden) Register vaultwarden non-volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [{'location': item['item']['location'], 'directory': item['stdout'] + item['item']['directory']}] }}"
+  when: not item['item']['directory'].startswith('/srv')
+  loop: "{{ compositional_vaultwarden_src_dirs['results'] }}"
+
+- name: (vaultwarden) Register vaultwarden volume bind-mountpoints for proxy
+  set_fact:
+    compositional_proxy_bind_mountpoints: "{{ compositional_proxy_bind_mountpoints + [item] }}"
+  when: item['directory'].startswith('/srv')
+  loop: "{{ compositional_vaultwarden_bind_mountpoints }}"
+
+- name: (vaultwarden) Reset the bind mountpoints in order to get vaultwarden healthy
+  include_tasks: ./bind_mountpoints.yml
+
+#
+# Admin Password
+#
+- name: (vaultwarden) vaultwarden is healthy
+  shell: docker exec -i vaultwarden bash -c "curl -sSL --fail localhost"
+  register: compositional_vaultwarden_health
+  until: compositional_vaultwarden_health['rc'] == 0
+  retries: 24
+  delay: 5
+
+- name: (vaultwarden) Get the registration parameters
+  script:
+    cmd: "../files/vaultwarden_registration_params.py
+            -n Admin
+            -e admin@{{ environment_domain }}
+            -p {{ compositional_vaultwarden_admin_password }}
+         "
+  delegate_to: localhost
+  become: False
+  register: compositional_vaultwarden_registration_params_result
+
+- name: (vaultwarden) Post the registration to the API URL
+  shell: "
+      docker exec -i vaultwarden bash -c \"
+        curl
+          --header 'Content-Type: application/json'
+          --request POST
+          --data '{{ compositional_vaultwarden_registration_params_result['stdout'].strip() }}'
+          http://localhost/api/accounts/register
+      \"
+    "
+  register: compositional_vaultwarden_admin_post_result
+  failed_when:
+    - "'error' in compositional_vaultwarden_admin_post_result['stdout']"
+    - "'User already exists' not in compositional_vaultwarden_admin_post_result['stdout']"
