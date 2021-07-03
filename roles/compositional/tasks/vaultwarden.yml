@@ -15,6 +15,8 @@
     else
       >%2 echo "No Bitwarden Data Directory"
     fi;
+  args:
+    executable: /bin/bash
   register: compositional_vaultwarden_data_directory_migration
   changed_when: "'No Bitwarden Data Directory' not in compositional_vaultwarden_data_directory_migration['stdout']"
 
