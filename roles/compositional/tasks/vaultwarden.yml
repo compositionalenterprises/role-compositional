@@ -13,9 +13,9 @@
       if [[ ! -d "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data" ]]; then \
         mkdir "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data";
       fi;
-      rm -rf "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data/*";
-      mv "/srv/{{ compositional_vaultwarden_storage}}/bitwarden_data/*" "/srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data/";
-      rm -rf "/srv/{{ compositional_vaultwarden_storage}}/bitwarden_data/";
+      rm -rf /srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data/*;
+      mv /srv/{{ compositional_vaultwarden_storage}}/bitwarden_data/* /srv/{{ compositional_vaultwarden_storage}}/vaultwarden_data/;
+      rm -rf /srv/{{ compositional_vaultwarden_storage}}/bitwarden_data/;
     else
       >%2 echo "No Bitwarden Data Directory";
     fi;
