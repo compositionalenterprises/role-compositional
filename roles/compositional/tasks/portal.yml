@@ -61,6 +61,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
+                      - "/var/run/docker.sock:/var/run/docker.sock"
                   networks:
                       - frontend
                       - backend
