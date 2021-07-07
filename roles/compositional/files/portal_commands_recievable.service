@@ -1,0 +1,4 @@
+[Service]
+StandardOutput=journal+console
+StandardError=journal+console
+ExecStart=/root/commands_recievable.py
