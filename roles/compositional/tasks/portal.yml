@@ -1,4 +1,29 @@
 ---
+#
+# Set up the commands_recievable supervisor daemon
+#
+- name: (portal) Commands recievable executable is deployed
+  copy:
+    src: 'portal_commands_recievable.py'
+    dest: '/usr/local/bin/'
+
+- name: (portal) Systemd service and socket file are deployed
+  copy:
+    src: "portal_commands_recievable.{{ item }}"
+    dest: "/etc/systemd/system/commands_recievable.{{ item }}"
+  with_items:
+    - 'service'
+    - 'socket'
+
+- name: (portal) systemd socket is started and enabled
+  systemd:
+    name: commands_recievable.socket
+    state: started
+    daemon_reload: True
+
+#
+# Hop back into the regular nginx conf/DB setup and container deploy
+#
 - name: (portal) Nginx conf is deployed
   template:
     src: "nginx_portal.conf.j2"
@@ -61,7 +86,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
-                      - "/var/run/docker.sock:/var/run/docker.sock"
+                      - "/var/run/commands_recievable.sock:/var/run/commands_recievable.sock"
                   networks:
                       - frontend
                       - backend
@@ -116,6 +141,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
+                      - "/var/run/commands_recievable.sock:/var/run/commands_recievable.sock"
                   networks:
                       - frontend
                       - backend
