@@ -6,6 +6,7 @@
   copy:
     src: 'portal_commands_recievable.py'
     dest: '/usr/local/bin/commands_recievable.py'
+    mode: '0744'
 
 - name: (portal) Systemd service and socket file are deployed
   copy:
