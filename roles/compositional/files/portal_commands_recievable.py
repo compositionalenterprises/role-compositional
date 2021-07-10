@@ -105,11 +105,11 @@ def run_docker_command(spec):
             '/srv/local/portal_env/': {
                 'bind': '/environment',
                 'mode': 'ro'
-                }
+                },
             '/root/.ssh/': {
                 'bind': '/root/.ssh',
                 'mode': 'ro'
-                }
+                },
             '/tmp/entrypoint/': {
                 'bind': '/entrypoint',
                 'mode': 'ro'
