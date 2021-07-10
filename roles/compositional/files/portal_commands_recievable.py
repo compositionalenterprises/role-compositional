@@ -99,7 +99,7 @@ def run_docker_command(spec):
         image=get_container_image(),
         command=build_command(spec),
         stream=True,
-        entrypoint='/entrypoint/entrypoint.sh'
+        entrypoint='/entrypoint/entrypoint.sh',
         volumes={
             # TODO Deal with local/remove pathing
             '/srv/local/portal_env/': {
