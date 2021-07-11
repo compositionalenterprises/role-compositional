@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -u
+#!/usr/local/bin/python3-docker -u
 
 import os
 import ast
