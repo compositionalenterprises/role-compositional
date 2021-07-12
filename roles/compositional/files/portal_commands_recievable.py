@@ -1,10 +1,10 @@
-#!/usr/local/bin/python3-docker -u
+#!/usr/local/lib/docker/virtualenv/bin/python3 -u
 
 import os
-import ast
-import socket
 import docker
+import socket
 import subprocess
+from ast import literal_eval
 from systemd.daemon import listen_fds;
 
 
@@ -35,8 +35,11 @@ def build_command(spec):
     command = command + spec['script']
 
     # Parse the args
-    for arg in spec['args']:
-        command = command + args_format.format(arg, spec['args'][arg])
+    if 'args' in spec:
+        for arg in spec['args']:
+            command = command + args_format.format(arg, spec['args'][arg])
+
+    command = command.split(' ')
 
     return command
 
@@ -55,32 +58,40 @@ def ssh_keys(action):
 def set_entrypoint_path(container_image):
     # Set the script dict for the options we have to choose amongst.
     scripts = {
-        ubuntu: """
-            apt-get update
-            apt-get install -y git dnsutils python3.6 libffi-dev libssl-dev python3.6-dev python3-distutils
-            unlink /usr/bin/python3
-            ln -sT /usr/bin/python3.6 /usr/bin/python3
-            curl https://bootstrap.pypa.io/get-pip.py | python3.6
-            pip3 install ansible==2.10 ansible-vault ansible-galaxy requests tabulate packaging
-            mkdir /var/ansible
-            ln -sT /environment /var/ansible/environment
-            git clone https://gitlab.com/compositionalenterprises/play-compositional.git /var/ansible
-            cd /var/ansible
-            sed 's/, plays@.\/.vault_pass//' ansible.cfg
-            rm -rf playbooks/group_vars/
-            ansible-galaxy install -fr requirements.yml
-        """,
-        commands_recievable: """
-            ln -sT /environment /var/ansible/environment
-            cd /var/ansible
-        """
+        'ubuntu': (
+            "#!/bin/bash -e\n"
+            "apt-get update\n"
+            "DEBIAN_FRONTEND=noninteractive apt-get install -y "
+            "git dnsutils python3 libffi-dev libssl-dev python3-dev "
+            "python3-distutils python3-pip\n"
+            "pip3 install 'ansible>=2.10,<2.11' ansible-vault requests "
+            "tabulate packaging\n"
+            "mkdir -p /var/ansible\n"
+            "ln -sT /environment /var/ansible/environment\n"
+            "git clone https://gitlab.com/compositionalenterprises/"
+            "play-compositional.git /var/ansible\n"
+            "cd /var/ansible\n"
+            "sed 's/, plays@. \/.vault_pass//' ansible.cfg\n"
+            "rm -rf playbooks/group_vars/\n"
+            "ansible-galaxy install -fr requirements.yml\n"
+            'exec "$@" \n'
+            ),
+        'commands_recievable': (
+            '#!/bin/bash -e\n'
+            'ln -sT /environment /var/ansible/environment\n'
+            'cd /var/ansible\n'
+            'exec "$@"'
+            )
         }
 
     # Write out a demo entrypoint script
-    os.mkdir('/tmp/entrypoint')
+    os.makedirs('/tmp/entrypoint', exist_ok=True)
     entrypoint_path = '/tmp/entrypoint/entrypoint.sh'
     with open(entrypoint_path, 'w') as entrypoint_script:
         entrypoint_script.write(scripts[container_image])
+
+    st = os.stat(entrypoint_path)
+    os.chmod(entrypoint_path, 0o755)
 
 
 def get_container_image():
@@ -95,13 +106,14 @@ def run_docker_command(spec):
     client = docker.from_env()
     container_image = get_container_image()
     set_entrypoint_path(container_image.split(':')[0]),
-    client.containers.run(
+    print('Running Container')
+    # TODO Deal with local/remove pathing
+    run_result = client.containers.run(
         image=get_container_image(),
         command=build_command(spec),
         stream=True,
         entrypoint='/entrypoint/entrypoint.sh',
         volumes={
-            # TODO Deal with local/remove pathing
             '/srv/local/portal_env/': {
                 'bind': '/environment',
                 'mode': 'ro'
@@ -116,6 +128,9 @@ def run_docker_command(spec):
                 }
             },
         )
+    print('Ran Container')
+
+    return run_result
 
 def systemd_socket_response():
     """
@@ -128,31 +143,34 @@ def systemd_socket_response():
         fds = [3]
 
     for fd in fds:
-        sock = socket.fromfd(fd, socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(0)
+        with socket.fromfd(fd, socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.settimeout(0)
 
-        try:
-            while True:
+            try:
                 conn, addr = sock.accept()
-                fragments = []
-                while True:
-                    data = conn.recv(1024)
-                    if not data:
-                        break
-                    fragments.append(chunk)
-                spec_bytes = b''.join(fragments)
-                spec = literal_eval(spec_bytes.decode('utf8'))
-                conn.sendall(b'Executing...')
-                run_command(spec)
-                conn.sendall(b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 3\r\n\r\nOK\n")
-        except socket.timeout:
-            pass
-        except OSError as e:
-            # Connection closed again? Don't care, we just do our job.
-            print(e)
+                with conn:
+                    fragments = []
+                    while True:
+                        data = conn.recv(1024)
+                        if not data:
+                            break
+                        fragments.append(data)
+                    spec_bytes = b''.join(fragments)
+                    spec = literal_eval(spec_bytes.decode('utf8'))
+                    #conn.sendall(b'Executing...')
+                    print('Executing...')
+                    run_result = run_docker_command(spec)
+                    #conn.sendall(b'Executed...')
+                    print('Executed...')
+                    print("Run Result: {}".format(run_result))
+            except socket.timeout:
+                pass
+            except OSError as e:
+                # Connection closed again? Don't care, we just do our job.
+                print(e)
 
 if __name__ == "__main__":
-    ssh_keys('create')
+    #ssh_keys('create')
     if os.environ.get("LISTEN_FDS", None) != None:
         systemd_socket_response()
-    ssh_keys('remove')
+    #ssh_keys('remove')
