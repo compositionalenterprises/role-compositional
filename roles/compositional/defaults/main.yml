@@ -87,7 +87,7 @@ compositional_mariadb_healthcheck: |
 compositional_kanboard_pull: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
-compositional_kanboard_version: 'v1.2.18'
+compositional_kanboard_version: 'v1.2.19'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_admin_password: 'testpassword'
 compositional_kanboard_backend_password: 'testpassword'
