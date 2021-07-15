@@ -152,7 +152,7 @@ compositional_wordpress_healthcheck: |
 compositional_bitwarden_pull: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
-compositional_bitwarden_version: '1.20.0'
+compositional_bitwarden_version: '1.21.0'
 compositional_bitwarden_storage: 'local'
 compositional_bitwarden_admin_password: 'testpassword'
 compositional_bitwarden_admin_token: 'testpassword'
