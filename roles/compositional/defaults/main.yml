@@ -87,7 +87,7 @@ compositional_mariadb_healthcheck: |
 compositional_kanboard_pull: yes
 compositional_kanboard_state: present
 compositional_kanboard_restarted: yes
-compositional_kanboard_version: 'v1.2.18'
+compositional_kanboard_version: 'v1.2.19'
 compositional_kanboard_storage: 'local'
 compositional_kanboard_admin_password: 'testpassword'
 compositional_kanboard_backend_password: 'testpassword'
@@ -98,8 +98,8 @@ compositional_kanboard_mysql_script: |
   CREATE DATABASE IF NOT EXISTS kanboard CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, REFERENCES, SELECT, UPDATE ON kanboard.* TO 'kanboard'@'%';
 compositional_kanboard_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/kanboard \
-  && curl -sSL --fail {{ environment_domain }}//kanboard/assets/img/favicon.png \
+  curl -sSL --fail localhost/kanboard \
+  && curl -L --fail --insecure proxy/kanboard/assets/img/favicon.png \
   || exit 1
 
 
@@ -121,8 +121,11 @@ compositional_nextcloud_admin_user: 'admin'
 compositional_nextcloud_admin_password: 'testpassword'
 compositional_nextcloud_legacy_dbtableprefix: False
 compositional_nextcloud_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/nextcloud/status.php \
+  curl -sSL --fail localhost/status.php \
   || exit 1
+compositional_nextcloud_bind_mountpoints:
+  - {location: '/nextcloud/core/', directory: '/usr/src/nextcloud/core'}
+  - {location: '/nextcloud/apps/', directory: '/usr/src/nextcloud/apps'}
 
 #
 # Wordpress
@@ -140,7 +143,7 @@ compositional_wordpress_mysql_script: |
   CREATE DATABASE IF NOT EXISTS wordpress;
   GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'%';
 compositional_wordpress_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/wordpress \
+  curl -sSL --fail --insecure proxy/wordpress \
   || exit 1
 
 #
@@ -149,7 +152,7 @@ compositional_wordpress_healthcheck: |
 compositional_bitwarden_pull: yes
 compositional_bitwarden_state: present
 compositional_bitwarden_restarted: yes
-compositional_bitwarden_version: '1.20.0'
+compositional_bitwarden_version: '1.21.0'
 compositional_bitwarden_storage: 'local'
 compositional_bitwarden_admin_password: 'testpassword'
 compositional_bitwarden_admin_token: 'testpassword'
@@ -166,7 +169,7 @@ compositional_bitwarden_bind_mountpoints:
 compositional_firefly_pull: yes
 compositional_firefly_state: present
 compositional_firefly_restarted: yes
-compositional_firefly_version: 'version-5.4.6'
+compositional_firefly_version: 'version-5.5.12'
 compositional_firefly_storage: 'local'
 compositional_firefly_admin_password: 'testpassword1234'
 compositional_firefly_backend_password: 'testpassword'
@@ -183,8 +186,8 @@ compositional_firefly_mysql_script: |
   CREATE DATABASE IF NOT EXISTS firefly;
   GRANT ALL PRIVILEGES ON firefly.* TO 'firefly'@'%';
 compositional_firefly_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/firefly \
-  && curl -sSL --fail {{ environment_domain }}/firefly/$$(curl -sSL --fail {{ environment_domain }}/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
+  curl -sSL --fail --insecure localhost:8080/firefly \
+  && curl -sSL --fail --insecure proxy/firefly/$$(curl -sSL --fail --insecure localhost:8000/firefly | grep -oe 'v1/css/firefly.css?v=[0-9.]\+') \
   || exit 1
 
 #
@@ -218,10 +221,10 @@ compositional_jekyll_extra_commands: |
 # path to the resource is given in the link. We exclude periods though, so it's only the last part
 # minus the period.
 compositional_jekyll_healthcheck: |
-  wget --quiet --no-verbose --tries=1 --spider "{{ environment_domain }}/jekyll" \
+  wget --quiet --no-verbose --tries=1 --spider localhost:8080/jekyll/ \
   {% if compositional_jekyll_bind_mountpoints | length > 0 %} \
     && set -o pipefail \
-    && path=$$(wget --quiet {{ environment_domain }}/jekyll -O - |\
+    && path=$$(wget --quiet --no-check-certificate localhost:8080/jekyll/ -O - |\
             grep -oe '[a-zA-Z0-9/_-]\+.png\|[a-zA-Z0-9/_-]\+.jpg\|[a-zA-Z0-9/_-]\+.jpeg' |\
             grep -v '^image/*' |\
             grep -e "{% for bind_mountpoint in compositional_jekyll_bind_mountpoints %}{{ bind_mountpoint['location'] }}\|{{ bind_mountpoint['location'].split('/')[2:] | join('/') }}{% if not loop.last %}\|{% endif %}{% endfor %}" |\
@@ -231,7 +234,7 @@ compositional_jekyll_healthcheck: |
     && path=$$(echo ${path} | sed 's#/jekyll##') \
     && prefix='/jekyll/' \
     && path=$$prefix$$path \
-    && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/$${path} \
+    && wget --quiet --no-verbose --tries=1 --spider --no-check-certificate proxy/$${path} \
   {% endif %} \
   || exit 1
 
@@ -256,8 +259,8 @@ compositional_rundeck_additional_setup: |
   echo "Hello, World!"
   echo "Command number 2"
 compositional_rundeck_healthcheck: |
-  curl -sSL --fail {{ environment_domain }}/rundeck \
-  && curl -sSL --fail {{ environment_domain }}$$(curl -sSL --fail {{ environment_domain }}/rundeck | grep -o '/rundeck/assets/bootstrap.min.*css') \
+  curl -sSL --fail localhost:4440/rundeck \
+  && curl -sSL --fail --insecure proxy$$(curl -sSL --fail localhost:4440/rundeck | grep -oe '/rundeck/assets/static/css/components/theme-[a-f0-9]\+\.css') \
   || exit 1
 
 #
@@ -278,8 +281,8 @@ compositional_bookstack_mysql_script: |
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
 compositional_bookstack_healthcheck: |
-  curl -sSL --fail "{{ environment_domain }}/bookstack" && \
-  curl -sSL --fail -o - "{{ environment_domain }}/bookstack/logo.png" &>/dev/null || \
+  curl -sSL --fail --insecure localhost:8080 && \
+  curl -sSL --fail -o - "proxy/bookstack/logo.png" &>/dev/null || \
   exit 1
 
 #
@@ -310,7 +313,7 @@ compositional_commandcenter_healthcheck: |
 compositional_portal_pull: yes
 compositional_portal_state: present
 compositional_portal_restarted: yes
-compositional_portal_version: '1.6.0'
+compositional_portal_version: '1.8.0'
 compositional_portal_storage: 'local'
 compositional_portal_role_branch: 'master'
 compositional_portal_backend_password: 'testpassword'
@@ -334,6 +337,6 @@ compositional_portal_mysql_script: |
   CREATE DATABASE IF NOT EXISTS portal;
   GRANT ALL PRIVILEGES ON portal.* TO 'portal'@'%';
 compositional_portal_healthcheck: |
-  wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}/portal \
-  && wget --quiet --no-verbose --tries=1 --spider {{ environment_domain }}$$(wget --quiet --no-verbose --tries=1 {{ environment_domain }}/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
+  wget --quiet --no-verbose --tries=1 --spider localhost:3000/portal \
+  && wget --quiet --no-verbose --tries=1 --spider --no-check-certificate proxy$$(wget --quiet --no-verbose --tries=1 localhost:3000/portal -O - | grep -oe "[A-Za-z0-9/_-]\+.css" | head -n 1 | sed 's/^{{ environment_domain.split(".")[-1] }}//') \
   || exit 1
