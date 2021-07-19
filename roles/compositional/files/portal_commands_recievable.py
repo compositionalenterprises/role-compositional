@@ -69,7 +69,7 @@ def set_entrypoint_path(container_image):
             "git clone https://gitlab.com/compositionalenterprises/"
             "play-compositional.git /var/ansible\n"
             "cd /var/ansible\n"
-            "ln -sT /environment /var/ansible/environment\n"
+            "ln -sT /portal_storage/ansible/environment /var/ansible/environment\n"
             "sed -i 's/, plays@.\/.vault_pass//' ansible.cfg\n"
             "rm -rf playbooks/group_vars/\n"
             "echo $VAULT_PASSWORD > environment/.vault_pass\n"
@@ -78,8 +78,9 @@ def set_entrypoint_path(container_image):
             ),
         'commands_recievable': (
             '#!/bin/bash -e\n'
-            'ln -sT /environment /var/ansible/environment\n'
-            'cd /var/ansible\n'
+            "ln -sT /portal_storage/ansible/environment /var/ansible/environment\n"
+            "cd /var/ansible\n"
+            "echo $VAULT_PASSWORD > environment/.vault_pass\n"
             'exec "$@"'
             )
         }
@@ -118,8 +119,8 @@ def run_docker_command(spec):
             'VAULT_PASSWORD': spec['vault_password']
             },
         volumes={
-            '/srv/local/portal_env/': {
-                'bind': '/environment',
+            '/srv/local/portal_storage/': {
+                'bind': '/portal_storage',
                 'mode': 'rw'
                 },
             '/root/.ssh/': {
