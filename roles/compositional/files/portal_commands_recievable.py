@@ -70,7 +70,7 @@ def set_entrypoint_path(container_image):
             "play-compositional.git /var/ansible\n"
             "cd /var/ansible\n"
             "ln -sT /environment /var/ansible/environment\n"
-            "sed -i 's/, plays@. \/.vault_pass//' ansible.cfg\n"
+            "sed -i 's/, plays@.\/.vault_pass//' ansible.cfg\n"
             "rm -rf playbooks/group_vars/\n"
             "echo $VAULT_PASSWORD > environment/.vault_pass\n"
             "ansible-galaxy install -fr requirements.yml\n"
@@ -111,8 +111,9 @@ def run_docker_command(spec):
     run_result = client.containers.run(
         image=get_container_image(),
         command=build_command(spec),
-        stream=True,
         entrypoint='/entrypoint/entrypoint.sh',
+        network_mode='host',
+        stream=True,
         environment={
             'VAULT_PASSWORD': spec['vault_password']
             },
