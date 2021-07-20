@@ -22,7 +22,7 @@ def build_command(spec):
     #
     # Also, we add the format for the extra args
     if spec['script'].split('/')[0] == 'playbooks':
-        command = 'ansible-playbook -i environment/hosts.yml '
+        command = 'ansible-playbook -i localhost, '
         args_format = " -e {}={}"
     else:
         # This requires us to choose whether we enforce flag or switch passing
@@ -162,15 +162,18 @@ def systemd_socket_response():
                         fragments.append(data)
                     spec_bytes = b''.join(fragments)
                     spec = literal_eval(spec_bytes.decode('utf8'))
-                    #conn.sendall(b'Executing...')
+                    conn.sendall(b'Executing...')
                     print('Executing...')
                     container = run_docker_command(spec)
                     container_logs = container.logs(stream=True, follow=True)
                     try:
                         while True:
-                            line = next(container_logs).decode("utf-8")
-                            conn.send
-                    #conn.sendall(b'Executed...')
+                            line = next(container_logs)
+                            print(line)
+                            conn.send(line)
+                    except StopIteration:
+                        pass
+                    conn.sendall(b'Executed...')
                     print('Executed...')
             except socket.timeout:
                 pass
