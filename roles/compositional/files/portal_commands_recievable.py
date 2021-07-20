@@ -109,11 +109,12 @@ def run_docker_command(spec):
     set_entrypoint_path(container_image.split(':')[0]),
     print('Running Container')
     # TODO Deal with local/remove pathing
-    run_result = client.containers.run(
+    container = client.containers.run(
         image=get_container_image(),
         command=build_command(spec),
         entrypoint='/entrypoint/entrypoint.sh',
         network_mode='host',
+        detatch=True,
         stream=True,
         environment={
             'VAULT_PASSWORD': spec['vault_password']
@@ -133,9 +134,8 @@ def run_docker_command(spec):
                 }
             },
         )
-    print('Ran Container')
 
-    return run_result
+    return container
 
 def systemd_socket_response():
     """
@@ -164,10 +164,14 @@ def systemd_socket_response():
                     spec = literal_eval(spec_bytes.decode('utf8'))
                     #conn.sendall(b'Executing...')
                     print('Executing...')
-                    run_result = run_docker_command(spec)
+                    container = run_docker_command(spec)
+                    container_logs = container.logs(stream=True, follow=True)
+                    try:
+                        while True:
+                            line = next(container_logs).decode("utf-8")
+                            conn.send
                     #conn.sendall(b'Executed...')
                     print('Executed...')
-                    print("Run Result: {}".format(run_result))
             except socket.timeout:
                 pass
             except OSError as e:
