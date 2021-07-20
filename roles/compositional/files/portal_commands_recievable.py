@@ -114,7 +114,7 @@ def run_docker_command(spec):
         command=build_command(spec),
         entrypoint='/entrypoint/entrypoint.sh',
         network_mode='host',
-        detatch=True,
+        detach=True,
         stream=True,
         environment={
             'VAULT_PASSWORD': spec['vault_password']
