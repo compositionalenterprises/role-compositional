@@ -76,7 +76,7 @@ def set_entrypoint_path(container_image):
             "ansible-galaxy install -fr requirements.yml\n"
             'exec "$@" \n'
             ),
-        'commands_recievable': (
+        'commands_receiveable': (
             '#!/bin/bash -e\n'
             "ln -sT /portal_storage/ansible/environment /var/ansible/environment\n"
             "cd /var/ansible\n"
