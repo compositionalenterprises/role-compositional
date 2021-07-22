@@ -1,24 +1,24 @@
 ---
 #
-# Set up the commands_receiveable supervisor daemon
+# Set up the commands_receivable supervisor daemon
 #
-- name: (portal) Commands receiveable executable is deployed
+- name: (portal) Commands receivable executable is deployed
   copy:
-    src: 'portal_commands_receiveable.py'
-    dest: '/usr/local/bin/commands_receiveable.py'
+    src: 'portal_commands_receivable.py'
+    dest: '/usr/local/bin/commands_receivable.py'
     mode: '0744'
 
 - name: (portal) Systemd service and socket file are deployed
   copy:
-    src: "portal_commands_receiveable.{{ item }}"
-    dest: "/etc/systemd/system/commands_receiveable.{{ item }}"
+    src: "portal_commands_receivable.{{ item }}"
+    dest: "/etc/systemd/system/commands_receivable.{{ item }}"
   with_items:
     - 'service'
     - 'socket'
 
 - name: (portal) systemd socket is started and enabled
   systemd:
-    name: commands_receiveable.socket
+    name: commands_receivable.socket
     state: started
     daemon_reload: True
 
@@ -87,7 +87,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
-                      - "/var/run/commands_receiveable.sock:/var/run/commands_receiveable.sock"
+                      - "/var/run/commands_receivable.sock:/var/run/commands_receivable.sock"
                   networks:
                       - frontend
                       - backend
@@ -142,7 +142,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
-                      - "/var/run/commands_receiveable.sock:/var/run/commands_receiveable.sock"
+                      - "/var/run/commands_receivable.sock:/var/run/commands_receivable.sock"
                   networks:
                       - frontend
                       - backend
