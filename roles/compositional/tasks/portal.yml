@@ -2,6 +2,23 @@
 #
 # Set up the commands_receivable supervisor daemon
 #
+- name: Set up SSH keys
+  openssh_keypair:
+    path: "~/.ssh/commands_receivable"
+    type: ed25519
+    state: present
+
+- name: Slurp public key file contents
+  slurp:
+    src: "~/.ssh/commands_receivable.pub"
+  register: compositional_portal_crpubkey
+
+- name: Add Commands Receivable public key to authorized key files
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ compositional_portal_crpubkey['content'] | b64decode }}"
+
 - name: (portal) Commands receivable executable is deployed
   copy:
     src: 'portal_commands_receivable.py'

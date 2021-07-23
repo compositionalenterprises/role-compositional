@@ -22,7 +22,7 @@ def build_command(spec):
     #
     # Also, we add the format for the extra args
     if spec['script'].split('/')[0] == 'playbooks':
-        command = 'ansible-playbook -i localhost, '
+        command = 'ansible-playbook --private-key ~/.ssh/commands_receivable -i localhost, '
         args_format = " -e {}={}"
     else:
         # This requires us to choose whether we enforce flag or switch passing
