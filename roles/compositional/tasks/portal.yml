@@ -1,4 +1,47 @@
 ---
+#
+# Set up the commands_receivable supervisor daemon
+#
+- name: Set up SSH keys
+  openssh_keypair:
+    path: "~/.ssh/commands_receivable"
+    type: ed25519
+    state: present
+
+- name: Slurp public key file contents
+  slurp:
+    src: "~/.ssh/commands_receivable.pub"
+  register: compositional_portal_crpubkey
+
+- name: Add Commands Receivable public key to authorized key files
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ compositional_portal_crpubkey['content'] | b64decode }}"
+
+- name: (portal) Commands receivable executable is deployed
+  copy:
+    src: 'portal_commands_receivable.py'
+    dest: '/usr/local/bin/commands_receivable.py'
+    mode: '0744'
+
+- name: (portal) Systemd service and socket file are deployed
+  copy:
+    src: "portal_commands_receivable.{{ item }}"
+    dest: "/etc/systemd/system/commands_receivable.{{ item }}"
+  with_items:
+    - 'service'
+    - 'socket'
+
+- name: (portal) systemd socket is started and enabled
+  systemd:
+    name: commands_receivable.socket
+    state: started
+    daemon_reload: True
+
+#
+# Hop back into the regular nginx conf/DB setup and container deploy
+#
 - name: (portal) Nginx conf is deployed
   template:
     src: "nginx_portal.conf.j2"
@@ -61,6 +104,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
+                      - "/var/run/commands_receivable.sock:/var/run/commands_receivable.sock"
                   networks:
                       - frontend
                       - backend
@@ -115,6 +159,7 @@
                       - "/srv/{{ compositional_portal_storage }}/portal_storage/:/app/storage/"
                       - "/srv/{{ compositional_portal_storage }}/portal_credentials/:/app/config/credentials/"
                       - "/srv/{{ compositional_nginx_storage }}/nginx_logs/:/srv/nginx_logs/"
+                      - "/var/run/commands_receivable.sock:/var/run/commands_receivable.sock"
                   networks:
                       - frontend
                       - backend
