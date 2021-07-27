@@ -1,5 +1,13 @@
 ---
 # tasks file for role-compositional
+- name: Install necessary packages
+  apt:
+    name: "{{ pkgs }}"
+    state: latest
+  vars:
+    pkgs:
+      - build-essential
+      - libsystemd-dev
 
 - name: Ensure that the local and remote directories are configured
   file:

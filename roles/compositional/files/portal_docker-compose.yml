@@ -1,0 +1,12 @@
+version: 3
+services:
+  ansible:
+    image: ubuntu:18.04
+    container_name: ansible
+    command: "echo 'Hello World'"
+    restart: never
+    volumes:
+      - "/root/.ssh:/root/.ssh/"
+      # TODO: This variable won't exist in portal yet
+      - "/srv/{{ compositional_portal_storage }}/portal_env/:/var/ansible/environment"
+    network_mode: host
