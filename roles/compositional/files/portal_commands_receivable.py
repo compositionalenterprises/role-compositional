@@ -44,17 +44,6 @@ def build_command(spec):
     return command
 
 
-def ssh_keys(action):
-    '''
-    Idiot-suseptible way to create and delete ssh keys
-    '''
-    if action == 'create':
-        os.chdir('/root/.ssh')
-        subprocess.call('ssh-keygen -t ed25519', shell=True)
-    else:
-        subprocess.call('rm -rf /root/.ssh/ed25519*', shell=True)
-
-
 def set_entrypoint_path(container_image):
     # Set the script dict for the options we have to choose amongst.
     scripts = {
@@ -95,8 +84,55 @@ def set_entrypoint_path(container_image):
     os.chmod(entrypoint_path, 0o755)
 
 
-def get_container_image():
-    return 'ubuntu:20.04'
+def build_container_image(collection_version):
+    os.makedirs('/tmp/docker_build', exist_ok=True)
+    dockerfile_path = '/tmp/docker_build/Dockerfile'
+    with open(dockerfile_path, 'w') as dockerfile:
+        dockerfile.write(
+            "FROM ubuntu:20.04\n"
+            "ENV DEBIAN_FRONTEND=noninteractive\n"
+            "RUN apt-get update && \\\n"
+            "    apt-get install -y "
+            "git dnsutils python3 libffi-dev libssl-dev python3-dev "
+            "python3-distutils python3-pip && \\\n"
+            "    pip3 install 'ansible>=2.10,<2.11' ansible-vault requests "
+            "tabulate packaging && \\\n"
+            "    git clone https://gitlab.com/compositionalenterprises/"
+            "play-compositional.git /var/ansible && \\\n"
+            "    cd /var/ansible && \\\n"
+            "    sed -i 's/, plays@.\/.vault_pass//' ansible.cfg && \\\n"
+            "    rm -rf playbooks/group_vars/ && \\\n"
+            "    sed -i 's/version: master/version: "
+            f"{collection_version}/' requirements.yml && \\\n"
+            "    ansible-galaxy install -fr requirements.yml\n"
+            )
+
+    client = docker.from_env()
+    container = client.images.build(
+            path='/tmp/docker_build',
+            tag='commands_receivable',
+            pull=True,
+            # TODO: buildargs instead of f-string above?
+            )
+
+    return container
+
+def get_container_image(spec):
+    # TODO: Test for image present:
+    #
+    #   ➜  ~ docker images -q mariadb:latest
+    #        e76a4b2ed1b4
+    #   ➜  ~ docker images -q mariadb:1.10
+    #   ➜  ~ echo $?
+    #   0
+
+    # TODO: Test for spec passed something for us to auth to the docker
+    # registry with
+    if False:
+        return 'compositionalenterprises/commands_receivable'
+    else:
+        build_container_image(spec['collection_version'])
+        return 'commands_receivable'
 
 
 def run_docker_command(spec):
@@ -110,7 +146,7 @@ def run_docker_command(spec):
     print('Running Container')
     # TODO Deal with local/remove pathing
     container = client.containers.run(
-        image=get_container_image(),
+        image=get_container_image(spec),
         command=build_command(spec),
         entrypoint='/entrypoint/entrypoint.sh',
         network_mode='host',
@@ -160,6 +196,14 @@ def systemd_socket_response():
                         if not data:
                             break
                         fragments.append(data)
+                    # We are expecting at least the following here:
+                    #
+                    # {
+                    #     'vault_password': str(), # Required
+                    #     'script': str(), # Required
+                    #     'args': dict(), # Optional
+                    #     'collection_version': str(), # Required
+                    # }
                     spec_bytes = b''.join(fragments)
                     spec = literal_eval(spec_bytes.decode('utf8'))
                     conn.sendall(b'Executing...')
@@ -182,7 +226,5 @@ def systemd_socket_response():
                 print(e)
 
 if __name__ == "__main__":
-    #ssh_keys('create')
     if os.environ.get("LISTEN_FDS", None) != None:
         systemd_socket_response()
-    #ssh_keys('remove')
