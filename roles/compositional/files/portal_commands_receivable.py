@@ -84,7 +84,7 @@ def set_entrypoint_path(container_image):
     os.chmod(entrypoint_path, 0o755)
 
 
-def build_container_image(collection_version):
+def build_container_image(collection_version, build_target):
     os.makedirs('/tmp/docker_build', exist_ok=True)
     dockerfile_path = '/tmp/docker_build/Dockerfile'
     with open(dockerfile_path, 'w') as dockerfile:
@@ -108,16 +108,18 @@ def build_container_image(collection_version):
             )
 
     client = docker.from_env()
-    container = client.images.build(
+    container_image = client.images.build(
             path='/tmp/docker_build',
-            tag='commands_receivable',
+            tag="{}/commands_receivable:{}".format(
+                build_target, collection_version),
             pull=True,
             # TODO: buildargs instead of f-string above?
             )
+    print("Building {}".format(container_image[0].tags))
 
-    return container
+    return container_image
 
-def get_container_image(spec):
+def get_container_tag(spec):
     # TODO: Test for image present:
     #
     #   ➜  ~ docker images -q mariadb:latest
@@ -129,10 +131,12 @@ def get_container_image(spec):
     # TODO: Test for spec passed something for us to auth to the docker
     # registry with
     if False:
-        return 'compositionalenterprises/commands_receivable'
+        return 'compositionalenterprises/commands_receivable:{}'.format(
+                spec['collection_version'])
     else:
-        build_container_image(spec['collection_version'])
-        return 'commands_receivable'
+        build_container_image(spec['collection_version'], 'local')
+        return "local/commands_receivable:{}".format(
+                spec['collection_version'])
 
 
 def run_docker_command(spec):
@@ -141,12 +145,11 @@ def run_docker_command(spec):
     of it.
     """
     client = docker.from_env()
-    container_image = get_container_image()
     set_entrypoint_path(container_image.split(':')[0]),
     print('Running Container')
     # TODO Deal with local/remove pathing
     container = client.containers.run(
-        image=get_container_image(spec),
+        image=get_container_tag(spec),
         command=build_command(spec),
         entrypoint='/entrypoint/entrypoint.sh',
         network_mode='host',
