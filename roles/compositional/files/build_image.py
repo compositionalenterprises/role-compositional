@@ -12,7 +12,7 @@ def build_container_images(collection_version):
             line = next(container_image[1])
             print(line)
     except StopIteration:
-        exit
+        return container_image
 
 
 def parse_args():
