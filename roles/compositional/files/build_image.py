@@ -1,3 +1,4 @@
+import argparse
 from portal_commands_receivable import build_container_image
 
 
@@ -33,7 +34,7 @@ def parse_args():
 if __name__ == '__main__':
 
     args = parse_args()
-    if args['eollction_version'].startswith('v'):
+    if args['collection_version'].startswith('v'):
         # Build the full tag
         build_container_images(args['collection_version'][1:])
         # Build the major version

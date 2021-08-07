@@ -5,7 +5,6 @@ import docker
 import socket
 import subprocess
 from ast import literal_eval
-from systemd.daemon import listen_fds;
 
 
 def build_command(spec):
@@ -234,5 +233,6 @@ def systemd_socket_response():
                 print(e)
 
 if __name__ == "__main__":
+    from systemd.daemon import listen_fds;
     if os.environ.get("LISTEN_FDS", None) != None:
         systemd_socket_response()
