@@ -57,8 +57,7 @@ if __name__ == '__main__':
                     repository=repository,
                     tag=tag,
                     )
-            for line in pushed_image_tag:
-                print(line)
+            print(pushed_image_tag)
 
     # TODO: handle master
     elif args['collection_version'] == 'master':
@@ -72,5 +71,4 @@ if __name__ == '__main__':
                 repository=repository,
                 tag='latest',
                 )
-        print(pushed_image_tag:)
-            print(line)
+        print(pushed_image_tag)
