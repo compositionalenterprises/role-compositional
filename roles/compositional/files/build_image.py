@@ -36,24 +36,41 @@ if __name__ == '__main__':
 
     args = parse_args()
     client = docker.from_env()
+    repository = 'compositionalenterprises/commands_receivable'
     if args['collection_version'].startswith('v'):
+        maj_ver = '.'.join(args['collection_version'][1:].split('.')[:2])
         # Build the full tag
         image_tag = build_container_images(args['collection_version'])
-        pushed_image_tag = client.images.push(
-                repository='compositionalenterprises/commands_receivable',
-                tag=args['collection_version'],
+        # Tag that image as stable and minor version
+        image_tag[0].tag(
+                repository=repository,
+                tag='stable-' + maj_ver
                 )
-        print([line for line in pushed_image_tag])
+        image_tag[0].tag(
+                repository=repository,
+                tag=maj_ver
+                )
 
-        # Build the major version
-        maj_ver = '.'.join(args['collection_version'][1:].split('.')[:2])
-        image_maj_ver = build_container_images("stable-" + maj_ver)
-        pushed_image_maj_ver = client.images.push(
-                repository='compositionalenterprises/commands_receivable',
-                tag='stable-' + maj_ver,
-                )
-        print([line for line in pushed_image_maj_ver])
+        tags = [args['collection_version'], 'stable' + maj_ver, maj_ver]
+        for tag in tags:
+            pushed_image_tag = client.images.push(
+                    repository=repository,
+                    tag=tag,
+                    )
+            for line in pushed_image_tag:
+                print(line)
+
     # TODO: handle master
     elif args['collection_version'] == 'master':
-        pass
-
+        # Build the full tag
+        image_tag = build_container_images(args['collection_version'])
+        image_tag[0].tag(
+                repository=repository,
+                tag='latest'
+                )
+        pushed_image_tag = client.images.push(
+                repository=repository,
+                tag='latest',
+                )
+        for line in pushed_image_tag:
+            print(line)
