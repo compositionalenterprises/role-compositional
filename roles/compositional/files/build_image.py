@@ -37,17 +37,7 @@ if __name__ == '__main__':
     if args['collection_version'].startswith('v'):
         # Build the full tag
         image_tag = build_container_images(args['collection_version'])
-        # Build the major version
-        try:
-            while True:
-                print(next(image_tag[1]))
-        except StopIteration:
-            pass
 
+        # Build the major version
         maj_ver = '.'.join(args['collection_version'][1:].split('.')[:2])
         image_maj_ver = build_container_images("stable-" + maj_ver)
-        try:
-            while True:
-                print(next(image_maj_ver[1]))
-        except StopIteration:
-            pass
