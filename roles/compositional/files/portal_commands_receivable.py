@@ -119,7 +119,7 @@ def build_container_image(collection_version, build_target):
 
     return container_image
 
-def get_container_tag(spec):
+def get_container_image(spec):
     # TODO: Test for image present:
     #
     #   ➜  ~ docker images -q mariadb:latest
@@ -130,10 +130,15 @@ def get_container_tag(spec):
 
     # TODO: Test for spec passed something for us to auth to the docker
     # registry with
-    if False:
+    try:
+        client = docker.from_env()
+        client.images.pull(
+                repository='compositionalenterprises/commands_receivable',
+                tag=spec['collection_version']
+                )
         return 'compositionalenterprises/commands_receivable:{}'.format(
                 spec['collection_version'])
-    else:
+    except docker.errors.APIERROR:
         build_container_image(spec['collection_version'], 'local')
         return "local/commands_receivable:{}".format(
                 spec['collection_version'])
@@ -149,7 +154,7 @@ def run_docker_command(spec):
     print('Running Container')
     # TODO Deal with local/remove pathing
     container = client.containers.run(
-        image=get_container_tag(spec),
+        image=get_container_image(spec),
         command=build_command(spec),
         entrypoint='/entrypoint/entrypoint.sh',
         network_mode='host',
