@@ -1,3 +1,4 @@
+import docker
 import argparse
 from portal_commands_receivable import build_container_image
 
