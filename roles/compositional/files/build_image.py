@@ -53,3 +53,7 @@ if __name__ == '__main__':
                 tag='stable-' + maj_ver,
                 )
         print([line for line in pushed_image_maj_ver])
+    # TODO: handle master
+    elif args['collection_version'] == 'master':
+        pass
+
