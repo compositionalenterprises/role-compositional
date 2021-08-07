@@ -131,12 +131,13 @@ def run_docker_command(spec):
     of it.
     """
     client = docker.from_env()
+    set_entrypoint_path()
     print('Running Container')
     # TODO Deal with local/remove pathing
     container = client.containers.run(
         image=get_container_image(spec),
         command=build_command(spec),
-        entrypoint=set_entrypoint_path(),
+        entrypoint='/entrypoint/entrypoint.sh',
         network_mode='host',
         detach=True,
         stream=True,
