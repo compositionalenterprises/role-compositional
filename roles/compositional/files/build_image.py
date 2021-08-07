@@ -34,10 +34,19 @@ def parse_args():
 if __name__ == '__main__':
 
     args = parse_args()
+    client = docker.from_env()
     if args['collection_version'].startswith('v'):
         # Build the full tag
         image_tag = build_container_images(args['collection_version'])
+        client.push(
+                repository='compositionalenterprises/commands_receivable',
+                tag=args['collection_version'],
+                )
 
         # Build the major version
         maj_ver = '.'.join(args['collection_version'][1:].split('.')[:2])
         image_maj_ver = build_container_images("stable-" + maj_ver)
+        client.push(
+                repository='compositionalenterprises/commands_receivable',
+                tag='stable-' + maj_ver,
+                )
