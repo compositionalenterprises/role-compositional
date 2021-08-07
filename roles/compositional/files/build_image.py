@@ -48,10 +48,10 @@ if __name__ == '__main__':
                 )
         image_tag[0].tag(
                 repository=repository,
-                tag=maj_ver
+                tag='v' + maj_ver
                 )
 
-        tags = [args['collection_version'], 'stable' + maj_ver, maj_ver]
+        tags = [args['collection_version'], 'stable-' + maj_ver, 'v' + maj_ver]
         for tag in tags:
             pushed_image_tag = client.images.push(
                     repository=repository,
@@ -72,5 +72,5 @@ if __name__ == '__main__':
                 repository=repository,
                 tag='latest',
                 )
-        for line in pushed_image_tag:
+        print(pushed_image_tag:)
             print(line)
