@@ -17,7 +17,8 @@ def build_container_images(collection_version):
 
 def parse_args():
     """Parse the passed in arguments"""
-    parser = argparse.ArgumentParser(description="Updates an entry in ClouDNS")
+    parser = argparse.ArgumentParser(description='''Builds a commands_receivable
+            container image''')
     parser.add_argument('-c', '--collection_version',
                         help="The version of the collection to build this for",
                         required=False)
@@ -72,3 +73,7 @@ if __name__ == '__main__':
                 tag='latest',
                 )
         print(pushed_image_tag)
+
+    else:
+        print("I don't know what to build...")
+        exit 1
