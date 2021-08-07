@@ -39,15 +39,17 @@ if __name__ == '__main__':
     if args['collection_version'].startswith('v'):
         # Build the full tag
         image_tag = build_container_images(args['collection_version'])
-        client.push(
+        pushed_image_tag = client.images.push(
                 repository='compositionalenterprises/commands_receivable',
                 tag=args['collection_version'],
                 )
+        print([line for line in pushed_image_tag])
 
         # Build the major version
         maj_ver = '.'.join(args['collection_version'][1:].split('.')[:2])
         image_maj_ver = build_container_images("stable-" + maj_ver)
-        client.push(
+        pushed_image_maj_ver = client.images.push(
                 repository='compositionalenterprises/commands_receivable',
                 tag='stable-' + maj_ver,
                 )
+        print([line for line in pushed_image_maj_ver])
