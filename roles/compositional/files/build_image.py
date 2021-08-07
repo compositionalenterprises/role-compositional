@@ -36,7 +36,9 @@ if __name__ == '__main__':
     args = parse_args()
     if args['collection_version'].startswith('v'):
         # Build the full tag
-        build_container_images(args['collection_version'][1:])
+        image_tag = build_container_images(args['collection_version'])
         # Build the major version
-        build_container_images('.'.join(
-            args['collection_version'][1:].split('.')[:2]))
+        print(list(image_tag[1]))
+        maj_ver = '.'.join(args['collection_version'][1:].split('.')[:2])
+        image_maj_ver = build_container_images("stable-" + maj_ver)
+        print(list(image_maj_ver[1]))

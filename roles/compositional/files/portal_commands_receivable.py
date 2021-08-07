@@ -114,7 +114,6 @@ def build_container_image(collection_version, build_target):
             pull=True,
             # TODO: buildargs instead of f-string above?
             )
-    print("Building {}".format(container_image[0].tags))
 
     return container_image
 
