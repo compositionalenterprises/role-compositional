@@ -43,45 +43,28 @@ def build_command(spec):
     return command
 
 
-def set_entrypoint_path(container_image):
+def set_entrypoint_path():
     # Set the script dict for the options we have to choose amongst.
-    scripts = {
-        'ubuntu': (
-            "#!/bin/bash -e\n"
-            "apt-get update\n"
-            "DEBIAN_FRONTEND=noninteractive apt-get install -y "
-            "git dnsutils python3 libffi-dev libssl-dev python3-dev "
-            "python3-distutils python3-pip\n"
-            "pip3 install 'ansible>=2.10,<2.11' ansible-vault requests "
-            "tabulate packaging\n"
-            "git clone https://gitlab.com/compositionalenterprises/"
-            "play-compositional.git /var/ansible\n"
-            "cd /var/ansible\n"
-            "ln -sT /portal_storage/ansible/environment /var/ansible/environment\n"
-            "sed -i 's/, plays@.\/.vault_pass//' ansible.cfg\n"
-            "rm -rf playbooks/group_vars/\n"
-            "echo $VAULT_PASSWORD > environment/.vault_pass\n"
-            "ansible-galaxy install -fr requirements.yml\n"
-            'exec "$@" \n'
-            ),
-        'commands_receivable': (
-            '#!/bin/bash -e\n'
-            "ln -sT /portal_storage/ansible/environment /var/ansible/environment\n"
-            "cd /var/ansible\n"
-            "echo $VAULT_PASSWORD > environment/.vault_pass\n"
-            'exec "$@"'
-            )
-        }
+    lines = [
+        '#!/bin/bash -e\n',
+        "ln -sT /portal_storage/ansible/environment "
+        "/var/ansible/environment\n",
+        "cd /var/ansible\n",
+        "echo $VAULT_PASSWORD > environment/.vault_pass\n",
+        'exec "$@"\n'
+        ]
 
     # Write out a demo entrypoint script
     os.makedirs('/tmp/entrypoint', exist_ok=True)
     entrypoint_path = '/tmp/entrypoint/entrypoint.sh'
     with open(entrypoint_path, 'w') as entrypoint_script:
-        entrypoint_script.write(scripts[container_image])
+        for line in lines:
+            entrypoint_script.write(line)
 
     st = os.stat(entrypoint_path)
     os.chmod(entrypoint_path, 0o755)
 
+    return entrypoint_path
 
 def build_container_image(collection_version, build_target):
     os.makedirs('/tmp/docker_build', exist_ok=True)
@@ -148,13 +131,12 @@ def run_docker_command(spec):
     of it.
     """
     client = docker.from_env()
-    set_entrypoint_path(container_image.split(':')[0]),
     print('Running Container')
     # TODO Deal with local/remove pathing
     container = client.containers.run(
         image=get_container_image(spec),
         command=build_command(spec),
-        entrypoint='/entrypoint/entrypoint.sh',
+        entrypoint=set_entrypoint_path(),
         network_mode='host',
         detach=True,
         stream=True,
