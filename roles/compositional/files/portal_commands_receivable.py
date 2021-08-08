@@ -119,7 +119,7 @@ def get_container_image(spec):
                 )
         return 'compositionalenterprises/commands_receivable:{}'.format(
                 spec['collection_version'])
-    except docker.errors.APIERROR:
+    except docker.errors.APIError:
         build_container_image(spec['collection_version'], 'local')
         return "local/commands_receivable:{}".format(
                 spec['collection_version'])
