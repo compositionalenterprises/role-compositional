@@ -4,6 +4,12 @@
 
 This role sets up a VM to host what amounts to a cloud-in-a-box; a combination of various cloud services all hosted in subdirectories of a given domain. 
 
+### [Feature Roadmap](https://compositionalenterprises.ourcompose.com/kanboard/public/board/891c8f5ee50d3f7ab49b35f552298c547fd7eb0eb11a03a37b3b9516aed2)
+
+The above link will take you to our Roadmap Kanboard where we prioritize tasks for the upcoming work. If you see something or DON'T see something on there, feel free to [reach out to us](https://ourcompose.com/commandcenter/contact) or file an issue against the affected repo.
+
+We also prioritize bugfixes and security vulnerabilities separately, which are not displayed on that board. This board is solely for new features and improvements.
+
 # Requirements
 
 Here is our [requirements.txt](https://gitlab.com/compositionalenterprises/play-compositional/-/blob/master/requirements.yml) that we use when we set up the environment for our playbooks to execute in:
