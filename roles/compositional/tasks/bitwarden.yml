@@ -23,6 +23,7 @@
 
               environment:
                 ADMIN_TOKEN: "{{ compositional_bitwarden_admin_token }}"
+                DOMAIN: "https://{{ environment_domain }}/bitwarden/"
                 LOG_LEVEL: "debug"
 
       networks:
