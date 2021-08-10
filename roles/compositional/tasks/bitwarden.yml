@@ -89,17 +89,32 @@
   become: False
   register: compositional_bitwarden_registration_params_result
 
+- name: Write out the command to a local file
+  #
+  # We do this because we know that there will always be a pipe in the 'key' key of the
+  # params result. This causes sh/bash to trip up and think we're trying to pipe to another
+  # command. We can't get around this by escaping, because that causes the data to be malformed
+  # and we can't escape it using single quotes because that's just not how things work
+  # apparently. I kept getting `sh: 1: Syntax error: Unterminated quoted string` for some damn
+  # reason. So here, we write the command out to a file, run it, and then delete the file.
+  #
+  copy:
+    dest: "/srv/{{ compositional_bitwarden_storage}}/bitwarden_data/admin_registration_command.sh"
+    content: |
+      #!/bin/bash
+      curl --header 'Content-Type: application/json' --request POST --data '{{ compositional_bitwarden_registration_params_result['stdout'].strip() }}' http://localhost/bitwarden/api/accounts/register
+
 - name: (bitwarden) Post the registration to the API URL
   shell: "
       docker exec -i bitwarden bash -c \"
-        curl
-          --header 'Content-Type: application/json'
-          --request POST
-          --data '{{ compositional_bitwarden_registration_params_result['stdout'].strip() | replace('|', '\|') }}'
-          http://localhost/bitwarden/api/accounts/register
       \"
     "
   register: compositional_bitwarden_admin_post_result
   failed_when:
     - "'error' in compositional_bitwarden_admin_post_result['stdout']"
     - "'User already exists' not in compositional_bitwarden_admin_post_result['stdout']"
+
+- name: Remove the local command file
+  file:
+    dest: "/srv/{{ compositional_bitwarden_storage}}/bitwarden_data/admin_registration_command.sh"
+    state: absent
