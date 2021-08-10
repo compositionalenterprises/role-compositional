@@ -95,7 +95,7 @@
         curl
           --header 'Content-Type: application/json'
           --request POST
-          --data '{{ compositional_bitwarden_registration_params_result['stdout'].strip() }}'
+          --data '{{ compositional_bitwarden_registration_params_result['stdout'].strip() | replace('|', '\|') }}'
           http://localhost/bitwarden/api/accounts/register
       \"
     "
