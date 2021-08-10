@@ -26,6 +26,12 @@
                 DOMAIN: "https://{{ environment_domain }}/bitwarden/"
                 LOG_LEVEL: "debug"
 
+              healthcheck:
+                test: "{{ compositional_bitwarden_healthcheck }}"
+                interval: 5s
+                timeout: 30s
+                retries: 3
+
       networks:
           frontend:
               external: true

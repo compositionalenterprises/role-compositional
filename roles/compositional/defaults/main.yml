@@ -162,6 +162,11 @@ compositional_bitwarden_bind_mountpoints:
   - {location: '/bitwarden/images/', directory: '/web-vault/images'}
   - {location: '/bitwarden/locales/', directory: '/web-vault/locales'}
   - {location: '/bitwarden/fonts/', directory: '/web-vault/fonts'}
+compositional_bitwarden_healthcheck: |
+  curl -sSL --fail localhost/bitwarden/alive \
+  && curl -L --fail --insecure -o - "proxy/bitwarden/$$(curl -sSL --fail localhost/bitwarden | grep -oe 'app/[a-z0-9.]\+' | head -n 1)" &>/dev/null \
+  && curl -L --fail --insecure -o - "proxy/bitwarden/$$(curl -sSL --fail localhost/bitwarden | grep -oe 'images/[a-z0-9./@-]\+' | head -n 1)" &>/dev/null \
+  || exit 1
 
 #
 # Firefly
@@ -281,9 +286,9 @@ compositional_bookstack_mysql_script: |
   CREATE DATABASE IF NOT EXISTS bookstack;
   GRANT ALL PRIVILEGES ON bookstack.* TO 'bookstack'@'%';
 compositional_bookstack_healthcheck: |
-  curl -sSL --fail --insecure localhost:8080 && \
-  curl -sSL --fail -o - "proxy/bookstack/logo.png" &>/dev/null || \
-  exit 1
+  curl -sSL --fail --insecure localhost:8080 \
+  && curl -sSL --fail -o - "proxy/bookstack/logo.png" &>/dev/null \
+  || exit 1
 
 #
 # CommandCenter
