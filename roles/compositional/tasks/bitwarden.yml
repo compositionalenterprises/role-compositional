@@ -72,7 +72,7 @@
 # Admin Password
 #
 - name: (bitwarden) Bitwarden is healthy
-  shell: docker exec -i bitwarden bash -c "curl -sSL --fail localhost"
+  shell: docker exec -i bitwarden bash -c "curl -sSL --fail localhost/bitwarden"
   register: compositional_bitwarden_health
   until: compositional_bitwarden_health['rc'] == 0
   retries: 24
@@ -96,7 +96,7 @@
           --header 'Content-Type: application/json'
           --request POST
           --data '{{ compositional_bitwarden_registration_params_result['stdout'].strip() }}'
-          http://localhost/api/accounts/register
+          http://localhost/bitwarden/api/accounts/register
       \"
     "
   register: compositional_bitwarden_admin_post_result
