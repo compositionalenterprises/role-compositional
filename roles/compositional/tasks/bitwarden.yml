@@ -103,10 +103,12 @@
     content: |
       #!/bin/bash
       curl --header 'Content-Type: application/json' --request POST --data '{{ compositional_bitwarden_registration_params_result['stdout'].strip() }}' http://localhost/bitwarden/api/accounts/register
+    mode: a+x
 
 - name: (bitwarden) Post the registration to the API URL
   shell: "
       docker exec -i bitwarden bash -c \"
+        /data/admin_registration_command.sh
       \"
     "
   register: compositional_bitwarden_admin_post_result
