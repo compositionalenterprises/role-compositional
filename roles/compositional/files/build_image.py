@@ -74,6 +74,9 @@ def build_and_tag(repository, collection_version):
         print("Updating branches: {}...".format(stable_branches))
         for stable_branch in stable_branches:
             version = stable_branch.split('-')[-1]
+            if float(version) < float('2.7'):
+                # Less than 2.7 was not a collection, so this won't work
+                continue
             latest_tag = subprocess.check_output(
                 "git tag | grep v{} | sort -V | tail -n 1".format(version),
                 shell=True, text=True, cwd=script_dir
