@@ -94,7 +94,7 @@ def build_and_tag(repository, collection_version):
 
     else:
         print("I don't know what to build...")
-        exit 1
+        exit(1)
 
 
 def parse_args():
