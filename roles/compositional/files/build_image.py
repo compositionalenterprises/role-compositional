@@ -68,10 +68,10 @@ def build_and_tag(repository, collection_version):
         # resulting list, so we wrap this in a filter to filter out `None`
         # types (e.g. zero-length strings) from the result, and then transpose
         # it back into a list
+        cmd1 = "git branch -a | grep 'remotes/origin/stable-[0-9.]\+$' | "
+        cmd2 = "cut -d '/' -f 3 | tail -n 3"
         stable_branches = list(filter(None,
-            cmd1 = "git branch -a | grep 'remotes/origin/stable-[0-9.]\+$' | "
-            cmd2 = "cut -d '/' -f 3 | tail -n 3"
-            subprocess.check_output(cmd1 + cmd2 shell=True, text=True,
+            subprocess.check_output(cmd1 + cmd2, shell=True, text=True,
                 cwd=script_dir).split('\n')))
 
         # Using that list above, we get the latest tags for those three stable
