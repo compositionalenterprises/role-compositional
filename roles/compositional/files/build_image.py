@@ -86,7 +86,7 @@ def build_and_tag(repository, collection_version):
             # Now, we pass this information back to this same function (yes,
             # it's f'ing recursion) so that we can build the tags one at a time
             # again.
-            print("Building updated tags for {}...".format(stable_branch))
+            print("Building updated tags for {}...".format(latest_tag))
             build_and_tag(repository, latest_tag)
 
     else:
