@@ -17,7 +17,7 @@ Push latest:
     - master
   script:
     # First we want to create the docker container
-    - apk add --update git python3 py3-pip
+    - apk add --update git python3 py3-pip curl
     - pip3 install docker argparse
     - python3 roles/compositional/files/build_image.py --collection_version master
     # Then we want to push this up to ansible-galaxy as a collection
