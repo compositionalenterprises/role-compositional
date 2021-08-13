@@ -63,19 +63,15 @@ def build_and_tag(repository, collection_version):
 
         # Get the latest stable version tags. Here we're obviously just getting
         # the return of a command at the heart of it. The command gets all of
-        # the branches, and lists the latest three stable branches. However,
-        # the split at the end can cause a trailing zero-length string in the
-        # resulting list, so we wrap this in a filter to filter out `None`
-        # types (e.g. zero-length strings) from the result, and then transpose
-        # it back into a list
+        # the branches, and lists the latest three stable branches.
         cmd1 = "git branch -a | grep 'remotes/origin/stable-[0-9.]\+$' | "
         cmd2 = "cut -d '/' -f 3 | tail -n 3"
-        stable_branches = list(filter(None,
-            subprocess.check_output(cmd1 + cmd2, shell=True, text=True,
-                cwd=script_dir).split('\n')))
+        stable_branches = subprocess.check_output(cmd1 + cmd2, shell=True,
+                text=True, cwd=script_dir).strip().split('\n')))
 
         # Using that list above, we get the latest tags for those three stable
         # branches.
+        print("Updating branches: {}...".format(stable_branches))
         for stable_branch in stable_branches:
             version = stable_branch.split('-')[-1]
             latest_tag = subprocess.check_output(
