@@ -75,8 +75,8 @@ def build_and_tag(repository, collection_version):
         for stable_branch in stable_branches:
             version = stable_branch.split('-')[-1]
             latest_tag = subprocess.check_output(
-                "git tag | grep v{} | sort -V | tail -n 1", shell=True,
-                text=True, cwd=script_dir
+                "git tag | grep v{} | sort -V | tail -n 1".format(version),
+                shell=True, text=True, cwd=script_dir
             ).strip()
 
             # Now, we pass this information back to this same function (yes,
